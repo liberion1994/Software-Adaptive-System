@@ -82,7 +82,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 	public MOEAD_STM_SAS(Problem problem) {
 		super(problem);
 
-		functionType_ = "TCH";
+		functionType_ = "Norm_ITCH";
 	}
 
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
@@ -185,6 +185,10 @@ public class MOEAD_STM_SAS extends Algorithm {
 		// find the knee point
 		kneeIndividual = kneeSelection();
 		
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			System.out.print(kneeIndividual.getObjective(i) + "\t");
+		System.out.println();
+		
 		return population_;
 	}
 	
@@ -219,7 +223,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 			int minIndex = 0;
 			for (int j = 0; j < populationSize_; j++) {
 				fitnessMatrix[i][j] = fitnessFunction(union_.get(i), lambda_[j]);
-				distMatrix[i][j]  	= calculateDistance2(union_.get(i), lambda_[j]);
+				distMatrix[i][j]  	= calculateDistance(union_.get(i), lambda_[j]);
 				if (distMatrix[i][j] < distMatrix[i][minIndex])
 					minIndex = j;
 			}
@@ -353,7 +357,8 @@ public class MOEAD_STM_SAS extends Algorithm {
 	}
 	
 	/**
-	 * Calculate the perpendicular distance between the solution and reference line
+	 * Calculate the distance between 'individual' and a weight vector
+	 * 
 	 * @param individual
 	 * @param lambda
 	 * @return
@@ -374,6 +379,40 @@ public class MOEAD_STM_SAS extends Algorithm {
 			vecInd[i] = normalizedObj[i] - lambda[i];
 
 		distance = norm_vector(vecInd);
+
+		return distance;
+	}
+	
+	/**
+	 * Calculate the perpendicular distance between the solution and reference line (PBI style)
+	 * 
+	 * @param individual
+	 * @param lambda
+	 * @return
+	 */
+	public double calculateDistance3(Solution individual, double[] lambda) {
+
+		double distance;
+		
+		// normalize the weight vector (line segment)
+		double nd = norm_vector(lambda);
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			lambda[i] = lambda[i] / nd;
+
+		double[] realA = new double[problem_.getNumberOfObjectives()];
+		double[] realB = new double[problem_.getNumberOfObjectives()];
+
+		// difference between current point and reference point
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			realA[i] = (individual.getObjective(i) - z_[i]) / (nz_[i] - z_[i]);
+
+		// distance along the line segment
+		double d1 = Math.abs(innerproduct(realA, lambda));
+
+		// distance to the line segment
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			realB[i] = (realA[i] - (z_[i] + d1 * lambda[i]));
+		distance = norm_vector(realB);
 
 		return distance;
 	}
@@ -680,7 +719,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		double fitness;
 		fitness = 0.0;
 
-		if (functionType_.equals("TCH")) {
+		if (functionType_.equals("ITCH")) {
 			double maxFun = -1.0e+30;
 
 			for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
@@ -697,7 +736,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 				}
 			}
 			fitness = maxFun;
-		} else if (functionType_.equals("Norm_TCH"))  {
+		} else if (functionType_.equals("Norm_ITCH"))  {
 			double maxFun = -1.0e+30;
 			double[] normalized_obj = new double[problem_.getNumberOfObjectives()];
 			
@@ -717,7 +756,21 @@ public class MOEAD_STM_SAS extends Algorithm {
 					maxFun = feval;
 			}
 			fitness = maxFun;
-		} else if (functionType_.equals("Norm_ITCH")) {
+		} else if (functionType_.equals("TCH")) {			
+			double max_fun = -1.0e+30;
+			
+			for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+				double diff = (individual.getObjective(i) - z_[i]);
+				double feval;
+				if (lambda[i] == 0)
+					feval = 0.000001 * diff;
+				else
+					feval = diff * lambda[i];
+				if (feval > max_fun)
+					max_fun = feval;
+			}
+			fitness = max_fun;
+		} else if (functionType_.equals("Norm_TCH")) {
 			double max_fun = -1.0e+30;
 			double[] normalized_obj = new double[problem_.getNumberOfObjectives()];
 			
@@ -736,20 +789,6 @@ public class MOEAD_STM_SAS extends Algorithm {
 					max_fun = feval;
 			}
 			
-			fitness = max_fun;
-		} else if (functionType_.equals("ITCH")) {			
-			double max_fun = -1.0e+30;
-			
-			for (int n = 0; n < problem_.getNumberOfObjectives(); n++) {
-				double diff = (individual.getObjective(n) - z_[n]);
-				double feval;
-				if (lambda[n] == 0)
-					feval = 0.0001 * diff;
-				else
-					feval = diff * lambda[n];
-				if (feval > max_fun)
-					max_fun = feval;
-			}
 			fitness = max_fun;
 		} else if (functionType_.equals("PBI"))
 		{
@@ -792,49 +831,41 @@ public class MOEAD_STM_SAS extends Algorithm {
 	 * @param population
 	 * @return
 	 */
-	Solution kneeSelection() {
-		
-		int f1_index  = 0;
-		int f2_index  = 0;
-		double f1_max = -Double.MAX_VALUE;
-		double f2_max = -Double.MIN_VALUE;
+	Solution kneeSelection() {		
+		int[] max_idx    = new int[problem_.getNumberOfObjectives()];
+		double[] max_obj = new double[problem_.getNumberOfObjectives()];
 		
 		// finding the extreme solution for f1
 		for (int i = 0; i < populationSize_; i++) {
 			for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
-				// search for the extreme solution for f1
-				if (population_.get(i).getObjective(j) > f1_max) {
-					f1_index = i;
-					f1_max   = population_.get(i).getObjective(j);
-				}
-				// search for the extreme solution for f2
-				if (population_.get(i).getObjective(j) > f2_max) {
-					f2_index = i;
-					f2_max   = population_.get(i).getObjective(j);
+				// search the extreme solution for f1
+				if (population_.get(i).getObjective(j) > max_obj[j]) {
+					max_idx[j] = i;
+					max_obj[j] = population_.get(i).getObjective(j);
 				}
 			}
 		}
-		
-		if (f1_index == f2_index)
+
+		if (max_idx[0] == max_idx[1])
 			System.out.println("Watch out! Two equal extreme solutions cannot happen!");
 		
 		int maxIdx;
 		double maxDist;
-		double temp1 = (population_.get(f2_index).getObjective(1) - population_.get(f1_index).getObjective(1)) * 
-				(population_.get(f1_index).getObjective(2) - population_.get(0).getObjective(2)) * 
-				(population_.get(f1_index).getObjective(1) - population_.get(0).getObjective(1)) * 
-				(population_.get(f2_index).getObjective(2) - population_.get(f1_index).getObjective(2));
-		double temp2 = Math.pow(population_.get(f2_index).getObjective(1) - population_.get(f1_index).getObjective(1), 2.0) + 
-				Math.pow(population_.get(f2_index).getObjective(2) - population_.get(f1_index).getObjective(2), 2.0);
+		double temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) * 
+				(population_.get(max_idx[0]).getObjective(1) - population_.get(0).getObjective(1)) - 
+				(population_.get(max_idx[0]).getObjective(0) - population_.get(0).getObjective(0)) * 
+				(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
+		double temp2 = Math.pow(population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0), 2.0) + 
+				Math.pow(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1), 2.0);
 		double constant = Math.sqrt(temp2);
 		double tempDist = Math.abs(temp1) / constant;
 		maxIdx  = 0;
 		maxDist = tempDist;
 		for (int i = 1; i < populationSize_; i++) {
-			temp1 = (population_.get(f2_index).getObjective(1) - population_.get(f1_index).getObjective(1)) * 
-					(population_.get(f1_index).getObjective(2) - population_.get(i).getObjective(2)) * 
-					(population_.get(f1_index).getObjective(1) - population_.get(i).getObjective(1)) * 
-					(population_.get(f2_index).getObjective(2) - population_.get(f1_index).getObjective(2));
+			temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) *
+					(population_.get(max_idx[0]).getObjective(1) - population_.get(i).getObjective(1)) - 
+					(population_.get(max_idx[0]).getObjective(0) - population_.get(i).getObjective(0)) * 
+					(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
 			tempDist = Math.abs(temp1) / constant;
 			if (tempDist > maxDist) {
 				maxIdx  = i;
