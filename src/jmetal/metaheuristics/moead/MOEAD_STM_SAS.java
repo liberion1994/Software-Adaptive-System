@@ -35,9 +35,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * TODO need to add function in SASSolution to ensure variable dependency when the
- * genes mutate and crossover; or this can be done in the realization of SASSolution.
- * 
+ 
  * @author ke, tao
  * 
  */

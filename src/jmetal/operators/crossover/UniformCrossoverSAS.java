@@ -12,6 +12,7 @@ import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
+import jmetal.metaheuristics.moead.SASSolution;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -42,16 +43,64 @@ public class UniformCrossoverSAS extends Crossover {
 		
 		int valueX1;
 		int valueX2;
+
+		/**
+		 * Assuming that there is a many-to-many relationship between 
+		 * dependent variable and main variable, the workflow here is:
+		 * 
+		 *  
+		 * If the value of main variable is swapped, then so do the values for all dependent variables.
+		 * However, this rules is disregarded if the values of all main variables of the parents are equivalent.
+		 * */
 		
-		for (int i = 0; i < parent1.numberOfVariables(); i++) {
-			if (PseudoRandom.randDouble() < crossoverProbability_) {
-				valueX1 = (int) parent1.getDecisionVariables()[i].getValue();
-				valueX2 = (int) parent2.getDecisionVariables()[i].getValue();
-				offSpring[0].getDecisionVariables()[i].setValue(valueX2);
-				offSpring[1].getDecisionVariables()[i].setValue(valueX1);
+		// 0 = unchanged, 1 otherwise
+		int[] temp = new int[parent1.getDecisionVariables().length];
+		
+		if (parent1 instanceof SASSolution) {
+			for (int i = 0; i < parent1.numberOfVariables(); i++) {
+				temp[i] = 0;
+				if (PseudoRandom.randDouble() < crossoverProbability_) {
+					int[] main = ((SASSolution)parent1).getMainVariablesByDependentVariable(i);
+					
+					// meaning that the ith variable is a dependent variable.
+					if (main.length != 0) {
+						boolean isAllowed = true;
+						for (int j = 0; j < main.length; j ++) {
+							if (temp[j] == 0 && parent1.getDecisionVariables()[j].getValue() != 
+								parent2.getDecisionVariables()[j].getValue()) {
+								isAllowed = false;
+								break;
+							}
+						}
+						
+						if (!isAllowed) {
+							continue;
+						}
+					}
+					
+					temp[i] = 1;
+					
+					valueX1 = (int) parent1.getDecisionVariables()[i]
+							.getValue();
+					valueX2 = (int) parent2.getDecisionVariables()[i]
+							.getValue();
+					offSpring[0].getDecisionVariables()[i].setValue(valueX2);
+					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
+				}
+			}
+		} else {
+
+			for (int i = 0; i < parent1.numberOfVariables(); i++) {
+				if (PseudoRandom.randDouble() < crossoverProbability_) {
+					valueX1 = (int) parent1.getDecisionVariables()[i]
+							.getValue();
+					valueX2 = (int) parent2.getDecisionVariables()[i]
+							.getValue();
+					offSpring[0].getDecisionVariables()[i].setValue(valueX2);
+					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
+				}
 			}
 		}
-		
 		try {
 			
 		} catch (ClassCastException e1) {

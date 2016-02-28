@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import jmetal.metaheuristics.moead.SASSolution;
 import jmetal.operators.mutation.Mutation;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
@@ -85,6 +86,19 @@ public class BitFlipMutation extends Mutation {
 					((Binary) solution.getDecisionVariables()[i]).decode();
 				}
 			} // if
+			
+			else if(solution instanceof SASSolution){ // Integer representation
+				for (int i = 0; i < solution.getDecisionVariables().length; i++)
+					if (PseudoRandom.randDouble() < probability) {
+						int value = (int) (PseudoRandom.randInt(
+								// In the implementation of SASSolution, we can ensure the right boundary is 
+								// always used even under variable dependency.
+								((SASSolution)solution).getLowerBoundforVariable(i),
+								((SASSolution)solution).getLowerBoundforVariable(i)));
+						solution.getDecisionVariables()[i].setValue(value);
+					} // if
+			}
+			
 			else { // Integer representation
 				for (int i = 0; i < solution.getDecisionVariables().length; i++)
 					if (PseudoRandom.randDouble() < probability) {
