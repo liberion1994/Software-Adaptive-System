@@ -11,25 +11,28 @@ public class SAS extends Problem {
 	/**
 	 * Constructor
 	 */
-	public SAS(String solutionType) throws ClassNotFoundException {
-		this(solutionType, 10);
-	}
+//	public SAS(String solutionType) throws ClassNotFoundException {
+//		this(solutionType, 10);
+//	}
 
 	/**
+	 * vars [number of variables][upper and lower bounds]
+	 * 
 	 * Create a new instance of problem for SAS
 	 */
-	public SAS(String solutionType, Integer numberOfVariables) throws ClassNotFoundException {
-		numberOfVariables_ = numberOfVariables.intValue();
+	public SAS(String solutionType, int[][] vars) throws ClassNotFoundException {
+		numberOfVariables_ = vars.length;
 		numberOfObjectives_ = 2;
 		numberOfConstraints_ = 0;
 		problemName_ = "SAS";
 
 		upperLimitSAS_ = new int[numberOfVariables_];
 		lowerLimitSAS_ = new int[numberOfVariables_];
-
+//
 		// Establishes upper and lower limits for the variables
 		for (int i = 0; i < numberOfVariables_; i++) {
-			// TODO: the upper and lower bounds is given by Tao
+			upperLimitSAS_[i] = vars[i][0];
+			lowerLimitSAS_[i] = vars[i][1];
 		}
 
 		if (solutionType.compareTo("IntSolutionType") == 0)

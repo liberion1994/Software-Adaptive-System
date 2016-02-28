@@ -35,10 +35,8 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 /**
- * TODO To ensure the variables are chosen from given boundary, need to check
- * both crossover and mutation operator to use some functions from SASSolution.
  * TODO need to add function in SASSolution to ensure variable dependency when the
- * genes mutate; or this can be done in the realization of SASSolution.
+ * genes mutate and crossover; or this can be done in the realization of SASSolution.
  * 
  * @author ke, tao
  * 
