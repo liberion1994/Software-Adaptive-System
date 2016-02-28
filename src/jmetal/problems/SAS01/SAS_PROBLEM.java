@@ -1,4 +1,4 @@
-package jmetal.problems.SAS;
+package jmetal.problems.SAS01;
 
 import jmetal.core.*;
 import jmetal.encodings.solutionType.IntSolutionType;
