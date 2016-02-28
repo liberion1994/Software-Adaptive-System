@@ -2,6 +2,7 @@ package jmetal.problems;
 
 import jmetal.core.*;
 import jmetal.encodings.solutionType.IntSolutionType;
+import jmetal.metaheuristics.moead.SASSolution;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XInt;
 
@@ -46,15 +47,26 @@ public class SAS extends Problem {
 		XInt x = new XInt(solution);
 		
 		int[] var  = new int[numberOfVariables_];
-		double[] f = new double[numberOfObjectives_];
+//		double[] varValues  = new double[numberOfVariables_];
+//		double[] f = new double[numberOfObjectives_];
+		SASSolution sol = null;
+		if (solution instanceof SASSolution) {
+			sol = (SASSolution)solution;
+		}
 		
-		for (int i = 0; i < numberOfVariables_; i++)
+		// put "var[]" into Tao's System, note that var[] is only the index, we need to get the variable value
+		// from a variable list
+//		for (int i = 0; i < numberOfVariables_; i++) {
+//			var[i] = x.getValue(i);
+//			varValues[i] = sol.getVariableValueFromIndex(var[i]);
+//		}
+		
+		for (int i = 0; i < numberOfVariables_; i++) 
 			var[i] = x.getValue(i);
 		
-		// TODO: put "var[]" into Tao's System, note that var[] is only the index, we need to get the variable value
-		// from a variable list
-		
-		
+		// It is possible to directly retrieve objective' values from indices, and this
+		// can be done from my end.
+		double[] f = sol.getObjectiveValuesFromIndex(var);
 		
 		solution.setObjective(0, f[0]);
 		solution.setObjective(1, f[1]);

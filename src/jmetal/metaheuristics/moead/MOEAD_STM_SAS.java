@@ -34,10 +34,21 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+/**
+ * TODO To ensure the variables are chosen from given boundary, need to check
+ * both crossover and mutation operator to use some functions from SASSolution.
+ * TODO need to add function in SASSolution to ensure variable dependency when the
+ * genes mutate; or this can be done in the realization of SASSolution.
+ * 
+ * @author ke, tao
+ * 
+ */
+
 public class MOEAD_STM_SAS extends Algorithm {
 
 	private int populationSize_;
 
+	private SASSolutionInstantiator factory = null;
 	// population repository
 	private SolutionSet population_;
 	private SolutionSet currentOffspring_;
@@ -85,13 +96,27 @@ public class MOEAD_STM_SAS extends Algorithm {
 		functionType_ = "Norm_ITCH";
 	}
 
+  	/**
+  	 * Constructor
+  	 * @param problem Problem to solve
+  	 */
+	public MOEAD_STM_SAS(Problem problem, SASSolutionInstantiator factory) {
+		super(problem);
+        this.factory = factory;
+		functionType_ = "Norm_ITCH";
+	}
+	
 	public SolutionSet execute() throws JMException, ClassNotFoundException {
+		
+		if (factory == null) {
+			throw new RuntimeException("No instance of SASSolutionInstantiator found!");
+		}
 		
 		int type;
 		int maxEvaluations;
 		
 		// knee point which might be used as the output
-		Solution kneeIndividual = new Solution(problem_);
+		Solution kneeIndividual = factory.getSolution(problem_);
 
 		evaluations_    = 0;
 		dataDirectory_  = this.getInputParameter("dataDirectory").toString();
@@ -253,7 +278,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		idx = stableMatching(subpPref, solPref, populationSize_, union_.size());
 
 		for (int i = 0; i < populationSize_; i++)
-			population_.replace(i, new Solution(union_.get(idx[i])));
+			population_.replace(i, factory.getSolution(union_.get(idx[i])));
 	}
   
   	/**
@@ -476,7 +501,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 				uti 		= (0.95 + (0.05 * delta / 0.001)) * utility_[i];
 				utility_[i] = uti < 1.0 ? uti : 1.0;
 			}
-			savedValues_[i] = new Solution(population_.get(i));
+			savedValues_[i] = factory.getSolution(population_.get(i));
 		}
 	}
 
@@ -510,12 +535,12 @@ public class MOEAD_STM_SAS extends Algorithm {
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
 	  for (int i = 0; i < populationSize_; i++) {
-      Solution newSolution = new Solution(problem_);
+      Solution newSolution = factory.getSolution(problem_);
 
       problem_.evaluate(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
-      savedValues_[i] = new Solution(newSolution);
+      savedValues_[i] = factory.getSolution(newSolution);
     }
   }
 
@@ -535,14 +560,14 @@ public class MOEAD_STM_SAS extends Algorithm {
 			while (aux != null) {
 				StringTokenizer st = new StringTokenizer(aux);
 				j = 0;
-				Solution newSolution = new Solution(problem_);
+				Solution newSolution = factory.getSolution(problem_);
 				while (st.hasMoreTokens()) {
 					double value = (new Double(st.nextToken())).doubleValue();
 					newSolution.setObjective(j, value);
 					j++;
 				}
 				population_.add(newSolution) ;
-				savedValues_[i] = new Solution(newSolution);
+				savedValues_[i] = factory.getSolution(newSolution);
 				aux = br.readLine();
 				i++;
 			}
