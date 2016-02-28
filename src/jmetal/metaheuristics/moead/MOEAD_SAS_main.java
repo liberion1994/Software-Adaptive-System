@@ -114,6 +114,8 @@ public class MOEAD_SAS_main {
 			parameters = new HashMap();
 			parameters.put("probability", 0.9);
 			parameters.put("distributionIndex", 20.0);
+			// This needs to change in testing.
+			parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator", null);
 			crossover = CrossoverFactory.getCrossoverOperator("UniformCrossoverSAS", parameters);
 		}
 		

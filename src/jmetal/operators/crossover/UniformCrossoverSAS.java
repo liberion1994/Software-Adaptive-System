@@ -13,6 +13,7 @@ import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
 import jmetal.metaheuristics.moead.SASSolution;
+import jmetal.metaheuristics.moead.SASSolutionInstantiator;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -20,8 +21,18 @@ import jmetal.util.Configuration.*;
 
 public class UniformCrossoverSAS extends Crossover {
 	
+	private SASSolutionInstantiator factory;
+	
 	public UniformCrossoverSAS(HashMap<String, Object> parameters) {
 		super(parameters);
+		if (parameters
+				.get("jmetal.metaheuristics.moead.SASSolutionInstantiator") == null) {
+			System.err
+					.print("jmetal.metaheuristics.moead.SASSolutionInstantiator has not been instantiated in UniformCrossoverSAS\n");
+		} else {
+			factory = (SASSolutionInstantiator) parameters
+					.get("jmetal.metaheuristics.moead.SASSolutionInstantiator");
+		}
 		if (parameters.get("probability") != null)
 			crossoverProbability_ = (Double) parameters.get("probability");
 	}
@@ -38,8 +49,13 @@ public class UniformCrossoverSAS extends Crossover {
 	 */
 	public Solution[] doCrossover(double probability, Solution parent1, Solution parent2) throws JMException {
 		Solution[] offSpring = new Solution[2];
-		offSpring[0] = new Solution(parent1);
-		offSpring[1] = new Solution(parent2);
+		if (parent1 instanceof SASSolution) {
+			offSpring[0] = factory.getSolution(parent1);
+			offSpring[1] = factory.getSolution(parent2);
+		} else {
+			offSpring[0] = new Solution(parent1);
+			offSpring[1] = new Solution(parent2);
+		}
 		
 		int valueX1;
 		int valueX2;
@@ -112,6 +128,8 @@ public class UniformCrossoverSAS extends Crossover {
 		
 		return offSpring;
 	}
+	
+	
 
 	@Override
 	public Object execute(Object object) throws JMException {
