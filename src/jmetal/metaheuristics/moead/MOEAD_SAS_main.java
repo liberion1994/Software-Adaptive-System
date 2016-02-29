@@ -87,8 +87,8 @@ public class MOEAD_SAS_main {
 			}
 			else { // Default problem
 //				problem = new ZDT1("Real");
-				problem = new DTLZ2("Real", 14, 5);
 //				problem = new DTLZ2("Real");
+				problem = new SAS("IntSolutionType", null);
 			} // else
 		}
 
@@ -101,10 +101,9 @@ public class MOEAD_SAS_main {
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 
 		algorithm.setInputParameter("dataDirectory", "weight");
-//		algorithm.setInputParameter("dataDirectory", "weight/preference");
 		
 		// Crossover operator
-		int tag = 1;
+		int tag = 2;
 		if (tag == 1) {
 			parameters = new HashMap();
 			parameters.put("CR", 0.5);

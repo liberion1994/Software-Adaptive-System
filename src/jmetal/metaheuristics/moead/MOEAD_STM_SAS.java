@@ -443,11 +443,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 	 */
 	public void initUniformWeight() {
 		String dataFileName;
-//		dataFileName = "W" + problem_.getNumberOfObjectives() + "D_"
-//				+ populationSize_ + ".dat";
-
-		dataFileName = "pW" + problem_.getNumberOfObjectives() + "D_"
-				+ problem_.getName() + "_IN_3.dat";
+		dataFileName = "W" + problem_.getNumberOfObjectives() + "D_" + populationSize_ + ".dat";
 
 		try {
 			// Open the file
