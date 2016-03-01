@@ -24,7 +24,6 @@
 
 package jmetal.metaheuristics.moead;
 
-import jmetal.core.SolutionSet;
 import jmetal.core.*;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.*;
@@ -42,6 +41,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.logging.FileHandler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -92,7 +92,7 @@ public class MOEAD_SAS_main {
 			} // else
 		}
 
-		algorithm = new MOEAD_STM_SAS(problem);
+		algorithm = new MOEAD_STM_SAS(problem, null);
 
 		// Algorithm parameters
 		int popsize = 331;
@@ -159,4 +159,73 @@ public class MOEAD_SAS_main {
 					+ "M" + problem.getNumberOfObjectives() + "/" + str2);
 		}
 	} // main
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public SolutionSet execute(int[][] vars, SASSolutionInstantiator factory) throws JMException,
+			SecurityException, IOException, ClassNotFoundException {
+		Problem problem; // The problem to solve
+		Algorithm algorithm; // The algorithm to use
+		Operator crossover; // Crossover operator
+		Operator mutation; // Mutation operator
+
+		HashMap parameters; // Operator parameters
+
+		// Logger object and file to store log messages
+		logger_ = Configuration.logger_;
+		fileHandler_ = new FileHandler("MOEAD.log");
+		logger_.addHandler(fileHandler_);
+
+	
+		problem = new SAS("IntSolutionType", vars);
+		
+
+		algorithm = new MOEAD_STM_SAS(problem, factory);
+
+		// Algorithm parameters
+		int popsize = 331;
+		int generations = 1000;
+		algorithm.setInputParameter("populationSize", popsize);
+		algorithm.setInputParameter("maxEvaluations", popsize * generations);
+
+		algorithm.setInputParameter("dataDirectory", "weight");
+
+		// Crossover operator
+//		int tag = 2;
+//		if (tag == 1) {
+//			parameters = new HashMap();
+//			parameters.put("CR", 0.5);
+//			parameters.put("F", 0.5);
+//			crossover = CrossoverFactory.getCrossoverOperator(
+//					"DifferentialEvolutionCrossover", parameters);
+//		} else {
+		parameters = new HashMap();
+		parameters.put("probability", 0.9);
+		parameters.put("distributionIndex", 20.0);
+		// This needs to change in testing.
+		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
+				factory);
+		crossover = CrossoverFactory.getCrossoverOperator(
+				"UniformCrossoverSAS", parameters);
+		//}
+
+		// Mutation operator
+		parameters = new HashMap();
+		parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+		parameters.put("distributionIndex", 20.0);
+		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
+				parameters);
+
+		algorithm.addOperator("crossover", crossover);
+		algorithm.addOperator("mutation", mutation);
+		
+		long initTime = System.currentTimeMillis();
+		
+		SolutionSet population = algorithm.execute();
+		long estimatedTime = System.currentTimeMillis() - initTime;
+		
+		logger_.log(Level.ALL, "Total execution time: " + estimatedTime + "ms");
+		
+		return population;
+
+	}
 } // MOEAD_main

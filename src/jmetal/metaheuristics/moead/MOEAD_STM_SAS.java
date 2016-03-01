@@ -86,9 +86,8 @@ public class MOEAD_STM_SAS extends Algorithm {
   	 * Constructor
   	 * @param problem Problem to solve
   	 */
-	public MOEAD_STM_SAS(Problem problem) {
+	private MOEAD_STM_SAS(Problem problem) {
 		super(problem);
-
 		functionType_ = "Norm_ITCH";
 	}
 
