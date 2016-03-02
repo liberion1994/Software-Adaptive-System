@@ -30,8 +30,8 @@ public class SAS extends Problem {
 //
 		// Establishes upper and lower limits for the variables
 		for (int i = 0; i < numberOfVariables_; i++) {
-			upperLimitSAS_[i] = vars[i][0];
-			lowerLimitSAS_[i] = vars[i][1];
+			lowerLimitSAS_[i] = vars[i][0];
+			upperLimitSAS_[i] = vars[i][1];
 		}
 
 		if (solutionType.compareTo("SASSolutionType") == 0)

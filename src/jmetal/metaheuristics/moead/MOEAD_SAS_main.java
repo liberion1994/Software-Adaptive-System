@@ -183,7 +183,7 @@ public class MOEAD_SAS_main {
 
 		// Algorithm parameters
 		int popsize = 300;
-		int generations = 1000;
+		int generations = 1;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
@@ -222,8 +222,16 @@ public class MOEAD_SAS_main {
 		
 		SolutionSet population = algorithm.execute();
 		long estimatedTime = System.currentTimeMillis() - initTime;
+		logger_.setLevel(Level.CONFIG);
+		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
-		logger_.log(Level.ALL, "Total execution time: " + estimatedTime + "ms");
+		String str = problem.getName()
+		+ "M" + problem.getNumberOfObjectives() + "/SAS";
+		
+		Utils.deleteFolder(new File(str));
+		Utils.createFolder(str);
+		
+		population.printObjectivesToFile(str + "/results.dat");
 		
 		return population;
 

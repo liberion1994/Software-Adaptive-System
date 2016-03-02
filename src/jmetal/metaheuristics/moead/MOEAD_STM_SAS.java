@@ -176,6 +176,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 				// apply DE crossover and polynomial mutation
 				//child = (Solution) crossover_.execute(new Object[] {population_.get(n), parents});
+				//children=parents;
 				children = (Solution[]) crossover_.execute(parents);
 				mutation_.execute(children[0]);
 				mutation_.execute(children[1]);

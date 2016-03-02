@@ -74,12 +74,13 @@ public class DummySASSolution extends SASSolution{
 				try {
 					VarEntity v = map.get(i)[(int) super.getDecisionVariables()[map
 							.get(i)[0].getVarIndex()].getValue()];
+					
 					x[i] = v.getOptionalValues(super.getDecisionVariables()) == null ? 0
 							/**
 							 * this use 0 which represent the actual value
 							 */
 							: v.getOptionalValues(super.getDecisionVariables())[var[i]];
-				} catch (JMException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

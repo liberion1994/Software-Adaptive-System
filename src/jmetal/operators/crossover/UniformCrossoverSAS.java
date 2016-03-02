@@ -66,8 +66,11 @@ public class UniformCrossoverSAS extends Crossover {
 		 * dependent variable and main variable, the workflow here is:
 		 * 
 		 *  
-		 * If the value of main variable is swapped, then so do the values for all dependent variables.
+		 * If the value of one main variable is swapped, then so do the values for all dependent variables.
 		 * However, this rules is disregarded if the values of all main variables of the parents are equivalent.
+		 * 
+		 * We will make sure that if the dependent variables cross the boundary, then the largest index would
+		 * be used.
 		 * */
 		
 		// 0 = unchanged, 1 otherwise
@@ -76,33 +79,39 @@ public class UniformCrossoverSAS extends Crossover {
 		if (parent1 instanceof SASSolution) {
 			for (int i = 0; i < parent1.numberOfVariables(); i++) {
 				temp[i] = 0;
-				if (PseudoRandom.randDouble() < crossoverProbability_) {
-					int[] main = ((SASSolution)parent1).getMainVariablesByDependentVariable(i);
+				int[] main = ((SASSolution)parent1).getMainVariablesByDependentVariable(i);
+				boolean isCrossOver = false;
+				// meaning that the ith variable is a dependent variable.
+				if (main != null) {
 					
-					// meaning that the ith variable is a dependent variable.
-					if (main != null && main.length != 0) {
-						boolean isAllowed = true;
-						for (int j = 0; j < main.length; j ++) {
-							if (temp[j] == 0 && parent1.getDecisionVariables()[j].getValue() != 
-								parent2.getDecisionVariables()[j].getValue()) {
-								isAllowed = false;
-								break;
-							}
-						}
-						
-						if (!isAllowed) {
-							continue;
+					for (int j = 0; j < main.length; j ++) {
+						// meaning at least one man variable has been swapped.
+						if (temp[main[j]] == 1) {
+							isCrossOver = true;
+							break;
 						}
 					}
 					
+				}
+				if ((main == null && PseudoRandom.randDouble() < crossoverProbability_) ||
+						(main != null && isCrossOver)	) {
+								
 					temp[i] = 1;
 					
 					valueX1 = (int) parent1.getDecisionVariables()[i]
 							.getValue();
 					valueX2 = (int) parent2.getDecisionVariables()[i]
 							.getValue();
-					offSpring[0].getDecisionVariables()[i].setValue(valueX2);
-					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
+					
+					int upper1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
+					int upper2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
+					
+					valueX2 = valueX2 == -1 && upper1 != -1? 0 : valueX2;
+					valueX1 = valueX1 == -1 && upper2 != -1? 0 : valueX1;
+					
+					offSpring[0].getDecisionVariables()[i].setValue(upper1 == -1? -1 : valueX2 > upper1? upper1 : valueX2);
+					offSpring[1].getDecisionVariables()[i].setValue(upper2 == -1? -1 : valueX1 > upper2? upper2 : valueX1);
+					
 				}
 			}
 		} else {
