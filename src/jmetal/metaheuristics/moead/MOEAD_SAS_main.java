@@ -88,7 +88,7 @@ public class MOEAD_SAS_main {
 			else { // Default problem
 //				problem = new ZDT1("Real");
 //				problem = new DTLZ2("Real");
-				problem = new SAS("IntSolutionType", null);
+				problem = new SAS("IntSolutionType", null, 2, 0);
 			} // else
 		}
 
@@ -161,7 +161,7 @@ public class MOEAD_SAS_main {
 	} // main
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public SolutionSet execute(int[][] vars, SASSolutionInstantiator factory) throws JMException,
+	public SolutionSet execute(SASSolutionInstantiator factory, int[][] vars,  int numberOfObjectives_, int numberOfConstraints_) throws JMException,
 			SecurityException, IOException, ClassNotFoundException {
 		Problem problem; // The problem to solve
 		Algorithm algorithm; // The algorithm to use
@@ -176,7 +176,7 @@ public class MOEAD_SAS_main {
 		logger_.addHandler(fileHandler_);
 
 	
-		problem = new SAS("IntSolutionType", vars);
+		problem = new SAS("SASSolutionType", vars, numberOfObjectives_, numberOfConstraints_);
 		
 
 		algorithm = new MOEAD_STM_SAS(problem, factory);

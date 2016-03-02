@@ -26,6 +26,7 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 

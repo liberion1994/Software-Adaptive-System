@@ -1,4 +1,4 @@
-package jmetal.metaheuristics.moead;
+package jmetal.problems;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;

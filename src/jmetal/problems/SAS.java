@@ -2,7 +2,6 @@ package jmetal.problems;
 
 import jmetal.core.*;
 import jmetal.encodings.solutionType.IntSolutionType;
-import jmetal.metaheuristics.moead.SASSolution;
 import jmetal.util.JMException;
 import jmetal.util.wrapper.XInt;
 
@@ -20,10 +19,10 @@ public class SAS extends Problem {
 	 * 
 	 * Create a new instance of problem for SAS
 	 */
-	public SAS(String solutionType, int[][] vars) throws ClassNotFoundException {
+	public SAS(String solutionType, int[][] vars, int numberOfObjectives_, int numberOfConstraints_) throws ClassNotFoundException {
 		numberOfVariables_ = vars.length;
-		numberOfObjectives_ = 2;
-		numberOfConstraints_ = 0;
+		this.numberOfObjectives_ = numberOfObjectives_;
+		this.numberOfConstraints_ = numberOfConstraints_;
 		problemName_ = "SAS";
 
 		upperLimitSAS_ = new int[numberOfVariables_];
@@ -35,8 +34,8 @@ public class SAS extends Problem {
 			lowerLimitSAS_[i] = vars[i][1];
 		}
 
-		if (solutionType.compareTo("IntSolutionType") == 0)
-			solutionType_ = new IntSolutionType(this);
+		if (solutionType.compareTo("SASSolutionType") == 0)
+			solutionType_ = new SASSolutionType(this);
 		else {
 			System.out.println("Error: solution type " + solutionType + " invalid");
 			System.exit(-1);

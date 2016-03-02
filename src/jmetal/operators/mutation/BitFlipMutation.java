@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
-import jmetal.metaheuristics.moead.SASSolution;
 import jmetal.operators.mutation.Mutation;
+import jmetal.problems.SASSolution;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;

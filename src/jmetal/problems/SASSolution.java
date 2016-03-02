@@ -1,6 +1,8 @@
-package jmetal.metaheuristics.moead;
+package jmetal.problems;
 
+import jmetal.core.Problem;
 import jmetal.core.Solution;
+import jmetal.util.JMException;
 
 /**
  * Need to ensure that the order of variables is the same as control primitives, and that
@@ -10,8 +12,21 @@ import jmetal.core.Solution;
  *
  */
 public abstract class SASSolution extends Solution {
+	
+	
+	
 
-	public abstract double getVariableValueFromIndexValue(int indexValue);
+	//public abstract double getVariableValueFromIndexValue(int indexValue);
+
+	public SASSolution(Problem problem) throws ClassNotFoundException {
+		super(problem);
+		// TODO Auto-generated constructor stub
+	}
+
+	public SASSolution(Solution solution) {
+		super(solution);
+		// TODO Auto-generated constructor stub
+	}
 
 	public abstract double[] getObjectiveValuesFromIndexValue(int[] var);
 	
@@ -20,14 +35,14 @@ public abstract class SASSolution extends Solution {
 	 * @param index
 	 * @return index value
 	 */
-	public abstract int getUpperBoundforVariable(int index);
+	public abstract int getUpperBoundforVariable(int index) throws JMException;
 	
 	/**
 	 * Need to ensure variable dependency.
 	 * @param index
 	 * @return index value
 	 */
-	public abstract int getLowerBoundforVariable(int index);
+	public abstract int getLowerBoundforVariable(int index) throws JMException;
 	
 	/**
 	 * 

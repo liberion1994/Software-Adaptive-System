@@ -81,7 +81,15 @@ public abstract class Problem implements Serializable {
    */
   protected int [] upperLimitSAS_ ;
   
-  /**
+	public int getLowerLimitSAS(int i) {
+		return lowerLimitSAS_[i];
+	}
+
+	public int getUpperLimitSAS(int i) {
+		return upperLimitSAS_[i];
+	}
+
+/**
    * Stores the number of bits used by binary-coded variables (e.g., BinaryReal
    * variables). By default, they are initialized to DEFAULT_PRECISION)
    */
