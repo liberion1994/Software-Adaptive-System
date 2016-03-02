@@ -154,7 +154,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		do {
 			// select the satisfied subproblems
 			List<Integer> order = tour_selection(10);
-			currentOffspring_   = new SolutionSet(order.size());
+			currentOffspring_   = new SolutionSet(2 * order.size());
 			
 			for (int i = 0; i < order.size(); i++) {
 				int n = order.get(i);
