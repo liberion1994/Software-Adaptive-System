@@ -26,6 +26,7 @@ import jmetal.core.SolutionType;
 import jmetal.encodings.solutionType.ArrayIntSolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.ArrayInt;
+import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 
@@ -59,7 +60,7 @@ public class XInt {
 	 * @throws JMException
 	 */
 	public int getValue(int index) throws JMException {
-		if (type_.getClass() == IntSolutionType.class){
+		if (type_.getClass() == IntSolutionType.class || type_ instanceof SASSolutionType){
 			return (int)solution_.getDecisionVariables()[index].getValue() ;			
 		} 
 		else if (type_.getClass() == ArrayIntSolutionType.class) {
@@ -79,7 +80,7 @@ public class XInt {
 	 * @throws JMException
 	 */
 	public void setValue(int index, int value) throws JMException {
-		if (type_.getClass() == IntSolutionType.class)
+		if (type_.getClass() == IntSolutionType.class || type_ instanceof SASSolutionType)
 			solution_.getDecisionVariables()[index].setValue(value) ;
 		else if (type_.getClass() == ArrayIntSolutionType.class)
 			((ArrayInt)(solution_.getDecisionVariables()[0])).array_[index]=value ;
@@ -95,7 +96,7 @@ public class XInt {
 	 * @throws JMException
 	 */
 	public int getLowerBound(int index) throws JMException {
-		if (type_.getClass() == IntSolutionType.class)
+		if (type_.getClass() == IntSolutionType.class || type_ instanceof SASSolutionType)
 			return (int)solution_.getDecisionVariables()[index].getLowerBound() ;
 		else if (type_.getClass() == ArrayIntSolutionType.class) 
 			return (int)((ArrayInt)(solution_.getDecisionVariables()[0])).getLowerBound(index) ;
@@ -113,7 +114,7 @@ public class XInt {
 	 * @throws JMException
 	 */
 	public int getUpperBound(int index) throws JMException {
-		if (type_.getClass() == IntSolutionType.class)		
+		if (type_.getClass() == IntSolutionType.class || type_ instanceof SASSolutionType)		
 			return (int)solution_.getDecisionVariables()[index].getUpperBound() ;
 		else if (type_.getClass() == ArrayIntSolutionType.class) 
 			return (int)((ArrayInt)(solution_.getDecisionVariables()[0])).getUpperBound(index) ;
@@ -129,7 +130,7 @@ public class XInt {
 	 * @return
 	 */
 	public int getNumberOfDecisionVariables() {
-		if (type_.getClass() == IntSolutionType.class)		
+		if (type_.getClass() == IntSolutionType.class || type_ instanceof SASSolutionType)		
 			return solution_.getDecisionVariables().length ;
 		else if (type_.getClass() == ArrayIntSolutionType.class) 
 			return ((ArrayInt)(solution_.getDecisionVariables()[0])).getLength() ;

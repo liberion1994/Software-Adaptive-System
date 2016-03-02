@@ -168,26 +168,32 @@ public class MOEAD_STM_SAS extends Algorithm {
 				} else {
 					type = 2; // whole population
 				}
-				Solution child;
-				Solution[] parents = new Solution[3];
+				Solution[] children;
+				Solution[] parents = new Solution[2];
 				Vector<Integer> p = new Vector<Integer>();
 				
 				parents = matingSelection(p, n, 2, type);
 
 				// apply DE crossover and polynomial mutation
-				child = (Solution) crossover_.execute(new Object[] {population_.get(n), parents});
-				mutation_.execute(child);
-
+				//child = (Solution) crossover_.execute(new Object[] {population_.get(n), parents});
+				children = (Solution[]) crossover_.execute(parents);
+				mutation_.execute(children[0]);
+				mutation_.execute(children[1]);
 				// evaluation
-				problem_.evaluate(child);
+				problem_.evaluate(children[0]);
+				problem_.evaluate(children[1]);
 				evaluations_++;
 
 				// STEP 2.3. update the ideal and nadir points
-				updateReference(child);
-				updateNadirPoint(child);
+				updateReference(children[0]);
+				updateNadirPoint(children[0]);
+				
+				updateReference(children[1]);
+				updateNadirPoint(children[1]);
 
 				// add into the offspring population
-				currentOffspring_.add(child);
+				currentOffspring_.add(children[0]);
+				currentOffspring_.add(children[1]);
 			} // for
 			
 			// Combine the parent and the current offspring populations
@@ -609,7 +615,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		
 		int ss, r, p;
 		
-		Solution[] parents = new Solution[3];
+		Solution[] parents = new Solution[2];
 		
 		ss = neighborhood_[cid].length;
 		while (list.size() < size) {
@@ -634,7 +640,6 @@ public class MOEAD_STM_SAS extends Algorithm {
 		}
 		parents[0] = population_.get(list.get(0));
 		parents[1] = population_.get(list.get(1));
-		parents[2] = population_.get(cid);
 		
 		return parents;
 	} // matingSelection

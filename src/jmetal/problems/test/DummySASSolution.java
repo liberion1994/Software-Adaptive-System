@@ -137,15 +137,18 @@ public class DummySASSolution extends SASSolution{
 
 	@Override
 	public int[] getMainVariablesByDependentVariable(int index) {
-		// TODO Auto-generated method stub
-		Integer[] ints = map.get(index)[0].getMainVariablesByDependentVariable(new ArrayList<Integer>());
-		int[] result = new int[ints.length];
-		
-		for (int i = 0; i < result.length; i++) {
-			result[i] = ints[i];
+		if (map.containsKey(index)) {
+			Integer[] ints = map.get(index)[0]
+					.getMainVariablesByDependentVariable(new ArrayList<Integer>());
+			int[] result = new int[ints.length];
+
+			for (int i = 0; i < result.length; i++) {
+				result[i] = ints[i];
+			}
+
+			return result;
 		}
-		
-		return result;
+		return null;
 	}
 
 	

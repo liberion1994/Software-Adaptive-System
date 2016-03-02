@@ -182,11 +182,11 @@ public class MOEAD_SAS_main {
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 331;
+		int popsize = 300;
 		int generations = 1000;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
-
+		
 		algorithm.setInputParameter("dataDirectory", "weight");
 
 		// Crossover operator

@@ -3,9 +3,10 @@ package jmetal.problems;
 import jmetal.core.Problem;
 import jmetal.core.SolutionType;
 import jmetal.core.Variable;
+import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.Int;
 
-public class SASSolutionType extends SolutionType {
+public class SASSolutionType extends IntSolutionType {
 	/**
 	 * Constructor
 	 * @param problem

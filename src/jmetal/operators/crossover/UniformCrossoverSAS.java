@@ -14,6 +14,7 @@ import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
 import jmetal.problems.SASSolution;
 import jmetal.problems.SASSolutionInstantiator;
+import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -40,7 +41,7 @@ public class UniformCrossoverSAS extends Crossover {
 	/**
 	 * Valid solution types to apply this operator
 	 */
-	private static List VALID_TYPES = Arrays.asList(BinarySolutionType.class, IntSolutionType.class);
+	private static List VALID_TYPES = Arrays.asList(BinarySolutionType.class, IntSolutionType.class, SASSolutionType.class);
 	
 	private Double crossoverProbability_ = null;
 	
@@ -79,7 +80,7 @@ public class UniformCrossoverSAS extends Crossover {
 					int[] main = ((SASSolution)parent1).getMainVariablesByDependentVariable(i);
 					
 					// meaning that the ith variable is a dependent variable.
-					if (main.length != 0) {
+					if (main != null && main.length != 0) {
 						boolean isAllowed = true;
 						for (int j = 0; j < main.length; j ++) {
 							if (temp[j] == 0 && parent1.getDecisionVariables()[j].getValue() != 

@@ -28,6 +28,7 @@ import java.util.Properties;
 
 import jmetal.operators.mutation.Mutation;
 import jmetal.problems.SASSolution;
+import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -50,7 +51,8 @@ public class BitFlipMutation extends Mutation {
    */
   private static List VALID_TYPES = Arrays.asList(BinarySolutionType.class, 
       BinaryRealSolutionType.class,
-      IntSolutionType.class) ;
+      IntSolutionType.class,
+      SASSolutionType.class) ;
 
   private Double mutationProbability_ = null ;
   
