@@ -61,64 +61,48 @@ public class UniformCrossoverSAS extends Crossover {
 		int valueX1;
 		int valueX2;
 
-		/**
-		 * Assuming that there is a many-to-many relationship between 
-		 * dependent variable and main variable, the workflow here is:
-		 * 
-		 *  
-		 * If the value of one main variable is swapped, then so do the values for all dependent variables.
-		 * However, this rules is disregarded if the values of all main variables of the parents are equivalent.
-		 * 
-		 * We will make sure that if the dependent variables cross the boundary, then the largest index would
-		 * be used.
-		 * */
-		
-		// 0 = unchanged, 1 otherwise
-		int[] temp = new int[parent1.getDecisionVariables().length];
-		
 		if (parent1 instanceof SASSolution) {
 			for (int i = 0; i < parent1.numberOfVariables(); i++) {
-				temp[i] = 0;
-				int[] main = ((SASSolution)parent1).getMainVariablesByDependentVariable(i);
+			
 				boolean isCrossOver = false;
-				// meaning that the ith variable is a dependent variable.
-				if (main != null) {
-					
-					for (int j = 0; j < main.length; j ++) {
-						// meaning at least one man variable has been swapped.
-						if (temp[main[j]] == 1) {
-							isCrossOver = true;
-							break;
-						}
-					}
-					
+				valueX1 = (int) parent1.getDecisionVariables()[i]
+				                   							.getValue();
+				                   					valueX2 = (int) parent2.getDecisionVariables()[i]
+				                   							.getValue();	
+				                   					
+				                					int upper1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
+				                					int upper2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
+				if((valueX1 == -1 && upper1 != -1) ||
+						(valueX1 != -1 && upper1 == -1 ||
+								valueX1 > upper1		)	) {
+					isCrossOver = true;
 				}
-				if ((main == null && PseudoRandom.randDouble() < crossoverProbability_) ||
-						(main != null && isCrossOver)	) {
+				
+				if((valueX2 == -1 && upper2 != -1) ||
+						(valueX2 != -1 && upper2 == -1 ||
+								valueX2 > upper2		)	) {
+					isCrossOver = true;
+				}
+				
+				if ((!isCrossOver && PseudoRandom.randDouble() < crossoverProbability_) || isCrossOver	) {
 								
-					temp[i] = 1;
-					
-					valueX1 = (int) parent1.getDecisionVariables()[i]
-							.getValue();
-					valueX2 = (int) parent2.getDecisionVariables()[i]
-							.getValue();
-					
-					int upper1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
-					int upper2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
+				
+					int lower1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
+					int lower2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
 					
 					valueX2 = valueX2 == -1 && upper1 != -1? (int) (PseudoRandom.randInt(
-							((SASSolution)offSpring[0]).getLowerBoundforVariable(i),
-							((SASSolution)offSpring[0]).getUpperBoundforVariable(i))) : valueX2;
+							lower1,
+							upper1)) : valueX2;
 					valueX1 = valueX1 == -1 && upper2 != -1? (int) (PseudoRandom.randInt(
-							((SASSolution)offSpring[1]).getLowerBoundforVariable(i),
-							((SASSolution)offSpring[1]).getUpperBoundforVariable(i))) : valueX1;
+							lower2,
+							upper2)) : valueX1;
 					
 					offSpring[0].getDecisionVariables()[i].setValue(upper1 == -1? -1 : valueX2 > upper1? (int) (PseudoRandom.randInt(
-							((SASSolution)offSpring[0]).getLowerBoundforVariable(i),
-							((SASSolution)offSpring[0]).getUpperBoundforVariable(i))) : valueX2);
+							lower1,
+							upper1)) : valueX2);
 					offSpring[1].getDecisionVariables()[i].setValue(upper2 == -1? -1 : valueX1 > upper2? (int) (PseudoRandom.randInt(
-							((SASSolution)offSpring[1]).getLowerBoundforVariable(i),
-							((SASSolution)offSpring[1]).getUpperBoundforVariable(i))) : valueX1);
+							lower2,
+							upper2)) : valueX1);
 					
 				}
 			}

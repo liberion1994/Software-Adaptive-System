@@ -91,39 +91,27 @@ public class BitFlipMutation extends Mutation {
 			
 			else if(solution instanceof SASSolution){ // Integer representation
 				
-				// 0 = unchanged, 1 otherwise
-				int[] temp = new int[solution.getDecisionVariables().length];
-				/**
-				 * If the main variable mutate, then do do the dependent ones.
-				 * 
-				 ***/
 				for (int i = 0; i < solution.getDecisionVariables().length; i++) {
-					temp[i] = 0;
-					int[] main = ((SASSolution)solution).getMainVariablesByDependentVariable(i);
-					boolean isMutate = false;
-					// meaning that the ith variable is a dependent variable.
-					if (main != null) {
-						
-						for (int j = 0; j < main.length; j ++) {
-							if (temp[main[j]] == 1) {
-								isMutate = true;
-								break;
-							}
-						}
-						
-					}
-					if ((main == null && PseudoRandom.randDouble() < probability) ||
-							(main != null && isMutate) || 
-							(main != null && !isMutate && PseudoRandom.randDouble() < probability)) {
-						temp[i] = 1;
 					
-						int value = (int) (PseudoRandom.randInt(
+					boolean isMutate = false;
+					int value = (int)solution.getDecisionVariables()[i].getValue();	
+					int upper = ((SASSolution)solution).getUpperBoundforVariable(i);
+					if((value == -1 && upper != -1) ||
+							(value != -1 && upper == -1 ||
+									value > upper		)	) {
+						isMutate = true;
+					}
+					
+					if ((!isMutate && PseudoRandom.randDouble() < probability) || isMutate) {
+					
+					
+						int v = (int) (PseudoRandom.randInt(
 								// In the implementation of SASSolution, we can ensure the right boundary is 
 								// always used even under variable dependency.
 								((SASSolution)solution).getLowerBoundforVariable(i),
-								((SASSolution)solution).getUpperBoundforVariable(i)));
+								upper));
 					
-						solution.getDecisionVariables()[i].setValue(value);
+						solution.getDecisionVariables()[i].setValue(v);
 					} // if
 				}
 			}
