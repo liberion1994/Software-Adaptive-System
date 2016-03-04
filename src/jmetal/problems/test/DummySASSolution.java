@@ -57,12 +57,21 @@ public class DummySASSolution extends SASSolution{
 		// TODO Auto-generated constructor stub
 	}
 
+	public DummySASSolution(Problem problem, Variable[] variables) throws ClassNotFoundException {
+		super(problem, variables);
+		// TODO Auto-generated constructor stub
+	}
+
 
 	public DummySASSolution(Solution solution) {
 		super(solution);
 		// TODO Auto-generated constructor stub
 	}
 	
+	public DummySASSolution() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 	
 	@Override
 	public double[] getObjectiveValuesFromIndexValue(int[] var) {
@@ -75,11 +84,8 @@ public class DummySASSolution extends SASSolution{
 					VarEntity v = map.get(i)[(int) super.getDecisionVariables()[map
 							.get(i)[0].getVarIndex()].getValue()];
 					
-					x[i] = v.getOptionalValues(super.getDecisionVariables()) == null ? 0
-							/**
-							 * this use 0 which represent the actual value
-							 */
-							: v.getOptionalValues(super.getDecisionVariables())[var[i]];
+					x[i] = var[i] == -1? -1: v.getOptionalValues(super.getDecisionVariables())[var[i]];
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

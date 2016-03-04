@@ -106,11 +106,19 @@ public class UniformCrossoverSAS extends Crossover {
 					int upper1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
 					int upper2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
 					
-					valueX2 = valueX2 == -1 && upper1 != -1? 0 : valueX2;
-					valueX1 = valueX1 == -1 && upper2 != -1? 0 : valueX1;
+					valueX2 = valueX2 == -1 && upper1 != -1? (int) (PseudoRandom.randInt(
+							((SASSolution)offSpring[0]).getLowerBoundforVariable(i),
+							((SASSolution)offSpring[0]).getUpperBoundforVariable(i))) : valueX2;
+					valueX1 = valueX1 == -1 && upper2 != -1? (int) (PseudoRandom.randInt(
+							((SASSolution)offSpring[1]).getLowerBoundforVariable(i),
+							((SASSolution)offSpring[1]).getUpperBoundforVariable(i))) : valueX1;
 					
-					offSpring[0].getDecisionVariables()[i].setValue(upper1 == -1? -1 : valueX2 > upper1? upper1 : valueX2);
-					offSpring[1].getDecisionVariables()[i].setValue(upper2 == -1? -1 : valueX1 > upper2? upper2 : valueX1);
+					offSpring[0].getDecisionVariables()[i].setValue(upper1 == -1? -1 : valueX2 > upper1? (int) (PseudoRandom.randInt(
+							((SASSolution)offSpring[0]).getLowerBoundforVariable(i),
+							((SASSolution)offSpring[0]).getUpperBoundforVariable(i))) : valueX2);
+					offSpring[1].getDecisionVariables()[i].setValue(upper2 == -1? -1 : valueX1 > upper2? (int) (PseudoRandom.randInt(
+							((SASSolution)offSpring[1]).getLowerBoundforVariable(i),
+							((SASSolution)offSpring[1]).getUpperBoundforVariable(i))) : valueX1);
 					
 				}
 			}

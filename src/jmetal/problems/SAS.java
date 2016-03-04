@@ -7,6 +7,8 @@ import jmetal.util.wrapper.XInt;
 
 public class SAS extends Problem {
 
+	
+	public SASSolutionInstantiator factory;
 	/**
 	 * Constructor
 	 */
@@ -19,8 +21,9 @@ public class SAS extends Problem {
 	 * 
 	 * Create a new instance of problem for SAS
 	 */
-	public SAS(String solutionType, int[][] vars, int numberOfObjectives_, int numberOfConstraints_) throws ClassNotFoundException {
+	public SAS(String solutionType, SASSolutionInstantiator factory, int[][] vars, int numberOfObjectives_, int numberOfConstraints_) throws ClassNotFoundException {
 		numberOfVariables_ = vars.length;
+		this.factory = factory;
 		this.numberOfObjectives_ = numberOfObjectives_;
 		this.numberOfConstraints_ = numberOfConstraints_;
 		problemName_ = "SAS";

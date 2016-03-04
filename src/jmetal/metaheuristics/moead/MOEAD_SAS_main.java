@@ -88,7 +88,7 @@ public class MOEAD_SAS_main {
 			else { // Default problem
 //				problem = new ZDT1("Real");
 //				problem = new DTLZ2("Real");
-				problem = new SAS("IntSolutionType", null, 2, 0);
+				problem = new SAS("IntSolutionType", null, null, 2, 0);
 			} // else
 		}
 
@@ -176,7 +176,7 @@ public class MOEAD_SAS_main {
 		logger_.addHandler(fileHandler_);
 
 	
-		problem = new SAS("SASSolutionType", vars, numberOfObjectives_, numberOfConstraints_);
+		problem = new SAS("SASSolutionType", factory, vars, numberOfObjectives_, numberOfConstraints_);
 		
 
 		algorithm = new MOEAD_STM_SAS(problem, factory);

@@ -12,7 +12,7 @@ public class DependencyTest extends TestCase {
 		Problem p;
 		DummySASSolution dss = null;
 		try {
-			p = new SAS("SASSolutionType", DummySASSolution.vars, 0, 0);
+			p = new SAS("SASSolutionType",new DummySASSolutionInstantiator(), DummySASSolution.vars, 0, 0);
 			dss = new DummySASSolution(p);
 	
 		

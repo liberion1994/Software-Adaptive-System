@@ -2,6 +2,7 @@ package jmetal.problems;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
+import jmetal.core.Variable;
 import jmetal.util.JMException;
 
 /**
@@ -22,9 +23,19 @@ public abstract class SASSolution extends Solution {
 		super(problem);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public SASSolution(Problem problem, Variable[] variables) throws ClassNotFoundException {
+		super(problem, variables);
+		// TODO Auto-generated constructor stub
+	}
 
 	public SASSolution(Solution solution) {
 		super(solution);
+		// TODO Auto-generated constructor stub
+	}
+	
+	public SASSolution() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
