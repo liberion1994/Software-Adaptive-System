@@ -72,37 +72,37 @@ public class UniformCrossoverSAS extends Crossover {
 				                   					
 				                					int upper1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
 				                					int upper2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
-				if((valueX1 == -1 && upper1 != -1) ||
-						(valueX1 != -1 && upper1 == -1 ||
-								valueX1 > upper1		)	) {
+				                					int lower1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
+				                					int lower2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
+				                					int traUpper1 = ((SASSolution)offSpring[0]).translateIntoIndexInMainVariable(i, upper1);
+				                					int traLower1 = ((SASSolution)offSpring[0]).translateIntoIndexInMainVariable(i, lower1);
+				                					int traUpper2 = ((SASSolution)offSpring[1]).translateIntoIndexInMainVariable(i, upper2);
+				                					int traLower2 = ((SASSolution)offSpring[1]).translateIntoIndexInMainVariable(i, lower2);
+				if(valueX1 > traUpper1 || valueX1 < traLower1) {
 					isCrossOver = true;
 				}
 				
-				if((valueX2 == -1 && upper2 != -1) ||
-						(valueX2 != -1 && upper2 == -1 ||
-								valueX2 > upper2		)	) {
+				if(valueX2 > traUpper2 || valueX2 < traLower2) {
 					isCrossOver = true;
 				}
 				
 				if ((!isCrossOver && PseudoRandom.randDouble() < crossoverProbability_) || isCrossOver	) {
 								
 				
-					int lower1 = ((SASSolution)offSpring[0]).getUpperBoundforVariable(i);
-					int lower2 = ((SASSolution)offSpring[1]).getUpperBoundforVariable(i);
 					
-					valueX2 = valueX2 == -1 && upper1 != -1? (int) (PseudoRandom.randInt(
-							lower1,
-							upper1)) : valueX2;
-					valueX1 = valueX1 == -1 && upper2 != -1? (int) (PseudoRandom.randInt(
-							lower2,
-							upper2)) : valueX1;
 					
-					offSpring[0].getDecisionVariables()[i].setValue(upper1 == -1? -1 : valueX2 > upper1? (int) (PseudoRandom.randInt(
-							lower1,
-							upper1)) : valueX2);
-					offSpring[1].getDecisionVariables()[i].setValue(upper2 == -1? -1 : valueX1 > upper2? (int) (PseudoRandom.randInt(
-							lower2,
-							upper2)) : valueX1);
+					if(valueX1 > traUpper2 || valueX1 < traLower2) {
+						valueX1 = (int) (PseudoRandom.randInt(lower2,upper2));
+						valueX1 = ((SASSolution)offSpring[1]).translateIntoIndexInMainVariable(i, valueX1);
+					}
+					
+					if(valueX2 > traUpper1 || valueX2 < traLower1) {
+						valueX2 = (int) (PseudoRandom.randInt(lower1,upper1));
+						valueX2 = ((SASSolution)offSpring[0]).translateIntoIndexInMainVariable(i, valueX2);
+					}
+					
+					offSpring[0].getDecisionVariables()[i].setValue(valueX2);
+					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
 					
 				}
 			}

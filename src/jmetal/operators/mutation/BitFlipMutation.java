@@ -96,9 +96,10 @@ public class BitFlipMutation extends Mutation {
 					boolean isMutate = false;
 					int value = (int)solution.getDecisionVariables()[i].getValue();	
 					int upper = ((SASSolution)solution).getUpperBoundforVariable(i);
-					if((value == -1 && upper != -1) ||
-							(value != -1 && upper == -1 ||
-									value > upper		)	) {
+					int lower = ((SASSolution)solution).getLowerBoundforVariable(i);
+					int traUpper = ((SASSolution)solution).translateIntoIndexInMainVariable(i, upper);
+					int traLower = ((SASSolution)solution).translateIntoIndexInMainVariable(i, lower);
+					if(value > traUpper || value < traLower) {
 						isMutate = true;
 					}
 					
@@ -108,9 +109,10 @@ public class BitFlipMutation extends Mutation {
 						int v = (int) (PseudoRandom.randInt(
 								// In the implementation of SASSolution, we can ensure the right boundary is 
 								// always used even under variable dependency.
-								((SASSolution)solution).getLowerBoundforVariable(i),
+								lower,
 								upper));
 					
+						v = ((SASSolution)solution).translateIntoIndexInMainVariable(i, v);
 						solution.getDecisionVariables()[i].setValue(v);
 					} // if
 				}

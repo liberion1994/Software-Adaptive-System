@@ -19,7 +19,7 @@ public class DummySASSolution extends SASSolution{
 	public final static double[][] optionalVariables = 
 	{
 			{0,1,2},
-			{2,4,6,8,10},
+			{0,1,2,3,4,5,6,8,10},
 			{2,4,6,8,10,12,14,16,18,20},
 			{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100},
 			{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100}
@@ -43,11 +43,11 @@ public class DummySASSolution extends SASSolution{
 	static {
 		map.put(1,
 				new VarEntity[] {
-						new VarEntity(0, null, null),
+						new VarEntity(0, new int[] {0}, null),
 						new VarEntity(0,
-								new double[] { 1.0, 3.0, 4.0, 5.0, 6.0 }, null),
+								new int[] {1,2,3,4 }, null),
 						new VarEntity(0,
-								new double[] { 2,4,6,8,10,12 }, null) });
+								new int[] {5,6,7,8}, null) });
 	}
 	
 	
@@ -79,21 +79,12 @@ public class DummySASSolution extends SASSolution{
 		int numberOfVariables_ = optionalVariables.length;
 		for (int i = 0; i < x.length; i++) {
 
-			if (map.containsKey(i)) {
-				try {
-					VarEntity v = map.get(i)[(int) super.getDecisionVariables()[map
-							.get(i)[0].getVarIndex()].getValue()];
-					
-					x[i] = var[i] == -1? -1: v.getOptionalValues(super.getDecisionVariables())[var[i]];
-					
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				// the default values should not have null array.
 				x[i] = optionalVariables[i][var[i]];
-			}
+//				if (i == 1 && var[i-1] == 0) {
+//					System.out.print("var[0]= " + var[i-1] + " x[0]= " + x[i-1] +
+//							" var[1]= " + var[i] + " x[1]= " + x[i] + "\n");
+//				}
+			
 		}
 
 		double[] f = new double[numberOfObjectives_];
@@ -124,7 +115,7 @@ public class DummySASSolution extends SASSolution{
 	public int getUpperBoundforVariable(int index) throws JMException {
 		if (map.containsKey(index)) {
 			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
-			return v.getOptionalValues(super.getDecisionVariables()) == null? -1  :	v.getOptionalValues(super.getDecisionVariables()).length - 1;
+			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
 		}
@@ -133,15 +124,18 @@ public class DummySASSolution extends SASSolution{
 
 	@Override
 	public int getLowerBoundforVariable(int index) throws JMException {
-		if (map.containsKey(index)) {
-			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
-			return v.getOptionalValues(super.getDecisionVariables()) == null? -1  :	0;
-		} else {
-			return 0;
-		}
-	
+			return 0;		
 	}
 
+	public int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
+		if (map.containsKey(index)) {
+			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
+			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
+		} else {
+			return subIndex;
+		}
+	}
+	
 	@Override
 	public int[] getMainVariablesByDependentVariable(int index) {
 		if (map.containsKey(index)) {
@@ -176,7 +170,8 @@ public class DummySASSolution extends SASSolution{
 		
 		private int varIndex;
 		private VarEntity[] next;
-		private double[] optionalValues;
+		// This correspond to the index in the original set
+		private int[] optionalValues;
 //		private double[] dependentOptionalValues;
 //		
 //		public VarEntity(int index, double[] optionalValues, double[] dependentOptionalValues) {
@@ -186,7 +181,7 @@ public class DummySASSolution extends SASSolution{
 //			this.dependentOptionalValues = dependentOptionalValues;
 //		}
 
-		public VarEntity(int varIndex, double[] optionalValues, VarEntity[] next) {
+		public VarEntity(int varIndex, int[] optionalValues, VarEntity[] next) {
 			super();
 			this.varIndex = varIndex;
 			this.optionalValues = optionalValues;
@@ -197,7 +192,7 @@ public class DummySASSolution extends SASSolution{
 			return varIndex;
 		}
 		
-		public double[] getOptionalValues(Variable[] variables){
+		public int[] getOptionalValues(Variable[] variables){
 			if (next == null) {
 				return optionalValues;
 			} else {

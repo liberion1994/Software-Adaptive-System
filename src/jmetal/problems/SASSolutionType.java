@@ -32,6 +32,7 @@ public class SASSolutionType extends IntSolutionType {
 						sol.getLowerBoundforVariable(var),
 						sol.getUpperBoundforVariable(var))),
 						(int)problem_.getLowerLimitSAS(var), (int)problem_.getUpperLimitSAS(var));
+				variables[var].setValue(sol.translateIntoIndexInMainVariable(var, (int)variables[var].getValue()));
 			} catch (JMException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

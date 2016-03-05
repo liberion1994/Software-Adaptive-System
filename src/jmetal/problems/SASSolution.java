@@ -62,6 +62,8 @@ public abstract class SASSolution extends Solution {
 	 */
 	public abstract int[] getMainVariablesByDependentVariable(int index);
 	
+	
+	public abstract int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException;
 	//public abstract boolean isHavingMainVariable(int index);
 	
 	//public abstract boolean isHavingDependentVariables(int index);
