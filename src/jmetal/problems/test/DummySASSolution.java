@@ -80,10 +80,10 @@ public class DummySASSolution extends SASSolution{
 		for (int i = 0; i < x.length; i++) {
 
 				x[i] = optionalVariables[i][var[i]];
-//				if (i == 1 && var[i-1] == 0) {
-//					System.out.print("var[0]= " + var[i-1] + " x[0]= " + x[i-1] +
-//							" var[1]= " + var[i] + " x[1]= " + x[i] + "\n");
-//				}
+				if (i == 1 && var[i-1] == 2) {
+					System.out.print("var[0]= " + var[i-1] + " x[0]= " + x[i-1] +
+							" var[1]= " + var[i] + " x[1]= " + x[i] + "\n");
+				}
 			
 		}
 
@@ -152,6 +152,32 @@ public class DummySASSolution extends SASSolution{
 		return null;
 	}
 
+	public List<Integer> getVariableNeedCrossover(int index) {
+		List<Integer> list = new ArrayList<Integer>();
+		for (Map.Entry<Integer, VarEntity[]> entity : map.entrySet()) {
+			if (index == entity.getKey()) {
+				entity.getValue()[0].getMainVariablesByDependentVariable(list);
+			} else {
+				
+				VarEntity v = entity.getValue()[0];
+				
+				do {
+					if(index == v.varIndex) {
+						if(!list.contains(entity.getKey())) {
+							list.add(entity.getKey());
+						}
+						
+						break;
+					}
+					v = v.next == null? null : v.next[0];
+				} while(v != null);
+				
+			}
+		}
+		
+
+		return list;
+	}
 	
 	public void initVariables(int... vars){
 		Variable[] variable_ = super.getDecisionVariables();
@@ -208,8 +234,8 @@ public class DummySASSolution extends SASSolution{
 		}
 		
 		public Integer[] getMainVariablesByDependentVariable(List<Integer> ind){
-			if (next == null) {
-				ind.add(varIndex);
+			ind.add(varIndex);
+			if (next == null) {				
 				return ind.toArray(new Integer[ind.size()]);
 			} else {
 				return next[0].getMainVariablesByDependentVariable(ind);

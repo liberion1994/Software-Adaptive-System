@@ -1,5 +1,7 @@
 package jmetal.problems;
 
+import java.util.List;
+
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
@@ -64,6 +66,8 @@ public abstract class SASSolution extends Solution {
 	
 	
 	public abstract int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException;
+	
+	public abstract List<Integer> getVariableNeedCrossover(int index);
 	//public abstract boolean isHavingMainVariable(int index);
 	
 	//public abstract boolean isHavingDependentVariables(int index);
