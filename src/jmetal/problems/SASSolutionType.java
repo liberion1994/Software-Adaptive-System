@@ -27,16 +27,14 @@ public class SASSolutionType extends IntSolutionType {
 		Variable[] variables = new Variable[problem_.getNumberOfVariables()];
 		SASSolution sol = (SASSolution)((SAS)problem_).factory.getSolution(problem_, variables);
 		for (int var = 0; var < problem_.getNumberOfVariables(); var++) {
-			try {
-				variables[var] = new Int((int) (PseudoRandom.randInt(
-						sol.getLowerBoundforVariable(var),
-						sol.getUpperBoundforVariable(var))),
-						(int)problem_.getLowerLimitSAS(var), (int)problem_.getUpperLimitSAS(var));
-				variables[var].setValue(sol.translateIntoIndexInMainVariable(var, (int)variables[var].getValue()));
-			} catch (JMException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				variables[var] = new Int((int)problem_.getLowerLimitSAS(var), (int)problem_.getUpperLimitSAS(var));		
+		}
+		
+		try {
+			sol.correctDependencyOnMutation();
+		} catch (JMException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		sol = null;
 		return variables ;

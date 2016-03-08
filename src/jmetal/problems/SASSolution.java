@@ -1,11 +1,15 @@
 package jmetal.problems;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 
 /**
  * Need to ensure that the order of variables is the same as control primitives, and that
@@ -17,8 +21,14 @@ import jmetal.util.JMException;
 public abstract class SASSolution extends Solution {
 	
 	
+	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
+	protected final static Map<Integer, VarEntity[]> map = new HashMap<Integer, VarEntity[]>();
 	
+	// Key = variable index, Value = list of main/dependent variable index.
+	protected final static Map<Integer, List<Integer>> crossOverMap = new HashMap<Integer, List<Integer>>();
 
+	protected static double[][] optionalVariables;
+	
 	//public abstract double getVariableValueFromIndexValue(int indexValue);
 
 	public SASSolution(Problem problem) throws ClassNotFoundException {
@@ -42,33 +52,201 @@ public abstract class SASSolution extends Solution {
 	}
 
 	public abstract double[] getObjectiveValuesFromIndexValue(int[] var);
-	
-	/**
-	 * Need to ensure variable dependency.
-	 * @param index
-	 * @return index value
-	 */
-	public abstract int getUpperBoundforVariable(int index) throws JMException;
-	
-	/**
-	 * Need to ensure variable dependency.
-	 * @param index
-	 * @return index value
-	 */
-	public abstract int getLowerBoundforVariable(int index) throws JMException;
-	
-	/**
-	 * 
-	 * @param index
-	 * @return the array of index
-	 */
-	public abstract int[] getMainVariablesByDependentVariable(int index);
+
 	
 	
-	public abstract int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException;
+	private int getUpperBoundforVariable(int index) throws JMException {
+		if (map.containsKey(index)) {
+			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
+			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
+		} else {
+			return optionalVariables[index].length - 1;
+		}
 	
-	public abstract List<Integer> getVariableNeedCrossover(int index);
-	//public abstract boolean isHavingMainVariable(int index);
+	}
+
 	
-	//public abstract boolean isHavingDependentVariables(int index);
+	private int getLowerBoundforVariable(int index) throws JMException {
+			return 0;		
+	}
+
+	private int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
+		if (map.containsKey(index)) {
+			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
+			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
+		} else {
+			return subIndex;
+		}
+	}
+	
+	
+	private int[] getMainVariablesByDependentVariable(int index) {
+		if (map.containsKey(index)) {
+			Integer[] ints = map.get(index)[0]
+					.getMainVariablesByDependentVariable(new ArrayList<Integer>());
+			int[] result = new int[ints.length];
+
+			for (int i = 0; i < result.length; i++) {
+				result[i] = ints[i];
+			}
+
+			return result;
+		}
+		return null;
+	}
+
+	private List<Integer> getVariableNeedCrossover(int index) {
+		
+		if (crossOverMap.containsKey(index)) {
+			return crossOverMap.get(index);
+		}
+		
+		List<Integer> list = new ArrayList<Integer>();
+		for (Map.Entry<Integer, VarEntity[]> entity : map.entrySet()) {
+			if (index == entity.getKey()) {
+				entity.getValue()[0].getMainVariablesByDependentVariable(list);
+			} else {
+				
+				VarEntity v = entity.getValue()[0];
+				
+				do {
+					if(index == v.varIndex) {
+						if(!list.contains(entity.getKey())) {
+							list.add(entity.getKey());
+						}
+						
+						break;
+					}
+					v = v.next == null? null : v.next[0];
+				} while(v != null);
+				
+			}
+		}
+		
+
+		crossOverMap.put(index, list);
+		
+		return list;
+	}
+	
+	public void correctDependencyOnMutation() throws JMException{
+		for (int i = 0; i < super.getDecisionVariables().length; i++) {
+			boolean isMutate = false;
+			int value = (int)super.getDecisionVariables()[i].getValue();	
+			int upper = this.getUpperBoundforVariable(i);
+			int lower = this.getLowerBoundforVariable(i);
+			int traUpper = this.translateIntoIndexInMainVariable(i, upper);
+			int traLower = this.translateIntoIndexInMainVariable(i, lower);
+			if(value > traUpper || value < traLower) {
+				isMutate = true;
+			}
+			
+			if (isMutate) {
+			
+			
+				int v = (int) (PseudoRandom.randInt(
+						// In the implementation of SASSolution, we can ensure the right boundary is 
+						// always used even under variable dependency.
+						lower,
+						upper));
+			
+				v = this.translateIntoIndexInMainVariable(i, v);
+				super.getDecisionVariables()[i].setValue(v);
+			}
+		}
+	}
+	
+	public void correctDependencyOnCrossover(Solution parent1, Solution parent2, Solution offSpring1, Solution offSpring2) throws JMException{
+		for (int i = 0; i < parent1.numberOfVariables(); i++) {
+			this.correctDependencyOnCrossover(i, parent1, parent2, offSpring1, offSpring2);
+		}
+	}
+	
+	private void correctDependencyOnCrossover(int i, Solution parent1,
+			Solution parent2, Solution offSpring1, Solution offSpring2)
+			throws JMException {
+
+		if (i >= parent1.getDecisionVariables().length) {
+			return;
+		}
+
+		// If it swap and they are originally unequal.
+		if (offSpring1.getDecisionVariables()[i].getValue() != parent1
+				.getDecisionVariables()[i].getValue()) {
+			List<Integer> list = ((SASSolution) parent1)
+					.getVariableNeedCrossover(i);
+			for (Integer j : list) {
+
+				// swap all main/dependent variable, if they have not been swapped.
+				if (offSpring1.getDecisionVariables()[j].getValue() == parent1
+						.getDecisionVariables()[j].getValue()
+						&& parent1.getDecisionVariables()[j].getValue() != parent2
+								.getDecisionVariables()[j].getValue()) {
+					int valueX1 = (int) parent1.getDecisionVariables()[j]
+							.getValue();
+					int valueX2 = (int) parent2.getDecisionVariables()[j]
+							.getValue();
+					offSpring1.getDecisionVariables()[j].setValue(valueX2);
+					offSpring2.getDecisionVariables()[j].setValue(valueX1);
+					// Ensure that the main/dependent variable of the newly swapped variable are also swapped.
+					this.correctDependencyOnCrossover(j, parent1, parent2,
+							offSpring1, offSpring2);
+				}
+			}
+		}
+
+	}
+	
+	
+	protected static class VarEntity {
+		
+		private int varIndex;
+		private VarEntity[] next;
+		// This correspond to the index in the original set
+		private int[] optionalValues;
+//		private double[] dependentOptionalValues;
+//		
+//		public VarEntity(int index, double[] optionalValues, double[] dependentOptionalValues) {
+//			super();
+//			this.index = index;
+//			this.optionalValues = optionalValues;
+//			this.dependentOptionalValues = dependentOptionalValues;
+//		}
+
+		public VarEntity(int varIndex, int[] optionalValues, VarEntity[] next) {
+			super();
+			this.varIndex = varIndex;
+			this.optionalValues = optionalValues;
+			this.next = next;
+		}
+		
+		public int getVarIndex(){
+			return varIndex;
+		}
+		
+		public int[] getOptionalValues(Variable[] variables){
+			if (next == null) {
+				return optionalValues;
+			} else {
+				try {
+					return next[(int)variables[next[0].getVarIndex()].getValue()].getOptionalValues(variables);
+				} catch (JMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			return null;
+		}
+		
+		public Integer[] getMainVariablesByDependentVariable(List<Integer> ind){
+			ind.add(varIndex);
+			if (next == null) {				
+				return ind.toArray(new Integer[ind.size()]);
+			} else {
+				return next[0].getMainVariablesByDependentVariable(ind);
+			}
+		}
+		
+	}
 }

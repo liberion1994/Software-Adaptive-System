@@ -11,34 +11,17 @@ import jmetal.core.Variable;
 import jmetal.encodings.variable.Int;
 import jmetal.problems.SASSolution;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 
 public class DummySASSolution extends SASSolution{
 	
 
-
-	public final static double[][] optionalVariables = 
-	{
-			{0,1,2},
-			{0,1,2,3,4,5,6,8,10},
-			{2,4,6,8,10,12,14,16,18,20},
-			{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100},
-			{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100}
-	};
 	
-	public  static int[][] vars = 
-	{
-		{0,optionalVariables[0].length-1},	
-		{0,optionalVariables[1].length-1},
-		{0,optionalVariables[2].length-1},
-		{0,optionalVariables[3].length-1},
-		
-		{0,optionalVariables[4].length-1},
-	};
+	public static int[][] vars;
 
 	public final static int numberOfObjectives_ = 2;
 
-	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
-	private final static Map<Integer, VarEntity[]> map = new HashMap<Integer, VarEntity[]>();
+	
 
 	static {
 		map.put(1,
@@ -48,6 +31,25 @@ public class DummySASSolution extends SASSolution{
 								new int[] {1,2,3,4 }, null),
 						new VarEntity(0,
 								new int[] {5,6,7,8}, null) });
+		
+		optionalVariables = new double[][]
+		{
+				{0,1,2},
+				{0,1,2,3,4,5,6,8,10},
+				{2,4,6,8,10,12,14,16,18,20},
+				{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100},
+				{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100}
+		};
+		
+		vars = new int[][]
+		{
+			{0,optionalVariables[0].length-1},	
+			{0,optionalVariables[1].length-1},
+			{0,optionalVariables[2].length-1},
+			{0,optionalVariables[3].length-1},
+			
+			{0,optionalVariables[4].length-1},
+		};
 	}
 	
 	
@@ -111,73 +113,8 @@ public class DummySASSolution extends SASSolution{
 		return f;
 	}
 
-	@Override
-	public int getUpperBoundforVariable(int index) throws JMException {
-		if (map.containsKey(index)) {
-			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
-			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
-		} else {
-			return optionalVariables[index].length - 1;
-		}
 	
-	}
-
-	@Override
-	public int getLowerBoundforVariable(int index) throws JMException {
-			return 0;		
-	}
-
-	public int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
-		if (map.containsKey(index)) {
-			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
-			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
-		} else {
-			return subIndex;
-		}
-	}
 	
-	@Override
-	public int[] getMainVariablesByDependentVariable(int index) {
-		if (map.containsKey(index)) {
-			Integer[] ints = map.get(index)[0]
-					.getMainVariablesByDependentVariable(new ArrayList<Integer>());
-			int[] result = new int[ints.length];
-
-			for (int i = 0; i < result.length; i++) {
-				result[i] = ints[i];
-			}
-
-			return result;
-		}
-		return null;
-	}
-
-	public List<Integer> getVariableNeedCrossover(int index) {
-		List<Integer> list = new ArrayList<Integer>();
-		for (Map.Entry<Integer, VarEntity[]> entity : map.entrySet()) {
-			if (index == entity.getKey()) {
-				entity.getValue()[0].getMainVariablesByDependentVariable(list);
-			} else {
-				
-				VarEntity v = entity.getValue()[0];
-				
-				do {
-					if(index == v.varIndex) {
-						if(!list.contains(entity.getKey())) {
-							list.add(entity.getKey());
-						}
-						
-						break;
-					}
-					v = v.next == null? null : v.next[0];
-				} while(v != null);
-				
-			}
-		}
-		
-
-		return list;
-	}
 	
 	public void initVariables(int... vars){
 		Variable[] variable_ = super.getDecisionVariables();
@@ -192,55 +129,5 @@ public class DummySASSolution extends SASSolution{
 		}
 	}
 	
-	private static class VarEntity {
-		
-		private int varIndex;
-		private VarEntity[] next;
-		// This correspond to the index in the original set
-		private int[] optionalValues;
-//		private double[] dependentOptionalValues;
-//		
-//		public VarEntity(int index, double[] optionalValues, double[] dependentOptionalValues) {
-//			super();
-//			this.index = index;
-//			this.optionalValues = optionalValues;
-//			this.dependentOptionalValues = dependentOptionalValues;
-//		}
 
-		public VarEntity(int varIndex, int[] optionalValues, VarEntity[] next) {
-			super();
-			this.varIndex = varIndex;
-			this.optionalValues = optionalValues;
-			this.next = next;
-		}
-		
-		public int getVarIndex(){
-			return varIndex;
-		}
-		
-		public int[] getOptionalValues(Variable[] variables){
-			if (next == null) {
-				return optionalValues;
-			} else {
-				try {
-					return next[(int)variables[next[0].getVarIndex()].getValue()].getOptionalValues(variables);
-				} catch (JMException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			return null;
-		}
-		
-		public Integer[] getMainVariablesByDependentVariable(List<Integer> ind){
-			ind.add(varIndex);
-			if (next == null) {				
-				return ind.toArray(new Integer[ind.size()]);
-			} else {
-				return next[0].getMainVariablesByDependentVariable(ind);
-			}
-		}
-		
-	}
 }
