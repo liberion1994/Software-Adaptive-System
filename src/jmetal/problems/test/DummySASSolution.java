@@ -24,17 +24,49 @@ public class DummySASSolution extends SASSolution{
 	
 
 	static {
-		map.put(1,
+//		map.put(1,
+//				new VarEntity[] {
+//						new VarEntity(0, new int[] {0}, null),
+//						new VarEntity(0,
+//								new int[] {1,2,3,4 }, null),
+//						new VarEntity(0,
+//								new int[] {5,6,7,8}, null) });
+		mutationMap.put(2,
 				new VarEntity[] {
-						new VarEntity(0, new int[] {0}, null),
+						new VarEntity(0, null, new VarEntity[] {
+								new VarEntity(1,
+										new int[] {0}, null),
+										new VarEntity(1,
+												new int[] {0}, null)
+						}),
 						new VarEntity(0,
-								new int[] {1,2,3,4 }, null),
+								null, new VarEntity[] {
+										new VarEntity(1,
+												new int[] {0}, null),
+												new VarEntity(1,
+														new int[] {1,2,3,4 }, null)
+								}),
 						new VarEntity(0,
-								new int[] {5,6,7,8}, null) });
+								null, new VarEntity[] {
+								new VarEntity(1,
+										new int[] {7,8}, null),
+										new VarEntity(1,
+												new int[] {5,6,7,8 }, null)
+						}) 
+						});
+		
+		mutationMap.put(1,
+		new VarEntity[] {
+				new VarEntity(0, new int[] {0}, null),
+				new VarEntity(0,
+						new int[] {0}, null),
+				new VarEntity(0,
+						new int[] {1}, null) });
 		
 		optionalVariables = new double[][]
 		{
 				{0,1,2},
+				{0,1},
 				{0,1,2,3,4,5,6,8,10},
 				{2,4,6,8,10,12,14,16,18,20},
 				{5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100},
@@ -45,10 +77,12 @@ public class DummySASSolution extends SASSolution{
 		{
 			{0,optionalVariables[0].length-1},	
 			{0,optionalVariables[1].length-1},
+			
 			{0,optionalVariables[2].length-1},
 			{0,optionalVariables[3].length-1},
 			
 			{0,optionalVariables[4].length-1},
+			{0,optionalVariables[5].length-1},
 		};
 	}
 	
@@ -76,15 +110,22 @@ public class DummySASSolution extends SASSolution{
 	}
 	
 	@Override
-	public double[] getObjectiveValuesFromIndexValue(int[] var) {
+	public double[] getObjectiveValuesFromIndexValue() {
 		double[] x = new double[optionalVariables.length];
+		
 		int numberOfVariables_ = optionalVariables.length;
 		for (int i = 0; i < x.length; i++) {
 
-				x[i] = optionalVariables[i][var[i]];
-				if (i == 1 && var[i-1] == 2) {
-					System.out.print("var[0]= " + var[i-1] + " x[0]= " + x[i-1] +
-							" var[1]= " + var[i] + " x[1]= " + x[i] + "\n");
+				
+				try {
+					x[i] = optionalVariables[i][(int ) super.getDecisionVariables()[i].getValue()];
+					if (i == 2 && (int ) super.getDecisionVariables()[i-2].getValue() == 2 && (int ) super.getDecisionVariables()[i-1].getValue() == 1) {
+						System.out.print("var[0]= " + super.getDecisionVariables()[i-1].getValue() + " x[0]= " + x[i-1] +
+								" var[1]= " + super.getDecisionVariables()[i].getValue() + " x[1]= " + x[i] + "\n");
+					}
+				} catch (JMException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			
 		}
@@ -127,6 +168,12 @@ public class DummySASSolution extends SASSolution{
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public double getVariableValueFromIndex(int index) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 	
 

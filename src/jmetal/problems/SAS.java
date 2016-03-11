@@ -49,9 +49,9 @@ public class SAS extends Problem {
 	 * Evaluate a solution
 	 */
 	public void evaluate(Solution solution) throws JMException {
-		XInt x = new XInt(solution);
+		//XInt x = new XInt(solution);
 		
-		int[] var  = new int[numberOfVariables_];
+		//int[] var  = new int[numberOfVariables_];
 //		double[] varValues  = new double[numberOfVariables_];
 //		double[] f = new double[numberOfObjectives_];
 		SASSolution sol = null;
@@ -66,12 +66,12 @@ public class SAS extends Problem {
 //			varValues[i] = sol.getVariableValueFromIndex(var[i]);
 //		}
 		
-		for (int i = 0; i < numberOfVariables_; i++) 
-			var[i] = x.getValue(i);
+		//for (int i = 0; i < numberOfVariables_; i++) 
+			//var[i] = x.getValue(i);
 		
 		// It is possible to directly retrieve objective' values from indices, and this
 		// can be done from my end.
-		double[] f = sol.getObjectiveValuesFromIndexValue(var);
+		double[] f = sol.getObjectiveValuesFromIndexValue();
 		
 		solution.setObjective(0, f[0]);
 		solution.setObjective(1, f[1]);

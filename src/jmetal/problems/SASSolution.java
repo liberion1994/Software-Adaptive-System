@@ -22,10 +22,10 @@ public abstract class SASSolution extends Solution {
 	
 	
 	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
-	protected final static Map<Integer, VarEntity[]> map = new HashMap<Integer, VarEntity[]>();
+	protected final static Map<Integer, VarEntity[]> mutationMap = new HashMap<Integer, VarEntity[]>();
 	
 	// Key = variable index, Value = list of main/dependent variable index.
-	protected final static Map<Integer, List<Integer>> crossOverMap = new HashMap<Integer, List<Integer>>();
+	protected final static Map<Integer, List<Integer>> crossoverMap = new HashMap<Integer, List<Integer>>();
 
 	protected static double[][] optionalVariables;
 	
@@ -51,13 +51,13 @@ public abstract class SASSolution extends Solution {
 		// TODO Auto-generated constructor stub
 	}
 
-	public abstract double[] getObjectiveValuesFromIndexValue(int[] var);
+	public abstract double[] getObjectiveValuesFromIndexValue();
 
-	
+	public abstract double getVariableValueFromIndex(int index);
 	
 	private int getUpperBoundforVariable(int index) throws JMException {
-		if (map.containsKey(index)) {
-			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
+		if (mutationMap.containsKey(index)) {
+			VarEntity v = mutationMap.get(index)[(int) super.getDecisionVariables()[mutationMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
@@ -71,8 +71,8 @@ public abstract class SASSolution extends Solution {
 	}
 
 	private int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
-		if (map.containsKey(index)) {
-			VarEntity v = map.get(index)[(int) super.getDecisionVariables()[map.get(index)[0].getVarIndex()].getValue()];
+		if (mutationMap.containsKey(index)) {
+			VarEntity v = mutationMap.get(index)[(int) super.getDecisionVariables()[mutationMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
 		} else {
 			return subIndex;
@@ -81,8 +81,8 @@ public abstract class SASSolution extends Solution {
 	
 	
 	private int[] getMainVariablesByDependentVariable(int index) {
-		if (map.containsKey(index)) {
-			Integer[] ints = map.get(index)[0]
+		if (mutationMap.containsKey(index)) {
+			Integer[] ints = mutationMap.get(index)[0]
 					.getMainVariablesByDependentVariable(new ArrayList<Integer>());
 			int[] result = new int[ints.length];
 
@@ -97,12 +97,12 @@ public abstract class SASSolution extends Solution {
 
 	private List<Integer> getVariableNeedCrossover(int index) {
 		
-		if (crossOverMap.containsKey(index)) {
-			return crossOverMap.get(index);
+		if (crossoverMap.containsKey(index)) {
+			return crossoverMap.get(index);
 		}
 		
 		List<Integer> list = new ArrayList<Integer>();
-		for (Map.Entry<Integer, VarEntity[]> entity : map.entrySet()) {
+		for (Map.Entry<Integer, VarEntity[]> entity : mutationMap.entrySet()) {
 			if (index == entity.getKey()) {
 				entity.getValue()[0].getMainVariablesByDependentVariable(list);
 			} else {
@@ -124,7 +124,7 @@ public abstract class SASSolution extends Solution {
 		}
 		
 
-		crossOverMap.put(index, list);
+		crossoverMap.put(index, list);
 		
 		return list;
 	}

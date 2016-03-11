@@ -44,6 +44,8 @@ import java.util.*;
 public class MOEAD_STM_SAS extends Algorithm {
 
 	private int populationSize_;
+	
+	private static final boolean isFindKnee = true;
 
 	private SASSolutionInstantiator factory = null;
 	// population repository
@@ -214,8 +216,12 @@ public class MOEAD_STM_SAS extends Algorithm {
 		kneeIndividual = kneeSelection();
 		
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
-			System.out.print(kneeIndividual.getObjective(i) + "\t");
-		System.out.println();
+			System.out.print(kneeIndividual.getObjective(i) + "\n");
+		
+		if(isFindKnee) {
+			population_.clear();
+			population_.add(kneeIndividual);
+		}
 		
 		return population_;
 	}
