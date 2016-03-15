@@ -73,7 +73,8 @@ public class SAS extends Problem {
 		// can be done from my end.
 		double[] f = sol.getObjectiveValuesFromIndexValue();
 		
-		solution.setObjective(0, f[0]);
-		solution.setObjective(1, f[1]);
+		for (int i = 0; i < f.length ; i ++) {
+			solution.setObjective(i, f[i]);
+		}
 	}
 }
