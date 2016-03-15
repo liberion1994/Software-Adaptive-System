@@ -61,7 +61,7 @@ public class DummySASSolution extends SASSolution{
 				new VarEntity(0,
 						new int[] {0}, null),
 				new VarEntity(0,
-						new int[] {1}, null) });
+						new int[] {0}, null) });
 		
 		optionalVariables = new double[][]
 		{
@@ -119,7 +119,7 @@ public class DummySASSolution extends SASSolution{
 				
 				try {
 					x[i] = optionalVariables[i][(int ) super.getDecisionVariables()[i].getValue()];
-					if (i == 2 && (int ) super.getDecisionVariables()[i-2].getValue() == 2 && (int ) super.getDecisionVariables()[i-1].getValue() == 1) {
+					if (i == 2 && (int ) super.getDecisionVariables()[i-2].getValue() == 2 && (int ) super.getDecisionVariables()[i-1].getValue() == 0) {
 						System.out.print("var[0]= " + super.getDecisionVariables()[i-1].getValue() + " x[0]= " + x[i-1] +
 								" var[1]= " + super.getDecisionVariables()[i].getValue() + " x[1]= " + x[i] + "\n");
 					}
