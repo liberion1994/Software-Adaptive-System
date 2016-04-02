@@ -45,10 +45,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class MOEAD_SAS_main implements SASAlgorithmAdaptor{
+public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 
+	Problem problem; // The problem to solve
+	Algorithm algorithm; // The algorithm to use
+	Operator crossover; // Crossover operator
+	Operator mutation; // Mutation operator
+
+	
 	/**
 	 * @param args
 	 *            Command line arguments. The first (optional) argument
@@ -161,13 +167,9 @@ public class MOEAD_SAS_main implements SASAlgorithmAdaptor{
 	} // main
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public SolutionSet execute(SASSolutionInstantiator factory, int[][] vars,  int numberOfObjectives_, int numberOfConstraints_) throws JMException,
+	protected SolutionSet findParetoFront(SASSolutionInstantiator factory, int[][] vars,  int numberOfObjectives_, int numberOfConstraints_) throws JMException,
 			SecurityException, IOException, ClassNotFoundException {
-		Problem problem; // The problem to solve
-		Algorithm algorithm; // The algorithm to use
-		Operator crossover; // Crossover operator
-		Operator mutation; // Mutation operator
-
+	
 		HashMap parameters; // Operator parameters
 
 		// Logger object and file to store log messages
@@ -235,5 +237,31 @@ public class MOEAD_SAS_main implements SASAlgorithmAdaptor{
 		
 		return population;
 
+	}
+
+
+	@Override
+	protected ApproachType getName() {
+		return ApproachType.MOEAD_STM_D_K;
+	}
+
+	@Override
+	protected Solution findSoleSolutionAfterEvolution(SolutionSet pareto_front) {
+		// find the knee point
+		Solution kneeIndividual = ((MOEAD_STM_SAS)algorithm).kneeSelection(pareto_front);
+		
+		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
+			System.out.print(kneeIndividual.getObjective(i) + "\n");
+		
+		
+		String str = problem.getName()
+		+ "M" + problem.getNumberOfObjectives() + "/SAS";
+		
+		SolutionSet set = new SolutionSet();
+		set.add(kneeIndividual);
+		
+		set.printObjectivesToFile(str + "/knee_results.dat");
+		
+		return kneeIndividual;
 	}
 } // MOEAD_main

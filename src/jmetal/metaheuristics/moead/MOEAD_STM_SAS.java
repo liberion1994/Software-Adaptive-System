@@ -45,7 +45,6 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 	private int populationSize_;
 	
-	private static final boolean isFindKnee = true;
 
 	private SASSolutionInstantiator factory = null;
 	// population repository
@@ -213,15 +212,15 @@ public class MOEAD_STM_SAS extends Algorithm {
 		} while (evaluations_ <= maxEvaluations);
 		
 		// find the knee point
-		kneeIndividual = kneeSelection();
-		
-		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
-			System.out.print(kneeIndividual.getObjective(i) + "\n");
-		
-		if(isFindKnee) {
-			population_.clear();
-			population_.add(kneeIndividual);
-		}
+//		kneeIndividual = kneeSelection();
+//		
+//		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+//			System.out.print(kneeIndividual.getObjective(i) + "\n");
+//		
+//		if(isFindKnee) {
+//			population_.clear();
+//			population_.add(kneeIndividual);
+//		}
 		
 		return population_;
 	}
@@ -860,10 +859,10 @@ public class MOEAD_STM_SAS extends Algorithm {
 	 * @param population
 	 * @return
 	 */
-	Solution kneeSelection() {		
+	public Solution kneeSelection(SolutionSet population_) {		
 		int[] max_idx    = new int[problem_.getNumberOfObjectives()];
 		double[] max_obj = new double[problem_.getNumberOfObjectives()];
-		
+		int populationSize_ = population_.size();
 		// finding the extreme solution for f1
 		for (int i = 0; i < populationSize_; i++) {
 			for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
