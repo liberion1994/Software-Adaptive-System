@@ -257,7 +257,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		String str = problem.getName()
 		+ "M" + problem.getNumberOfObjectives() + "/SAS";
 		
-		SolutionSet set = new SolutionSet();
+		SolutionSet set = new SolutionSet(1);
 		set.add(kneeIndividual);
 		
 		set.printObjectivesToFile(str + "/knee_results.dat");

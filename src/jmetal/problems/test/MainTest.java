@@ -1,6 +1,7 @@
 package jmetal.problems.test;
 
 import jmetal.core.Problem;
+import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.metaheuristics.moead.MOEAD_SAS_main;
 import jmetal.problems.SAS;
@@ -19,7 +20,7 @@ public class MainTest extends TestCase{
 			DummySASSolutionInstantiator inst = new DummySASSolutionInstantiator();
 			
 			MOEAD_SAS_main main = new MOEAD_SAS_main();
-			SolutionSet set = main.execute(inst, DummySASSolution.vars, 2, 0);
+			Solution s = main.execute(inst, DummySASSolution.vars, 2, 0);
 	
 		//Assert.assertEquals(dss.getUpperBoundforVariable(1), 2);
 		} catch (Exception e) {
