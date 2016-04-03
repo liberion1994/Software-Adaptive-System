@@ -93,13 +93,14 @@ public class BitFlipMutation extends Mutation {
 				
 				for (int i = 0; i < solution.getDecisionVariables().length; i++)
 					if (PseudoRandom.randDouble() < probability) {
-						int value = (int) (PseudoRandom.randInt(
-								(int)solution.getDecisionVariables()[i].getLowerBound(),
-								(int)solution.getDecisionVariables()[i].getUpperBound()));
-						solution.getDecisionVariables()[i].setValue(value);
+						((SASSolution) solution).mutateWithDependency(i);
+//						int value = (int) (PseudoRandom.randInt(
+//								(int)solution.getDecisionVariables()[i].getLowerBound(),
+//								(int)solution.getDecisionVariables()[i].getUpperBound()));
+//						solution.getDecisionVariables()[i].setValue(value);
 					} // if
 			
-				((SASSolution) solution).correctDependencyOnMutation();
+				//((SASSolution) solution).correctDependencyOnMutation();
 			}
 			
 			else { // Integer representation

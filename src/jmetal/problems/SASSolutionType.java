@@ -31,7 +31,7 @@ public class SASSolutionType extends IntSolutionType {
 		}
 		
 		try {
-			sol.correctDependencyOnMutation();
+			sol.mutateWithDependency();
 		} catch (JMException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

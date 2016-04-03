@@ -72,7 +72,7 @@ public class UniformCrossoverSAS extends Crossover {
 					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
 				}				
 			}
-			((SASSolution)parent1).correctDependencyOnCrossover(parent1, parent2, offSpring[0], offSpring[1]);
+			((SASSolution)parent1).crossoverWithDependency(parent1, parent2, offSpring[0], offSpring[1]);
 		} else {
 
 			for (int i = 0; i < parent1.numberOfVariables(); i++) {

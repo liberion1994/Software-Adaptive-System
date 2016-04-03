@@ -129,40 +129,44 @@ public abstract class SASSolution extends Solution {
 		return list;
 	}
 	
-	public void correctDependencyOnMutation() throws JMException{
+	public void mutateWithDependency() throws JMException{
 		for (int i = 0; i < super.getDecisionVariables().length; i++) {
-			boolean isMutate = false;
-			int value = (int)super.getDecisionVariables()[i].getValue();	
-			int upper = this.getUpperBoundforVariable(i);
-			int lower = this.getLowerBoundforVariable(i);
-			int traUpper = this.translateIntoIndexInMainVariable(i, upper);
-			int traLower = this.translateIntoIndexInMainVariable(i, lower);
-			if(value > traUpper || value < traLower) {
-				isMutate = true;
-			}
-			
-			if (isMutate) {
-			
-			
-				int v = (int) (PseudoRandom.randInt(
-						// In the implementation of SASSolution, we can ensure the right boundary is 
-						// always used even under variable dependency.
-						lower,
-						upper));
-			
-				v = this.translateIntoIndexInMainVariable(i, v);
-				super.getDecisionVariables()[i].setValue(v);
-			}
+			this.mutateWithDependency(i);
 		}
 	}
 	
-	public void correctDependencyOnCrossover(Solution parent1, Solution parent2, Solution offSpring1, Solution offSpring2) throws JMException{
+	public void mutateWithDependency(int i) throws JMException{
+		boolean isMutate = false;
+		int value = (int)super.getDecisionVariables()[i].getValue();	
+		int upper = this.getUpperBoundforVariable(i);
+		int lower = this.getLowerBoundforVariable(i);
+		int traUpper = this.translateIntoIndexInMainVariable(i, upper);
+		int traLower = this.translateIntoIndexInMainVariable(i, lower);
+		if(value > traUpper || value < traLower) {
+			isMutate = true;
+		}
+		
+		if (isMutate) {
+		
+		
+			int v = (int) (PseudoRandom.randInt(
+					// In the implementation of SASSolution, we can ensure the right boundary is 
+					// always used even under variable dependency.
+					lower,
+					upper));
+		
+			v = this.translateIntoIndexInMainVariable(i, v);
+			super.getDecisionVariables()[i].setValue(v);
+		}
+	}
+	
+	public void crossoverWithDependency(Solution parent1, Solution parent2, Solution offSpring1, Solution offSpring2) throws JMException{
 		for (int i = 0; i < parent1.numberOfVariables(); i++) {
-			this.correctDependencyOnCrossover(i, parent1, parent2, offSpring1, offSpring2);
+			this.crossoverWithDependency(i, parent1, parent2, offSpring1, offSpring2);
 		}
 	}
 	
-	private void correctDependencyOnCrossover(int i, Solution parent1,
+	public void crossoverWithDependency(int i, Solution parent1,
 			Solution parent2, Solution offSpring1, Solution offSpring2)
 			throws JMException {
 
@@ -189,7 +193,7 @@ public abstract class SASSolution extends Solution {
 					offSpring1.getDecisionVariables()[j].setValue(valueX2);
 					offSpring2.getDecisionVariables()[j].setValue(valueX1);
 					// Ensure that the main/dependent variable of the newly swapped variable are also swapped.
-					this.correctDependencyOnCrossover(j, parent1, parent2,
+					this.crossoverWithDependency(j, parent1, parent2,
 							offSpring1, offSpring2);
 				}
 			}
