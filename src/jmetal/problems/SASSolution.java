@@ -22,10 +22,13 @@ public abstract class SASSolution extends Solution {
 	
 	
 	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
-	protected final static Map<Integer, VarEntity[]> mutationMap = new HashMap<Integer, VarEntity[]>();
+	protected final static Map<Integer, VarEntity[]> dependencyMap = new HashMap<Integer, VarEntity[]>();
 	
 	// Key = variable index, Value = list of main/dependent variable index.
 	protected final static Map<Integer, List<Integer>> crossoverMap = new HashMap<Integer, List<Integer>>();
+	
+	// Key = variable index, Value = list of dependent variable index.
+	protected final static Map<Integer, List<Integer>> mutationMap = new HashMap<Integer, List<Integer>>();
 
 	protected static double[][] optionalVariables;
 	
@@ -56,8 +59,8 @@ public abstract class SASSolution extends Solution {
 	public abstract double getVariableValueFromIndex(int index);
 	
 	private int getUpperBoundforVariable(int index) throws JMException {
-		if (mutationMap.containsKey(index)) {
-			VarEntity v = mutationMap.get(index)[(int) super.getDecisionVariables()[mutationMap.get(index)[0].getVarIndex()].getValue()];
+		if (dependencyMap.containsKey(index)) {
+			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
@@ -71,8 +74,8 @@ public abstract class SASSolution extends Solution {
 	}
 
 	private int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
-		if (mutationMap.containsKey(index)) {
-			VarEntity v = mutationMap.get(index)[(int) super.getDecisionVariables()[mutationMap.get(index)[0].getVarIndex()].getValue()];
+		if (dependencyMap.containsKey(index)) {
+			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
 		} else {
 			return subIndex;
@@ -81,8 +84,8 @@ public abstract class SASSolution extends Solution {
 	
 	
 	private int[] getMainVariablesByDependentVariable(int index) {
-		if (mutationMap.containsKey(index)) {
-			Integer[] ints = mutationMap.get(index)[0]
+		if (dependencyMap.containsKey(index)) {
+			Integer[] ints = dependencyMap.get(index)[0]
 					.getMainVariablesByDependentVariable(new ArrayList<Integer>());
 			int[] result = new int[ints.length];
 
@@ -102,7 +105,7 @@ public abstract class SASSolution extends Solution {
 		}
 		
 		List<Integer> list = new ArrayList<Integer>();
-		for (Map.Entry<Integer, VarEntity[]> entity : mutationMap.entrySet()) {
+		for (Map.Entry<Integer, VarEntity[]> entity : dependencyMap.entrySet()) {
 			if (index == entity.getKey()) {
 				entity.getValue()[0].getMainVariablesByDependentVariable(list);
 			} else {
@@ -125,6 +128,38 @@ public abstract class SASSolution extends Solution {
 		
 
 		crossoverMap.put(index, list);
+		
+		return list;
+	}
+	
+	private List<Integer> getVariableNeedMutation(int index) {
+		
+		if (mutationMap.containsKey(index)) {
+			return mutationMap.get(index);
+		}
+		
+		List<Integer> list = new ArrayList<Integer>();
+		for (Map.Entry<Integer, VarEntity[]> entity : dependencyMap.entrySet()) {
+			
+				
+				VarEntity v = entity.getValue()[0];
+				
+				do {
+					if(index == v.varIndex) {
+						if(!list.contains(entity.getKey())) {
+							list.add(entity.getKey());
+						}
+						
+						break;
+					}
+					v = v.next == null? null : v.next[0];
+				} while(v != null);
+				
+			
+		}
+		
+
+		mutationMap.put(index, list);
 		
 		return list;
 	}
@@ -159,7 +194,13 @@ public abstract class SASSolution extends Solution {
 		
 			v = this.translateIntoIndexInMainVariable(i, v);
 			super.getDecisionVariables()[i].setValue(v);
+			List<Integer> list = this.getVariableNeedMutation(i);
+			for (Integer j : list) {
+				this.mutateWithDependency(j, false);
+			}
 		}
+		
+	
 	}
 	
 	public void crossoverWithDependency(Solution parent1, Solution parent2, Solution offSpring1, Solution offSpring2) throws JMException{
