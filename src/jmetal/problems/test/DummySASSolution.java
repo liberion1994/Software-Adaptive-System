@@ -20,9 +20,7 @@ public class DummySASSolution extends SASSolution{
 	public static int[][] vars;
 
 	public final static int numberOfObjectives_ = 2;
-
-	
-
+	public final static double[][] testOptionalVariables;
 	static {
 //		map.put(1,
 //				new VarEntity[] {
@@ -63,7 +61,7 @@ public class DummySASSolution extends SASSolution{
 				new VarEntity(0,
 						new int[] {0}, null) });
 		
-		optionalVariables = new double[][]
+		testOptionalVariables = new double[][]
 		{
 				{0,1,2},
 				
@@ -76,14 +74,14 @@ public class DummySASSolution extends SASSolution{
 		
 		vars = new int[][]
 		{
-			{0,optionalVariables[0].length-1},	
-			{0,optionalVariables[1].length-1},
+			{0,testOptionalVariables[0].length-1},	
+			{0,testOptionalVariables[1].length-1},
 			
-			{0,optionalVariables[2].length-1},
-			{0,optionalVariables[3].length-1},
+			{0,testOptionalVariables[2].length-1},
+			{0,testOptionalVariables[3].length-1},
 			
-			{0,optionalVariables[4].length-1},
-			{0,optionalVariables[5].length-1},
+			{0,testOptionalVariables[4].length-1},
+			{0,testOptionalVariables[5].length-1},
 		};
 	}
 	

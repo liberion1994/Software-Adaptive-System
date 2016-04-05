@@ -58,6 +58,11 @@ public abstract class SASSolution extends Solution {
 
 	public abstract double getVariableValueFromIndex(int index);
 	
+	
+	public static void init(double[][] optionalVariables) {
+		SASSolution.optionalVariables = optionalVariables;
+	}
+	
 	private int getUpperBoundforVariable(int index) throws JMException {
 		if (dependencyMap.containsKey(index)) {
 			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
