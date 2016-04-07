@@ -175,19 +175,13 @@ public abstract class SASSolution extends Solution {
 		}
 	}
 	
-	public void mutateWithDependency(int i, boolean isMutate) throws JMException{
+	public void mutateWithDependency(int i, boolean isMutate /*This is can be only true for the initial entrance*/) throws JMException{
 	
-		
-		int value = (int)super.getDecisionVariables()[i].getValue();	
+			
 		int upper = this.getUpperBoundforVariable(i);
 		int lower = this.getLowerBoundforVariable(i);
-		int traUpper = this.translateIntoIndexInMainVariable(i, upper);
-		int traLower = this.translateIntoIndexInMainVariable(i, lower);
 		
-		if  (value > traUpper || value < traLower) {
-			isMutate = true;
-		}
-		
+		isMutate = !isValid(this, i);
 		if (isMutate) {
 		
 		
@@ -245,19 +239,40 @@ public abstract class SASSolution extends Solution {
 						.getDecisionVariables()[j].getValue()
 						&& parent1.getDecisionVariables()[j].getValue() != parent2
 								.getDecisionVariables()[j].getValue()) {
-					int valueX1 = (int) parent1.getDecisionVariables()[j]
-							.getValue();
-					int valueX2 = (int) parent2.getDecisionVariables()[j]
-							.getValue();
-					offSpring1.getDecisionVariables()[j].setValue(valueX2);
-					offSpring2.getDecisionVariables()[j].setValue(valueX1);
-					// Ensure that the main/dependent variable of the newly swapped variable are also swapped.
-					this.crossoverWithDependency(j, parent1, parent2,
-							offSpring1, offSpring2, false);
+					
+					// swap if it the prior swap causes any variables in the dependency becomes invalid.
+					if(!isValid((SASSolution)offSpring1, j) || !isValid((SASSolution)offSpring2, j) ) {
+					
+						int valueX1 = (int) parent1.getDecisionVariables()[j]
+								.getValue();
+						int valueX2 = (int) parent2.getDecisionVariables()[j]
+								.getValue();
+						offSpring1.getDecisionVariables()[j].setValue(valueX2);
+						offSpring2.getDecisionVariables()[j].setValue(valueX1);
+						// Ensure that the main/dependent variable of the newly swapped variable are also swapped.
+						this.crossoverWithDependency(j, parent1, parent2,
+								offSpring1, offSpring2, false);
+						
+					}
 				}
 			}
 		}
 
+	}
+	
+	private boolean isValid(SASSolution s, int i) throws JMException{
+		
+		int value = (int)s.getDecisionVariables()[i].getValue();	
+		int upper = s.getUpperBoundforVariable(i);
+		int lower = s.getLowerBoundforVariable(i);
+		int traUpper = s.translateIntoIndexInMainVariable(i, upper);
+		int traLower = s.translateIntoIndexInMainVariable(i, lower);
+		
+		if  (value > traUpper || value < traLower) {
+			return false;
+		}
+		
+		return true;
 	}
 	
 	
