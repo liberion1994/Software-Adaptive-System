@@ -243,7 +243,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 
 	@Override
 	protected ApproachType getName() {
-		return ApproachType.MOEAD_STM_D_K;
+		return ApproachType.NSGAII;
 	}
 
 	@Override
