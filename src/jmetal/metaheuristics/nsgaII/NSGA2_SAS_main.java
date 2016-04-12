@@ -36,6 +36,7 @@ import jmetal.problems.WFG.*;
 
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
+import jmetal.util.PseudoRandom;
 
 import java.io.File;
 import java.io.IOException;
@@ -228,7 +229,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
 		String str = problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "/SAS";
+		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
 		
 		Utils.deleteFolder(new File(str));
 		Utils.createFolder(str);
@@ -248,20 +249,21 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 	@Override
 	protected Solution findSoleSolutionAfterEvolution(SolutionSet pareto_front) {
 		// find the knee point
-		Solution kneeIndividual = ((NSGAII_SAS)algorithm).kneeSelection(pareto_front);
+		Solution individual = pareto_front.get(PseudoRandom.randInt(0, pareto_front.size())); 
+			
 		
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
-			System.out.print(kneeIndividual.getObjective(i) + "\n");
+			System.out.print(individual.getObjective(i) + "\n");
 		
 		
 		String str = problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "/SAS";
+		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
 		
 		SolutionSet set = new SolutionSet(1);
-		set.add(kneeIndividual);
+		set.add(individual);
 		
 		set.printObjectivesToFile(str + "/knee_results.dat");
 		
-		return kneeIndividual;
+		return individual;
 	}
 } // MOEAD_main

@@ -195,48 +195,48 @@ public class NSGAII_SAS extends Algorithm {
 	 * @param population
 	 * @return
 	 */
-	public Solution kneeSelection(SolutionSet population_) {		
-		int[] max_idx    = new int[problem_.getNumberOfObjectives()];
-		double[] max_obj = new double[problem_.getNumberOfObjectives()];
-		int populationSize_ = population_.size();
-		// finding the extreme solution for f1
-		for (int i = 0; i < populationSize_; i++) {
-			for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
-				// search the extreme solution for f1
-				if (population_.get(i).getObjective(j) > max_obj[j]) {
-					max_idx[j] = i;
-					max_obj[j] = population_.get(i).getObjective(j);
-				}
-			}
-		}
-
-		if (max_idx[0] == max_idx[1])
-			System.out.println("Watch out! Two equal extreme solutions cannot happen!");
-		
-		int maxIdx;
-		double maxDist;
-		double temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) * 
-				(population_.get(max_idx[0]).getObjective(1) - population_.get(0).getObjective(1)) - 
-				(population_.get(max_idx[0]).getObjective(0) - population_.get(0).getObjective(0)) * 
-				(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
-		double temp2 = Math.pow(population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0), 2.0) + 
-				Math.pow(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1), 2.0);
-		double constant = Math.sqrt(temp2);
-		double tempDist = Math.abs(temp1) / constant;
-		maxIdx  = 0;
-		maxDist = tempDist;
-		for (int i = 1; i < populationSize_; i++) {
-			temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) *
-					(population_.get(max_idx[0]).getObjective(1) - population_.get(i).getObjective(1)) - 
-					(population_.get(max_idx[0]).getObjective(0) - population_.get(i).getObjective(0)) * 
-					(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
-			tempDist = Math.abs(temp1) / constant;
-			if (tempDist > maxDist) {
-				maxIdx  = i;
-				maxDist = tempDist;
-			}
-		}
-		
-		return population_.get(maxIdx);
-	}
+//	public Solution kneeSelection(SolutionSet population_) {		
+//		int[] max_idx    = new int[problem_.getNumberOfObjectives()];
+//		double[] max_obj = new double[problem_.getNumberOfObjectives()];
+//		int populationSize_ = population_.size();
+//		// finding the extreme solution for f1
+//		for (int i = 0; i < populationSize_; i++) {
+//			for (int j = 0; j < problem_.getNumberOfObjectives(); j++) {
+//				// search the extreme solution for f1
+//				if (population_.get(i).getObjective(j) > max_obj[j]) {
+//					max_idx[j] = i;
+//					max_obj[j] = population_.get(i).getObjective(j);
+//				}
+//			}
+//		}
+//
+//		if (max_idx[0] == max_idx[1])
+//			System.out.println("Watch out! Two equal extreme solutions cannot happen!");
+//		
+//		int maxIdx;
+//		double maxDist;
+//		double temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) * 
+//				(population_.get(max_idx[0]).getObjective(1) - population_.get(0).getObjective(1)) - 
+//				(population_.get(max_idx[0]).getObjective(0) - population_.get(0).getObjective(0)) * 
+//				(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
+//		double temp2 = Math.pow(population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0), 2.0) + 
+//				Math.pow(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1), 2.0);
+//		double constant = Math.sqrt(temp2);
+//		double tempDist = Math.abs(temp1) / constant;
+//		maxIdx  = 0;
+//		maxDist = tempDist;
+//		for (int i = 1; i < populationSize_; i++) {
+//			temp1 = (population_.get(max_idx[1]).getObjective(0) - population_.get(max_idx[0]).getObjective(0)) *
+//					(population_.get(max_idx[0]).getObjective(1) - population_.get(i).getObjective(1)) - 
+//					(population_.get(max_idx[0]).getObjective(0) - population_.get(i).getObjective(0)) * 
+//					(population_.get(max_idx[1]).getObjective(1) - population_.get(max_idx[0]).getObjective(1));
+//			tempDist = Math.abs(temp1) / constant;
+//			if (tempDist > maxDist) {
+//				maxIdx  = i;
+//				maxDist = tempDist;
+//			}
+//		}
+//		
+//		return population_.get(maxIdx);
+//	}
 } // NSGA-II
