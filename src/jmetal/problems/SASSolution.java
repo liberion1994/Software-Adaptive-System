@@ -231,17 +231,17 @@ public abstract class SASSolution extends Solution {
 		if (offSpring1.getDecisionVariables()[i].getValue() != parent1
 				.getDecisionVariables()[i].getValue()) {
 			List<Integer> list = ((SASSolution) parent1)
-					.getVariableNeedCrossover(i);
+					.getVariableNeedMutation(i);
 			for (Integer j : list) {
-
+				// swap if it the prior swap causes any variables in the dependency becomes invalid.
+				if(!isValid((SASSolution)offSpring1, j) || !isValid((SASSolution)offSpring2, j) ) {
 				// swap all main/dependent variable, if they have not been swapped.
 				if (offSpring1.getDecisionVariables()[j].getValue() == parent1
 						.getDecisionVariables()[j].getValue()
 						&& parent1.getDecisionVariables()[j].getValue() != parent2
 								.getDecisionVariables()[j].getValue()) {
 					
-					// swap if it the prior swap causes any variables in the dependency becomes invalid.
-					if(!isValid((SASSolution)offSpring1, j) || !isValid((SASSolution)offSpring2, j) ) {
+					
 					
 						int valueX1 = (int) parent1.getDecisionVariables()[j]
 								.getValue();

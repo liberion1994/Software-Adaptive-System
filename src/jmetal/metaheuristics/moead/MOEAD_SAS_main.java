@@ -184,8 +184,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 300;
-		int generations = 1;
+		int popsize = 600;
+		int generations = 5;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
