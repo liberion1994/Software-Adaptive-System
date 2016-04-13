@@ -105,7 +105,7 @@ public class NSGAII_SAS extends Algorithm {
 		// Create the initial solutionSet
 		Solution newSolution;
 		for (int i = 0; i < populationSize; i++) {
-			newSolution = new Solution(problem_);
+			newSolution = factory.getSolution(problem_);
 			problem_.evaluate(newSolution);
 			problem_.evaluateConstraints(newSolution);
 			evaluations++;
