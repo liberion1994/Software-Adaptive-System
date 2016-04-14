@@ -29,6 +29,7 @@ import jmetal.core.*;
 import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
+import jmetal.util.Ranking;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -222,7 +223,10 @@ public class MOEAD_STM_SAS extends Algorithm {
 //			population_.add(kneeIndividual);
 //		}
 		
-		return population_;
+//		return population_;
+
+		Ranking ranking = new Ranking(population_);
+		return ranking.getSubfront(0);
 	}
 	
 	/**
