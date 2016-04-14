@@ -54,7 +54,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 	Algorithm algorithm; // The algorithm to use
 	Operator crossover; // Crossover operator
 	Operator mutation; // Mutation operator
-
+	Operator selection; // Selection operator
 	
 	/**
 	 * @param args
@@ -218,8 +218,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
 
+		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
+		
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
+		algorithm.addOperator("selection", selection);
 		
 		long initTime = System.currentTimeMillis();
 		
@@ -228,8 +231,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		logger_.setLevel(Level.CONFIG);
 		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
-		String str = "data/" +problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
+		String str = "data/NSGAII/SAS";
 		
 		Utils.deleteFolder(new File(str+ "/results.dat"));
 		Utils.createFolder(str);
@@ -256,8 +258,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 			System.out.print(individual.getObjective(i) + "\n");
 		
 		
-		String str = "data/" +problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
+		String str = "data/NSGAII/SAS";
 		Utils.deleteFolder(new File(str+ "/knee_results.dat"));
 		SolutionSet set = new SolutionSet(1);
 		set.add(individual);
