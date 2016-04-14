@@ -184,8 +184,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 300;
-		int generations = 1;
+		int popsize = 600;
+		int generations = 5;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
@@ -227,10 +227,10 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		logger_.setLevel(Level.CONFIG);
 		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
-		String str = problem.getName()
+		String str = "data/" + problem.getName()
 		+ "M" + problem.getNumberOfObjectives() + "/SAS";
 		
-		Utils.deleteFolder(new File(str));
+		Utils.deleteFolder(new File(str+ "/results.dat"));
 		Utils.createFolder(str);
 		
 		population.printObjectivesToFile(str + "/results.dat");
@@ -254,9 +254,9 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 			System.out.print(kneeIndividual.getObjective(i) + "\n");
 		
 		
-		String str = problem.getName()
+		String str = "data/" +problem.getName()
 		+ "M" + problem.getNumberOfObjectives() + "/SAS";
-		
+		Utils.deleteFolder(new File(str+ "/knee_results.dat"));
 		SolutionSet set = new SolutionSet(1);
 		set.add(kneeIndividual);
 		
