@@ -98,7 +98,7 @@ public class NSGAII_SAS extends Algorithm {
 		requiredEvaluations = 0;
 
 		//Read the operators
-		mutationOperator = operators_.get("mutation");
+		mutationOperator  = operators_.get("mutation");
 		crossoverOperator = operators_.get("crossover");
 		selectionOperator = operators_.get("selection");
 

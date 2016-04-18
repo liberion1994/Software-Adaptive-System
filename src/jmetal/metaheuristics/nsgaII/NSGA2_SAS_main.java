@@ -75,6 +75,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		Algorithm algorithm; // The algorithm to use
 		Operator crossover; // Crossover operator
 		Operator mutation; // Mutation operator
+		Operator selection; // Selection operator
 
 		HashMap parameters; // Operator parameters
 
@@ -131,8 +132,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
+		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
+
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
+		algorithm.addOperator("selection", selection);
 
 		String curDir = System.getProperty("user.dir");
 		String str 	  = curDir + "/" + problem.getName() + "M" + problem.getNumberOfObjectives();
@@ -172,16 +176,15 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 			SecurityException, IOException, ClassNotFoundException {
 	
 		HashMap parameters; // Operator parameters
+		Operator selection; // Selection operator
 
 		// Logger object and file to store log messages
 		logger_ = Configuration.logger_;
 		fileHandler_ = new FileHandler("MOEAD.log");
 		logger_.addHandler(fileHandler_);
 
-	
 		problem = new SAS("SASSolutionType", factory, vars, numberOfObjectives_, numberOfConstraints_);
 		
-
 		algorithm = new NSGAII_SAS(problem, factory);
 
 		// Algorithm parameters
@@ -190,17 +193,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
-		algorithm.setInputParameter("dataDirectory", "weight");
-
 		// Crossover operator
-//		int tag = 2;
-//		if (tag == 1) {
-//			parameters = new HashMap();
-//			parameters.put("CR", 0.5);
-//			parameters.put("F", 0.5);
-//			crossover = CrossoverFactory.getCrossoverOperator(
-//					"DifferentialEvolutionCrossover", parameters);
-//		} else {
 		parameters = new HashMap();
 		parameters.put("probability", 0.9);
 		parameters.put("distributionIndex", 20.0);
@@ -218,8 +211,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
 
+		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
+
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
+		algorithm.addOperator("selection", selection);
 		
 		long initTime = System.currentTimeMillis();
 		
@@ -266,4 +262,4 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		
 		return individual;
 	}
-} // MOEAD_main
+} // NSGA2_SAS_main 
