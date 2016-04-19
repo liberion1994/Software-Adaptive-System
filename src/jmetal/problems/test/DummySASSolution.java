@@ -10,6 +10,7 @@ import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.variable.Int;
 import jmetal.problems.SASSolution;
+import jmetal.problems.VarEntity;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
@@ -33,33 +34,33 @@ public class DummySASSolution extends SASSolution{
 				new VarEntity[] {
 						new VarEntity(0, null, new VarEntity[] {
 								new VarEntity(2,
-										new int[] {0}, null),
+										new Integer[] {0}, null),
 										new VarEntity(2,
-												new int[] {0}, null)
+												new Integer[] {0}, null)
 						}),
 						new VarEntity(0,
 								null, new VarEntity[] {
 										new VarEntity(2,
-												new int[] {0}, null),
+												new Integer[] {0}, null),
 												new VarEntity(2,
-														new int[] {1,2,3,4 }, null)
+														new Integer[] {1,2,3,4 }, null)
 								}),
 						new VarEntity(0,
 								null, new VarEntity[] {
 								new VarEntity(2,
-										new int[] {7,8}, null),
+										new Integer[] {7,8}, null),
 										new VarEntity(2,
-												new int[] {5,6,7,8 }, null)
+												new Integer[] {5,6,7,8 }, null)
 						}) 
 						});
 		
 		dependencyMap.put(2,
 		new VarEntity[] {
-				new VarEntity(0, new int[] {0}, null),
+				new VarEntity(0, new Integer[] {0}, null),
 				new VarEntity(0,
-						new int[] {0}, null),
+						new Integer[] {0}, null),
 				new VarEntity(0,
-						new int[] {0}, null) });
+						new Integer[] {0}, null) });
 		
 		testOptionalVariables = new double[][]
 		{
@@ -84,8 +85,6 @@ public class DummySASSolution extends SASSolution{
 			{0,testOptionalVariables[5].length-1},
 		};
 	}
-	
-	
 	
 	public DummySASSolution(Problem problem) throws ClassNotFoundException {
 		super(problem);

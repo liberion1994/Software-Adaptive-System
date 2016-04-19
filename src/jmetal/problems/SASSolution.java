@@ -63,6 +63,23 @@ public abstract class SASSolution extends Solution {
 		SASSolution.optionalVariables = optionalVariables;
 	}
 	
+	public static Map<Integer, VarEntity[]> getDependencyMap(){
+		return dependencyMap;
+	}
+
+	public static void main(String[] a) {
+		System.out.print(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() + "\n");
+		//VarEntity[] vars = new VarEntity[1000000]; 
+		//VarEntity v1 = new VarEntity(0, null, null);
+		for (int i = 0; i < 100000; i ++) {
+			VarEntity v1 = new VarEntity(0, null, null);
+			//Object obj = new Object();
+		//vars[i] = v1;
+		}
+		System.out.print(Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() + "\n");
+	}
+	
+	
 	private int getUpperBoundforVariable(int index) throws JMException {
 		if (dependencyMap.containsKey(index)) {
 			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
@@ -275,56 +292,5 @@ public abstract class SASSolution extends Solution {
 		return true;
 	}
 	
-	
-	protected static class VarEntity {
-		
-		private int varIndex;
-		private VarEntity[] next;
-		// This correspond to the index in the original set
-		private int[] optionalValues;
-//		private double[] dependentOptionalValues;
-//		
-//		public VarEntity(int index, double[] optionalValues, double[] dependentOptionalValues) {
-//			super();
-//			this.index = index;
-//			this.optionalValues = optionalValues;
-//			this.dependentOptionalValues = dependentOptionalValues;
-//		}
 
-		public VarEntity(int varIndex, int[] optionalValues, VarEntity[] next) {
-			super();
-			this.varIndex = varIndex;
-			this.optionalValues = optionalValues;
-			this.next = next;
-		}
-		
-		public int getVarIndex(){
-			return varIndex;
-		}
-		
-		public int[] getOptionalValues(Variable[] variables){
-			if (next == null) {
-				return optionalValues;
-			} else {
-				try {
-					return next[(int)variables[next[0].getVarIndex()].getValue()].getOptionalValues(variables);
-				} catch (JMException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			return null;
-		}
-		
-		public Integer[] getMainVariablesByDependentVariable(List<Integer> ind){
-			ind.add(varIndex);
-			if (next == null) {				
-				return ind.toArray(new Integer[ind.size()]);
-			} else {
-				return next[0].getMainVariablesByDependentVariable(ind);
-			}
-		}
-		
-	}
 }
