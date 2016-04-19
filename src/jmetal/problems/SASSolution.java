@@ -277,6 +277,20 @@ public abstract class SASSolution extends Solution {
 
 	}
 	
+	public boolean isSolutionValid(){
+		for (int i = 0; i < super.getDecisionVariables().length; i ++) {
+			try {
+				if(!isValid(this, i)) {
+					return false;
+				}
+			} catch (JMException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return true;
+	}
+	
 	private boolean isValid(SASSolution s, int i) throws JMException{
 		
 		int value = (int)s.getDecisionVariables()[i].getValue();	

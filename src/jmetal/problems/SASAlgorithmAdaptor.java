@@ -19,13 +19,29 @@ public abstract class SASAlgorithmAdaptor {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
 		} else if (ApproachType.NSGAII.equals(getName())) {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			pareto_front = correctDependencyAfterEvolution(pareto_front);
+			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
+			if(result.size() == 0) {
+				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
+				// Make sure the solution does not violate dependency.
+				s.mutateWithDependency();
+				return s;
+			}
 		} else if (ApproachType.GP.equals(getName())) {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			pareto_front = correctDependencyAfterEvolution(pareto_front);
+			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
+			if(result.size() == 0) {
+				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
+				s.mutateWithDependency();
+				return s;
+			}
 		} else if (ApproachType.MIP.equals(getName())) {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			pareto_front = correctDependencyAfterEvolution(pareto_front);
+			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
+			if(result.size() == 0) {
+				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
+				s.mutateWithDependency();
+				return s;
+			}
 		}
 
 		return findSoleSolutionAfterEvolution(pareto_front);

@@ -12,9 +12,13 @@ public class DependencyTest extends TestCase {
 		Problem p;
 		DummySASSolution dss = null;
 		try {
-			p = new SAS("SASSolutionType",new DummySASSolutionInstantiator(), DummySASSolution.vars, 0, 0);
-			dss = new DummySASSolution(p);
+			//p = new SAS("SASSolutionType",new DummySASSolutionInstantiator(), DummySASSolution.vars, 0, 0);
+			//dss = new DummySASSolution(p);
 	
+			double a = 50.0;
+			double b = 58.0;
+			
+			System.out.print(a/b);
 		
 //		Assert.assertEquals(dss.getUpperBoundforVariable(0), 2);
 //		Assert.assertEquals(dss.getLowerBoundforVariable(0), 0);
