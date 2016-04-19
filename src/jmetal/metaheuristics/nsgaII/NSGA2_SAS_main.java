@@ -212,11 +212,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 				parameters);
 
 		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> accc5ece7116e9699328c249977e678dbff8bc1a
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
 		algorithm.addOperator("selection", selection);
