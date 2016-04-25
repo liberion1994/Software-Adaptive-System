@@ -64,4 +64,15 @@ public class VarEntity {
 		}
 	}
 	
+	public void extend(VarEntity[] next){
+		this.next = next;
+		optionalValues = null;
+	}
+	
+	
+	public void replace(Integer[] optionalValues){
+		this.optionalValues = optionalValues;
+	}
+
+	
 }
