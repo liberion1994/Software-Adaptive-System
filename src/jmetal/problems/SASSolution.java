@@ -12,8 +12,7 @@ import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
 /**
- * Need to ensure that the order of variables is the same as control primitives, and that
- * the main variables always ahead of the dependent variables.
+ * Need to ensure that the order of variables is the same as control primitives.
  * 
  * @author tao
  *
@@ -23,7 +22,7 @@ public abstract class SASSolution extends Solution {
 	
 	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
 	protected final static Map<Integer, VarEntity[]> dependencyMap = new HashMap<Integer, VarEntity[]>();
-	
+	protected final static Map<Integer, VarEntity[]> validationDependencyMap = new HashMap<Integer, VarEntity[]>();
 	// Key = variable index, Value = list of main/dependent variable index.
 	protected final static Map<Integer, List<Integer>> crossoverMap = new HashMap<Integer, List<Integer>>();
 	
@@ -61,6 +60,11 @@ public abstract class SASSolution extends Solution {
 	
 	public static void init(double[][] optionalVariables) {
 		SASSolution.optionalVariables = optionalVariables;
+	}
+	
+	public static void clearAndStoreForValidationOnly(){
+		validationDependencyMap.putAll(dependencyMap);
+		dependencyMap.clear();
 	}
 	
 	public static Map<Integer, VarEntity[]> getDependencyMap(){
@@ -277,10 +281,12 @@ public abstract class SASSolution extends Solution {
 
 	}
 	
+	// This should only be used to check, regardless if dependency
+	// has been injected or not.
 	public boolean isSolutionValid(){
 		for (int i = 0; i < super.getDecisionVariables().length; i ++) {
 			try {
-				if(!isValid(this, i)) {
+				if(!checkIsValidOnly(this, i)) {
 					return false;
 				}
 			} catch (JMException e) {
@@ -288,6 +294,48 @@ public abstract class SASSolution extends Solution {
 			}
 		}
 		
+		return true;
+	}
+	
+	private boolean checkIsValidOnly(SASSolution s, int i) throws JMException {
+
+		int value = (int) s.getDecisionVariables()[i].getValue();
+		int upper = -1;
+
+		if (validationDependencyMap.containsKey(i)) {
+			VarEntity v = validationDependencyMap.get(i)[(int) super
+					.getDecisionVariables()[validationDependencyMap.get(i)[0]
+					.getVarIndex()].getValue()];
+			upper = v.getOptionalValues(super.getDecisionVariables()).length - 1;
+		} else {
+			upper = optionalVariables[i].length - 1;
+		}
+
+		int lower = 0;
+		int traUpper = -1;
+		if (validationDependencyMap.containsKey(i)) {
+			VarEntity v = validationDependencyMap.get(i)[(int) super
+					.getDecisionVariables()[validationDependencyMap.get(i)[0]
+					.getVarIndex()].getValue()];
+			traUpper = v.getOptionalValues(super.getDecisionVariables())[upper];
+		} else {
+			traUpper = upper;
+		}
+
+		int traLower = -1;
+		if (validationDependencyMap.containsKey(i)) {
+			VarEntity v = validationDependencyMap.get(i)[(int) super
+					.getDecisionVariables()[validationDependencyMap.get(i)[0]
+					.getVarIndex()].getValue()];
+			traLower = v.getOptionalValues(super.getDecisionVariables())[lower];
+		} else {
+			traLower = lower;
+		}
+
+		if (value > traUpper || value < traLower) {
+			return false;
+		}
+
 		return true;
 	}
 	

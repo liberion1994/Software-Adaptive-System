@@ -165,10 +165,11 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		Operator selection;
 
 		// Logger object and file to store log messages
+		if(SAS.isTest) { 
 		logger_ = Configuration.logger_;
 		fileHandler_ = new FileHandler("MOEAD.log");
 		logger_.addHandler(fileHandler_);
-
+		}
 		problem = new SAS("SASSolutionType", factory, vars, numberOfObjectives_, numberOfConstraints_);
 
 		algorithm = new GP_SAS(problem, factory);
@@ -203,17 +204,18 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		
 		SolutionSet population = algorithm.execute();
 		long estimatedTime = System.currentTimeMillis() - initTime;
+		if(SAS.isTest) { 
 		logger_.setLevel(Level.CONFIG);
 		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
 		String str = "data/" +problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
+		+ "M" + problem.getNumberOfObjectives() + "-GP/SAS";
 		
 		Utils.deleteFolder(new File(str+ "/results.dat"));
 		Utils.createFolder(str);
 		
 		population.printObjectivesToFile(str + "/results.dat");
-		
+		}
 		return population;
 
 	}
@@ -221,7 +223,7 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 
 	@Override
 	protected ApproachType getName() {
-		return ApproachType.NSGAII;
+		return ApproachType.GP;
 	}
 
 	@Override
@@ -235,7 +237,7 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		
 		
 		String str = "data/" +problem.getName()
-		+ "M" + problem.getNumberOfObjectives() + "-NSGAII/SAS";
+		+ "M" + problem.getNumberOfObjectives() + "-GP/SAS";
 		Utils.deleteFolder(new File(str+ "/knee_results.dat"));
 		SolutionSet set = new SolutionSet(1);
 		set.add(individual);
@@ -243,5 +245,11 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		set.printObjectivesToFile(str + "/knee_results.dat");
 		
 		return individual;
+	}
+
+	@Override
+	protected SolutionSet getAllFoundSolutions() {
+		// TODO Auto-generated method stub
+		return ((GP_SAS)algorithm).getPopulation();
 	}
 } // MOEAD_main

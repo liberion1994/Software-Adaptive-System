@@ -157,7 +157,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 			// select the satisfied subproblems
 			List<Integer> order = tour_selection(10);
 			currentOffspring_   = new SolutionSet(2 * order.size());
-			
+			//System.out.print("Run " + evaluations_ + "\n");
 			for (int i = 0; i < order.size(); i++) {
 				int n = order.get(i);
 
@@ -227,6 +227,11 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 		Ranking ranking = new Ranking(population_);
 		return ranking.getSubfront(0);
+		//return population_;
+	}
+	
+	public SolutionSet getPopulation(){
+		return population_;
 	}
 	
 	/**

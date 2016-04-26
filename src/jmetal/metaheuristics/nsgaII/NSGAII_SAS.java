@@ -34,6 +34,8 @@ import jmetal.util.*;
 public class NSGAII_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
+	
+	SolutionSet population_;
 
 	/**
 	 * Constructor
@@ -183,11 +185,17 @@ public class NSGAII_SAS extends Algorithm {
 
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
-
+		population_ = population;
 		// Return the first non-dominated front
 		Ranking ranking = new Ranking(population);
 		return ranking.getSubfront(0);
+		//return population;
 	} // execute
+	
+	
+	public SolutionSet getPopulation(){
+		return population_;
+	}
 	
 	/**
 	 * This is used to find the knee point from a set of solutions

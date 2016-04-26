@@ -34,7 +34,8 @@ import jmetal.util.*;
 public class GP_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
-
+	
+	SolutionSet population_;
 	/**
 	 * Constructor
 	 * @param problem Problem to solve
@@ -159,11 +160,15 @@ public class GP_SAS extends Algorithm {
 
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
-
+		population_ = population;
 		// Return the first non-dominated front
 		Ranking ranking = new Ranking(population);
 		return ranking.getSubfront(0);
 	} // execute
+	
+	public SolutionSet getPopulation(){
+		return population_;
+	}
 	
 	/**
 	 * This is used to assign fitness value to a solution, according to weighted sum strategy.
@@ -172,6 +177,8 @@ public class GP_SAS extends Algorithm {
 	public void fitnessAssignment(Solution cur_solution) {
 		double cur_fitness = 0.0;
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+			// We do not need to normalize here as we have ensure that the objective value
+			// would have been already normalized within the Solution instance.
 			cur_fitness += 1.0 * cur_solution.getObjective(i); 
 		}
 		cur_solution.setFitness(cur_fitness);

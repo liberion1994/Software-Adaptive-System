@@ -7,6 +7,7 @@ import jmetal.util.wrapper.XInt;
 
 public class SAS extends Problem {
 
+	public static final boolean isTest = true;
 	
 	public SASSolutionInstantiator factory;
 	/**

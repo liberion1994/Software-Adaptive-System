@@ -179,10 +179,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		Operator selection; // Selection operator
 
 		// Logger object and file to store log messages
+		if(SAS.isTest) { 
 		logger_ = Configuration.logger_;
 		fileHandler_ = new FileHandler("MOEAD.log");
 		logger_.addHandler(fileHandler_);
-
+		}
 		problem = new SAS("SASSolutionType", factory, vars, numberOfObjectives_, numberOfConstraints_);
 		
 		algorithm = new NSGAII_SAS(problem, factory);
@@ -221,6 +222,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		
 		SolutionSet population = algorithm.execute();
 		long estimatedTime = System.currentTimeMillis() - initTime;
+		if(SAS.isTest) { 
 		logger_.setLevel(Level.CONFIG);
 		logger_.log(Level.CONFIG, "Total execution time: " + estimatedTime + "ms");
 		
@@ -230,7 +232,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		Utils.createFolder(str);
 		
 		population.printObjectivesToFile(str + "/results.dat");
-		
+		}
 		return population;
 
 	}
@@ -259,5 +261,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		set.printObjectivesToFile(str + "/knee_results.dat");
 		
 		return individual;
+	}
+
+	@Override
+	protected SolutionSet getAllFoundSolutions() {
+		// TODO Auto-generated method stub
+		return ((NSGAII_SAS)algorithm).getPopulation();
 	}
 } // NSGA2_SAS_main 
