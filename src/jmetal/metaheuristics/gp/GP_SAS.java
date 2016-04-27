@@ -212,9 +212,11 @@ public class GP_SAS extends Algorithm {
 	 */
 	public void fitnessAssignment(Solution cur_solution) {
 		double cur_fitness = 0.0;
-		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
-			cur_fitness += 1.0 * ((cur_solution.getObjective(i) - z_[i])/(nz_[i] - z_[i])); 
-		}
+		double weight	   = 1.0 / (double) problem_.getNumberOfObjectives();
+
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			cur_fitness += weight * ((cur_solution.getObjective(i) - z_[i]) / (nz_[i] - z_[i])); 
+		
 		cur_solution.setFitness(cur_fitness);
 	}
 	
