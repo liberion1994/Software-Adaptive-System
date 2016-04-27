@@ -254,10 +254,11 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		
 		
 		String str = "data/NSGAII/SAS";
+		if(SAS.isTest) 
 		Utils.deleteFolder(new File(str+ "/knee_results.dat"));
 		SolutionSet set = new SolutionSet(1);
 		set.add(individual);
-		
+		if(SAS.isTest) 
 		set.printObjectivesToFile(str + "/knee_results.dat");
 		
 		return individual;

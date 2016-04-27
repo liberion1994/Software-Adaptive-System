@@ -14,52 +14,23 @@ public abstract class SASAlgorithmAdaptor {
 			ClassNotFoundException {
 		SolutionSet pareto_front = findParetoFront(factory, vars,
 				numberOfObjectives_, numberOfConstraints_);
-
-		if (ApproachType.MOEAD_STM_D_K.equals(getName())) {
-			//logDependencyAfterEvolution(getAllFoundSolutions());
-			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-		} else if (ApproachType.NSGAII.equals(getName())) {
-			
-			logDependencyAfterEvolution(getAllFoundSolutions());
-			
-			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
-			if(result.size() == 0) {
-				pareto_front = filterRequirementsAfterEvolution(pareto_front);
-				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
-				// Make sure the solution does not violate dependency.
-				s.mutateWithDependency();
-				return s;
-			}
-			
-			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			
-		} else if (ApproachType.GP.equals(getName())) {
-			
-			logDependencyAfterEvolution(getAllFoundSolutions());
-			
-			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
-			if(result.size() == 0) {
-				pareto_front = filterRequirementsAfterEvolution(pareto_front);
-				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
-				s.mutateWithDependency();
-				return s;
-			}
-			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			
-		} else if (ApproachType.MIP.equals(getName())) {
-			
-			logDependencyAfterEvolution(getAllFoundSolutions());
 		
-			SolutionSet result = correctDependencyAfterEvolution(pareto_front);
-			if(result.size() == 0) {
-				pareto_front = filterRequirementsAfterEvolution(pareto_front);
-				SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
-				s.mutateWithDependency();
-				return s;
-			}
+		logDependencyAfterEvolution(getAllFoundSolutions());
+		
+		SolutionSet result = correctDependencyAfterEvolution(pareto_front);
+		if(result.size() == 0) {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
+			SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
+			// Make sure the solution does not violate dependency.
+			s.mutateWithDependency();
+			return s;
+		} else {
+			pareto_front = result;
 		}
+		
+		pareto_front = filterRequirementsAfterEvolution(pareto_front);
 
+		
 		return findSoleSolutionAfterEvolution(pareto_front);
 	}
 
@@ -94,7 +65,6 @@ public abstract class SASAlgorithmAdaptor {
 	
 	protected void logDependencyAfterEvolution(
 			SolutionSet pareto_front_without_ranking) {
-		throw new RuntimeException("Need to implement logDependencyAfterEvolution");
 	}
 	/**
 	 * If the requirements (constraints) are considered outside the evolution,

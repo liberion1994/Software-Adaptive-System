@@ -35,6 +35,15 @@ public class GP_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
 	
+
+	// ideal point
+	double[] z_;
+
+	// nadir point
+	double[] nz_;
+	
+	int populationSize_;
+	
 	SolutionSet population_;
 	/**
 	 * Constructor
@@ -94,6 +103,8 @@ public class GP_SAS extends Algorithm {
 
 		//Initialize the variables
 		population = new SolutionSet(populationSize);
+		populationSize_ = populationSize;
+		population_ = population;
 		evaluations = 0;
 
 		requiredEvaluations = 0;
@@ -103,17 +114,33 @@ public class GP_SAS extends Algorithm {
 		crossoverOperator = operators_.get("crossover");
 		selectionOperator = operators_.get("selection");
 
+		
+		z_  = new double[problem_.getNumberOfObjectives()];
+	    nz_ = new double[problem_.getNumberOfObjectives()];
+		initIdealPoint();
+		initNadirPoint();
+		
 		// Create the initial solutionSet
 		Solution newSolution;
 		for (int i = 0; i < populationSize; i++) {
 			newSolution = factory.getSolution(problem_);
 			problem_.evaluate(newSolution);
 			problem_.evaluateConstraints(newSolution);
-			fitnessAssignment(newSolution);	// assign fitness value to each solution
+			
+			
+			updateReference(newSolution);
+			updateNadirPoint(newSolution);
+			
+			
+			
 			evaluations++;
 			population.add(newSolution);
 		} //for       
 
+		for (int i = 0; i < populationSize; i++) {
+			fitnessAssignment(population.get(i));	// assign fitness value to each solution			
+		}
+		
 		// Generations 
 		while (evaluations < maxEvaluations) {
 
@@ -123,6 +150,7 @@ public class GP_SAS extends Algorithm {
 			for (int i = 0; i < (populationSize / 2); i++) {
 				if (evaluations < maxEvaluations) {
 					//obtain parents
+					// First round, how to ensure normalization?
 					parents[0] = (Solution) selectionOperator.execute(population);
 					parents[1] = (Solution) selectionOperator.execute(population);
 					Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
@@ -132,8 +160,15 @@ public class GP_SAS extends Algorithm {
 					problem_.evaluateConstraints(offSpring[0]);
 					problem_.evaluate(offSpring[1]);
 					problem_.evaluateConstraints(offSpring[1]);
-					fitnessAssignment(offSpring[0]);
-					fitnessAssignment(offSpring[1]);
+					
+					updateReference(offSpring[0]);
+					updateNadirPoint(offSpring[0]);
+					
+					updateReference(offSpring[1]);
+					updateNadirPoint(offSpring[1]);
+					
+//					fitnessAssignment(offSpring[0]);
+//					fitnessAssignment(offSpring[1]);
 					offspringPopulation.add(offSpring[0]);
 					offspringPopulation.add(offSpring[1]);
 					evaluations += 2;
@@ -147,6 +182,7 @@ public class GP_SAS extends Algorithm {
 			int[] idxArray = new int[union.size()];
 			double[] pData = new double[union.size()];
 			for (int i = 0; i < union.size(); i++) {	// Is there a faster way?
+				fitnessAssignment(union.get(i));
 				idxArray[i] = i;
 				pData[i]    = union.get(i).getFitness();
 			}
@@ -160,7 +196,7 @@ public class GP_SAS extends Algorithm {
 
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
-		population_ = population;
+		
 		// Return the first non-dominated front
 		Ranking ranking = new Ranking(population);
 		return ranking.getSubfront(0);
@@ -177,11 +213,59 @@ public class GP_SAS extends Algorithm {
 	public void fitnessAssignment(Solution cur_solution) {
 		double cur_fitness = 0.0;
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
-			// We do not need to normalize here as we have ensure that the objective value
-			// would have been already normalized within the Solution instance.
-			cur_fitness += 1.0 * cur_solution.getObjective(i); 
+			cur_fitness += 1.0 * ((cur_solution.getObjective(i) - z_[i])/(nz_[i] - z_[i])); 
 		}
 		cur_solution.setFitness(cur_fitness);
+	}
+	
+
+  	/**
+  	 * Initialize the ideal point
+	 * @throws JMException
+	 * @throws ClassNotFoundException
+	 */
+	void initIdealPoint() throws JMException, ClassNotFoundException {
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			z_[i] = 1.0e+30;
+
+		for (int i = 0; i < populationSize_; i++)
+			updateReference(population_.get(i));
+	}
+
+	/**
+	 * Initialize the nadir point
+	 * @throws JMException
+	 * @throws ClassNotFoundException
+	 */
+	void initNadirPoint() throws JMException, ClassNotFoundException {
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
+			nz_[i] = -1.0e+30;
+
+		for (int i = 0; i < populationSize_; i++)
+			updateNadirPoint(population_.get(i));
+	}
+	
+   	/**
+   	 * Update the ideal point, it is just an approximation with the best value for each objective
+   	 * @param individual
+   	 */
+	void updateReference(Solution individual) {
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+			if (individual.getObjective(i) < z_[i])
+				z_[i] = individual.getObjective(i);
+		}
+	}
+  
+  	/**
+  	 * Update the nadir point, it is just an approximation with worst value for each objective
+  	 * 
+  	 * @param individual
+  	 */
+	void updateNadirPoint(Solution individual) {
+		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+			if (individual.getObjective(i) > nz_[i])
+				nz_[i] = individual.getObjective(i);
+		}
 	}
 	
 	/**

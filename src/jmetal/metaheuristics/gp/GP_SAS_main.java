@@ -176,9 +176,9 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 
 		// Algorithm parameters
 		int popsize = 600;
-		int generations = 5;
+		int factor = 5;
 		algorithm.setInputParameter("populationSize", popsize);
-		algorithm.setInputParameter("maxEvaluations", popsize * generations);
+		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
 		// Crossover operator
 		parameters = new HashMap();
@@ -238,10 +238,11 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		
 		String str = "data/" +problem.getName()
 		+ "M" + problem.getNumberOfObjectives() + "-GP/SAS";
+		if(SAS.isTest) 
 		Utils.deleteFolder(new File(str+ "/knee_results.dat"));
 		SolutionSet set = new SolutionSet(1);
 		set.add(individual);
-		
+		if(SAS.isTest) 
 		set.printObjectivesToFile(str + "/knee_results.dat");
 		
 		return individual;
