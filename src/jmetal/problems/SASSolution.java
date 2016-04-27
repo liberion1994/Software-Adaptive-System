@@ -187,8 +187,8 @@ public abstract class SASSolution extends Solution {
 		int upper = this.getUpperBoundforVariable(i);
 		int lower = this.getLowerBoundforVariable(i);
 		
-		isMutate = !isValid(this, i);
-		if (isMutate) {
+		//isMutate = !isValid(this, i);
+		if (isMutate || !isValid(this, i)) {
 		
 		
 			int v = (int) (PseudoRandom.randInt(
@@ -226,6 +226,7 @@ public abstract class SASSolution extends Solution {
 //						.getDecisionVariables()[i].getValue()) {
 //			return;
 //		}
+
 //		
 		if (isCrossover && offSpring1.getDecisionVariables()[i].getValue() == parent1
 				.getDecisionVariables()[i].getValue()

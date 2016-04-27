@@ -31,6 +31,9 @@ import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.solutionType.PermutationSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
+import jmetal.problems.SASSolution;
+import jmetal.problems.SASSolutionInstantiator;
+import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -43,10 +46,11 @@ import jmetal.util.Configuration.*;
  */
 public class TwoPointsCrossover extends Crossover {
 
+	private SASSolutionInstantiator factory;
   /**
    * Valid solution types to apply this operator 
    */
-  private static List VALID_TYPES = Arrays.asList(PermutationSolutionType.class) ;
+  private static List VALID_TYPES = Arrays.asList(PermutationSolutionType.class,  SASSolutionType.class) ;
 
   private Double crossoverProbability_ = null;
 
@@ -56,6 +60,14 @@ public class TwoPointsCrossover extends Crossover {
 	 */
 	public TwoPointsCrossover(HashMap<String, Object> parameters) {
 		super(parameters) ;
+		if (parameters
+				.get("jmetal.metaheuristics.moead.SASSolutionInstantiator") == null) {
+			System.err
+					.print("jmetal.metaheuristics.moead.SASSolutionInstantiator has not been instantiated in UniformCrossoverSAS\n");
+		} else {
+			factory = (SASSolutionInstantiator) parameters
+					.get("jmetal.metaheuristics.moead.SASSolutionInstantiator");
+		}
 		
   	if (parameters.get("probability") != null)
   		crossoverProbability_ = (Double) parameters.get("probability") ;  		
@@ -157,6 +169,33 @@ public class TwoPointsCrossover extends Crossover {
 					} // for
 				} // if 
 			} // if
+		
+		else if (parent1 instanceof SASSolution) {
+			
+			Solution[] offSpring = new Solution[2];
+			if (parent1 instanceof SASSolution) {
+				offSpring[0] = factory.getSolution(parent1);
+				offSpring[1] = factory.getSolution(parent2);
+			} 
+			
+			int crosspoint1 = PseudoRandom.randInt(0,parent1.getDecisionVariables().length - 1) ;
+			int crosspoint2 = PseudoRandom.randInt(0,parent1.getDecisionVariables().length - 1) ;
+			if (crosspoint1 > crosspoint2) {
+				int swap ;
+				swap        = crosspoint1 ;
+				crosspoint1 = crosspoint2 ;
+				crosspoint2 = swap;
+			} // if
+		
+		
+			for (int i = crosspoint1; i <= crosspoint2 ; i++) {
+				((SASSolution)parent1).crossoverWithDependency(i, parent1, parent2, offSpring[0], offSpring[1], 
+						true);
+			}
+			
+			return offSpring;
+		}
+		
 			else
 			{
 				Configuration.logger_.severe("TwoPointsCrossover.doCrossover: invalid " +

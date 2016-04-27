@@ -1,6 +1,7 @@
 package jmetal.metaheuristics.moead;
 
 import java.io.File;
+import java.util.Random;
 
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
@@ -11,7 +12,7 @@ public class MOEAD_SAS_PLAIN_main extends MOEAD_SAS_main{
 	@Override
 	protected Solution findSoleSolutionAfterEvolution(SolutionSet pareto_front) {
 		// find the knee point
-		Solution kneeIndividual = pareto_front.get(PseudoRandom.randInt(0, pareto_front.size())); 
+		Solution kneeIndividual = pareto_front.get(PseudoRandom.randInt(0, pareto_front.size() - 1)); 
 		
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			System.out.print(kneeIndividual.getObjective(i) + "\n");

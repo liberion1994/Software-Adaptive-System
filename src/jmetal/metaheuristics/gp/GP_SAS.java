@@ -117,8 +117,7 @@ public class GP_SAS extends Algorithm {
 		
 		z_  = new double[problem_.getNumberOfObjectives()];
 	    nz_ = new double[problem_.getNumberOfObjectives()];
-		initIdealPoint();
-		initNadirPoint();
+		
 		
 		// Create the initial solutionSet
 		Solution newSolution;
@@ -126,17 +125,13 @@ public class GP_SAS extends Algorithm {
 			newSolution = factory.getSolution(problem_);
 			problem_.evaluate(newSolution);
 			problem_.evaluateConstraints(newSolution);
-			
-			
-			updateReference(newSolution);
-			updateNadirPoint(newSolution);
-			
-			
-			
 			evaluations++;
 			population.add(newSolution);
 		} //for       
 
+		initIdealPoint();
+		initNadirPoint();
+		
 		for (int i = 0; i < populationSize; i++) {
 			fitnessAssignment(population.get(i));	// assign fitness value to each solution			
 		}

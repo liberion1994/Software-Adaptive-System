@@ -126,7 +126,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
@@ -202,7 +202,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 //					"DifferentialEvolutionCrossover", parameters);
 //		} else {
 		parameters = new HashMap();
-		parameters.put("probability", 0.9);
+		parameters.put("probability", 0.5);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -213,7 +213,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);

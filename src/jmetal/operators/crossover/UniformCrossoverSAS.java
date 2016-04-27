@@ -74,6 +74,16 @@ public class UniformCrossoverSAS extends Crossover {
 //					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
 //				}				
 			}
+			if(offSpring[0].getDecisionVariables()[0].getValue() > offSpring[0].getDecisionVariables()[2].getValue() ||
+					offSpring[0].getDecisionVariables()[2].getValue() < offSpring[0].getDecisionVariables()[1].getValue() ||
+					offSpring[1].getDecisionVariables()[0].getValue() > offSpring[1].getDecisionVariables()[2].getValue() ||
+					offSpring[1].getDecisionVariables()[2].getValue() < offSpring[1].getDecisionVariables()[1].getValue()) {
+			    System.out.print("***************\n");
+				print(parent1, parent2, offSpring[0], offSpring[1]);
+				System.out.print("***************\n");
+			} else {
+				print(parent1, parent2, offSpring[0], offSpring[1]);
+			}
 			//((SASSolution)parent1).crossoverWithDependency(parent1, parent2, offSpring[0], offSpring[1]);
 		} else {
 
@@ -149,5 +159,30 @@ public class UniformCrossoverSAS extends Crossover {
 		return null;
 	}
 	
+	private void print(Solution parent1,
+			Solution parent2, Solution offSpring1, Solution offSpring2) throws JMException{
+		System.out.print("-------------\n");
+		
+		String r = "parent1-" + print(parent1) + "\n";
+		r = r + "parent2-" + print(parent2) + "\n";
+		r = r + "offSpring1-" + print(offSpring1) + "\n";
+		r = r + "offSpring2-" + print(offSpring2);
+		System.out.print(r + "\n");
+		System.out.print("-------------\n");
+	}
+	
+	
+	private String print(Solution s) throws JMException {
+		String r = "[";
+		for (int i = 0; i < s.getDecisionVariables().length; i++) {
+			if (i == 0) {
+				r = r + s.getDecisionVariables()[i].getValue();
+			} else {
+				r = r + ", " + s.getDecisionVariables()[i].getValue();
+			}
+		}
+
+		return r + "]";
+	}
 
 }

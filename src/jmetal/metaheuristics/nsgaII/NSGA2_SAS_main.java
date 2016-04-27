@@ -41,6 +41,7 @@ import jmetal.util.PseudoRandom;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -196,7 +197,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		
 		// Crossover operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.9);
+		parameters.put("probability", 0.5);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -207,7 +208,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfVariables());
+		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
@@ -246,7 +247,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 	@Override
 	protected Solution findSoleSolutionAfterEvolution(SolutionSet pareto_front) {
 		// find the knee point
-		Solution individual = pareto_front.get(PseudoRandom.randInt(0, pareto_front.size())); 
+		Solution individual = pareto_front.get(PseudoRandom.randInt(0, pareto_front.size() - 1)); 
 			
 		
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)

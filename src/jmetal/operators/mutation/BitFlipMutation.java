@@ -90,7 +90,7 @@ public class BitFlipMutation extends Mutation {
 			} // if
 			
 			else if(solution instanceof SASSolution){ // Integer representation
-				
+				String r = print(true, solution);
 				for (int i = 0; i < solution.getDecisionVariables().length; i++){
 					((SASSolution) solution).mutateWithDependency(i,  (PseudoRandom.randDouble() < probability));
 				
@@ -102,6 +102,20 @@ public class BitFlipMutation extends Mutation {
 //					} // if
 				}
 				//((SASSolution) solution).mutateWithDependency();
+				if(solution.getDecisionVariables()[0].getValue() > solution.getDecisionVariables()[2].getValue() ||
+						solution.getDecisionVariables()[2].getValue() < solution.getDecisionVariables()[1].getValue()){
+					System.out.print("***************\n");
+					System.out.print("-------------\n");
+					System.out.print(r + "\n");
+					System.out.print(print(false, solution) + "\n");
+					System.out.print("-------------\n");
+					System.out.print("***************\n");
+				} else {
+					System.out.print("-------------\n");
+					System.out.print(r + "\n");
+					System.out.print(print(false, solution) + "\n");
+					System.out.print("-------------\n");
+				}
 			}
 			
 			else { // Integer representation
@@ -153,5 +167,26 @@ public class BitFlipMutation extends Mutation {
 	@Override
 	public Object execute_6(Object object) throws JMException {
 		return null;
+	}
+	
+	
+	private String print(boolean isBefore, Solution s) throws JMException{
+		String r = isBefore? "before mutation-" : "after mutation-";
+		r = r + print(s);
+		return r;
+	}
+	
+	
+	private String print(Solution s) throws JMException {
+		String r = "[";
+		for (int i = 0; i < s.getDecisionVariables().length; i++) {
+			if (i == 0) {
+				r = r + s.getDecisionVariables()[i].getValue();
+			} else {
+				r = r + ", " + s.getDecisionVariables()[i].getValue();
+			}
+		}
+
+		return r + "]";
 	}
 } // BitFlipMutation
