@@ -124,7 +124,7 @@ public abstract class SASSolution extends Solution {
 		return null;
 	}
 
-	private List<Integer> getVariableNeedCrossover(int index) {
+	private List<Integer> getMainVariables(int index) {
 		
 		if (crossoverMap.containsKey(index)) {
 			return crossoverMap.get(index);
@@ -134,22 +134,7 @@ public abstract class SASSolution extends Solution {
 		for (Map.Entry<Integer, VarEntity[]> entity : dependencyMap.entrySet()) {
 			if (index == entity.getKey()) {
 				entity.getValue()[0].getMainVariablesByDependentVariable(list);
-			} else {
-				
-				VarEntity v = entity.getValue()[0];
-				
-				do {
-					if(index == v.varIndex) {
-						if(!list.contains(entity.getKey())) {
-							list.add(entity.getKey());
-						}
-						
-						break;
-					}
-					v = v.next == null? null : v.next[0];
-				} while(v != null);
-				
-			}
+			} 
 		}
 		
 
@@ -158,7 +143,7 @@ public abstract class SASSolution extends Solution {
 		return list;
 	}
 	
-	private List<Integer> getVariableNeedMutation(int index) {
+	private List<Integer> getDependentVariables(int index) {
 		
 		if (mutationMap.containsKey(index)) {
 			return mutationMap.get(index);
@@ -214,7 +199,7 @@ public abstract class SASSolution extends Solution {
 		
 			v = this.translateIntoIndexInMainVariable(i, v);
 			super.getDecisionVariables()[i].setValue(v);
-			List<Integer> list = this.getVariableNeedMutation(i);
+			List<Integer> list = this.getDependentVariables(i);
 			for (Integer j : list) {
 				this.mutateWithDependency(j, false);
 			}
@@ -234,13 +219,26 @@ public abstract class SASSolution extends Solution {
 			Solution parent2, Solution offSpring1, Solution offSpring2, boolean isCrossover /*This is can be only true for the initial entrance*/)
 			throws JMException {
 
-		if (isCrossover) {
+//		// If has been swapped.
+//		if (offSpring1.getDecisionVariables()[i].getValue() == parent2
+//				.getDecisionVariables()[i].getValue()
+//				&& parent1.getDecisionVariables()[i].getValue() != parent2
+//						.getDecisionVariables()[i].getValue()) {
+//			return;
+//		}
+//		
+		if (isCrossover && offSpring1.getDecisionVariables()[i].getValue() == parent1
+				.getDecisionVariables()[i].getValue()
+				&& parent1.getDecisionVariables()[i].getValue() != parent2
+						.getDecisionVariables()[i].getValue()) {
+			
 			int valueX1 = (int) parent1.getDecisionVariables()[i]
 			                   							.getValue();
 			int valueX2 = (int) parent2.getDecisionVariables()[i]
 			                   							.getValue();
 			offSpring1.getDecisionVariables()[i].setValue(valueX2);
 			offSpring2.getDecisionVariables()[i].setValue(valueX1);
+			
 		}
 		
 		
@@ -248,15 +246,53 @@ public abstract class SASSolution extends Solution {
 			return;
 		}
 
-		// If it swap and they are originally unequal.
-		if (offSpring1.getDecisionVariables()[i].getValue() != parent1
-				.getDecisionVariables()[i].getValue()) {
-			List<Integer> list = ((SASSolution) parent1)
-					.getVariableNeedMutation(i);
-			for (Integer j : list) {
+		// If it swap and they are originally unequal. This might not needed.
+		if (offSpring1.getDecisionVariables()[i].getValue() == parent2
+				.getDecisionVariables()[i].getValue()
+				&& parent1.getDecisionVariables()[i].getValue() != parent2
+						.getDecisionVariables()[i].getValue()) {
+			// This should include both dependent and main variable of this variable.
+			List<Integer> mainList = ((SASSolution) parent1)
+					.getMainVariables(i);
+			
+			List<Integer> dependentList = ((SASSolution) parent1)
+			.getDependentVariables(i);
+			
+			// Do mains
+			if(!isValid((SASSolution)offSpring1, i) || !isValid((SASSolution)offSpring2, i) ) {
+				for (Integer j : mainList) {
+					// swap all main variable, if they have not been swapped. This should not occur
+					if (offSpring1.getDecisionVariables()[j].getValue() == parent1
+							.getDecisionVariables()[j].getValue()
+							&& parent1.getDecisionVariables()[j].getValue() != parent2
+									.getDecisionVariables()[j].getValue()) {
+						
+						
+						
+							int valueX1 = (int) parent1.getDecisionVariables()[j]
+									.getValue();
+							int valueX2 = (int) parent2.getDecisionVariables()[j]
+									.getValue();
+							offSpring1.getDecisionVariables()[j].setValue(valueX2);
+							offSpring2.getDecisionVariables()[j].setValue(valueX1);
+							// Ensure that the main/dependent variable of the newly swapped variable are also swapped.
+							this.crossoverWithDependency(j, parent1, parent2,
+									offSpring1, offSpring2, false);
+							
+						} 
+//					else {
+//							throw new RuntimeException("index " + j + " cause in valid but it has already been swapped!");
+//						}
+					} 
+			}
+			
+			
+			
+			// Do dependents
+			for (Integer j : dependentList) {
 				// swap if it the prior swap causes any variables in the dependency becomes invalid.
 				if(!isValid((SASSolution)offSpring1, j) || !isValid((SASSolution)offSpring2, j) ) {
-				// swap all main/dependent variable, if they have not been swapped.
+				// swap all dependent variable, if they have not been swapped. 
 				if (offSpring1.getDecisionVariables()[j].getValue() == parent1
 						.getDecisionVariables()[j].getValue()
 						&& parent1.getDecisionVariables()[j].getValue() != parent2
@@ -274,8 +310,11 @@ public abstract class SASSolution extends Solution {
 						this.crossoverWithDependency(j, parent1, parent2,
 								offSpring1, offSpring2, false);
 						
-					}
-				}
+					} 
+//				else {
+//						throw new RuntimeException("index " + j + " cause in valid but it has already been swapped!");
+//					}
+				} 
 			}
 		}
 
