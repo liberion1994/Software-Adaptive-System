@@ -22,7 +22,8 @@ public abstract class SASAlgorithmAdaptor {
 			pareto_front = filterRequirementsAfterEvolution(pareto_front);
 			SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
 			// Make sure the solution does not violate dependency.
-			s.mutateWithDependency();
+			// The dependencyMap is temporarily reset within the function.
+			s.correctDependency();
 			return s;
 		} else {
 			pareto_front = result;

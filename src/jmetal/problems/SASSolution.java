@@ -192,6 +192,17 @@ public abstract class SASSolution extends Solution {
 		}
 	}
 	
+	public void correctDependency() throws JMException {
+		// Only trigger when no dependency injection.
+		if (dependencyMap.size() == 0) {
+			dependencyMap.putAll(validationDependencyMap);
+			for (int i = 0; i < super.getDecisionVariables().length; i++) {
+				this.mutateWithDependency(i, false);
+			}
+			dependencyMap.clear();
+		}
+	}
+	
 	public void mutateWithDependency(int i, boolean isMutate /*This is can be only true for the initial entrance*/) throws JMException{
 	
 			
@@ -331,16 +342,16 @@ public abstract class SASSolution extends Solution {
 				} 
 			}
 		}
-		
-		if((offSpring1.getDecisionVariables()[3].getValue() == offSpring1.getDecisionVariables()[9].getValue() && offSpring1.getDecisionVariables()[3].getValue() == 1) || 
-				(offSpring2.getDecisionVariables()[3].getValue() == offSpring2.getDecisionVariables()[9].getValue() && offSpring2.getDecisionVariables()[3].getValue() == 1)){
-			
-			@SuppressWarnings("unused")
-			boolean is1  = isValid((SASSolution)offSpring1, 9);
-			boolean is2  = isValid((SASSolution)offSpring2, 9);
-			System.currentTimeMillis();
-		
-		}
+//		
+//		if((offSpring1.getDecisionVariables()[3].getValue() == offSpring1.getDecisionVariables()[9].getValue() && offSpring1.getDecisionVariables()[3].getValue() == 1) || 
+//				(offSpring2.getDecisionVariables()[3].getValue() == offSpring2.getDecisionVariables()[9].getValue() && offSpring2.getDecisionVariables()[3].getValue() == 1)){
+//			
+//			@SuppressWarnings("unused")
+//			boolean is1  = isValid((SASSolution)offSpring1, 9);
+//			boolean is2  = isValid((SASSolution)offSpring2, 9);
+//			System.currentTimeMillis();
+//		
+//		}
 
 	}
 	
