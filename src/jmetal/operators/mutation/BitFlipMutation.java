@@ -102,8 +102,8 @@ public class BitFlipMutation extends Mutation {
 //					} // if
 				}
 				//((SASSolution) solution).mutateWithDependency();
-				if(solution.getDecisionVariables()[0].getValue() > solution.getDecisionVariables()[2].getValue() ||
-						solution.getDecisionVariables()[2].getValue() < solution.getDecisionVariables()[1].getValue()){
+				if(solution.getDecisionVariables()[3].getValue() == solution.getDecisionVariables()[9].getValue()
+						&& solution.getDecisionVariables()[3].getValue() == 1){
 					System.out.print("***************\n");
 					System.out.print("-------------\n");
 					System.out.print(r + "\n");

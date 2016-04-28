@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
@@ -90,6 +91,16 @@ public abstract class SASSolution extends Solution {
 			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
+		}
+	
+	}
+	
+	private Set<Integer> getOptionalValueSet(int index) throws JMException {
+		if (dependencyMap.containsKey(index)) {
+			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
+			return v.getOptionalValuesSet(super.getDecisionVariables());
+		} else {
+			return null;
 		}
 	
 	}
@@ -242,6 +253,8 @@ public abstract class SASSolution extends Solution {
 			
 		}
 		
+
+		 
 		
 		if (i >= parent1.getDecisionVariables().length) {
 			return;
@@ -318,6 +331,16 @@ public abstract class SASSolution extends Solution {
 				} 
 			}
 		}
+		
+		if((offSpring1.getDecisionVariables()[3].getValue() == offSpring1.getDecisionVariables()[9].getValue() && offSpring1.getDecisionVariables()[3].getValue() == 1) || 
+				(offSpring2.getDecisionVariables()[3].getValue() == offSpring2.getDecisionVariables()[9].getValue() && offSpring2.getDecisionVariables()[3].getValue() == 1)){
+			
+			@SuppressWarnings("unused")
+			boolean is1  = isValid((SASSolution)offSpring1, 9);
+			boolean is2  = isValid((SASSolution)offSpring2, 9);
+			System.currentTimeMillis();
+		
+		}
 
 	}
 	
@@ -326,7 +349,7 @@ public abstract class SASSolution extends Solution {
 	public boolean isSolutionValid(){
 		for (int i = 0; i < super.getDecisionVariables().length; i ++) {
 			try {
-				if(!checkIsValidOnly(this, i)) {
+				if(!checkIsValidOnly(i)) {
 					return false;
 				}
 			} catch (JMException e) {
@@ -337,61 +360,45 @@ public abstract class SASSolution extends Solution {
 		return true;
 	}
 	
-	private boolean checkIsValidOnly(SASSolution s, int i) throws JMException {
+	private boolean checkIsValidOnly(int i) throws JMException {
 
-		int value = (int) s.getDecisionVariables()[i].getValue();
-		int upper = -1;
-
+		int value = (int) super.getDecisionVariables()[i].getValue();
+		Set<Integer> set = null;
 		if (validationDependencyMap.containsKey(i)) {
-			VarEntity v = validationDependencyMap.get(i)[(int) super
-					.getDecisionVariables()[validationDependencyMap.get(i)[0]
-					.getVarIndex()].getValue()];
-			upper = v.getOptionalValues(super.getDecisionVariables()).length - 1;
-		} else {
-			upper = optionalVariables[i].length - 1;
+			VarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
+			set = v.getOptionalValuesSet(super.getDecisionVariables());
 		}
 
-		int lower = 0;
-		int traUpper = -1;
-		if (validationDependencyMap.containsKey(i)) {
-			VarEntity v = validationDependencyMap.get(i)[(int) super
-					.getDecisionVariables()[validationDependencyMap.get(i)[0]
-					.getVarIndex()].getValue()];
-			traUpper = v.getOptionalValues(super.getDecisionVariables())[upper];
-		} else {
-			traUpper = upper;
+		// Means no dependency
+		if(set == null) {
+			return true;
 		}
+		
 
-		int traLower = -1;
-		if (validationDependencyMap.containsKey(i)) {
-			VarEntity v = validationDependencyMap.get(i)[(int) super
-					.getDecisionVariables()[validationDependencyMap.get(i)[0]
-					.getVarIndex()].getValue()];
-			traLower = v.getOptionalValues(super.getDecisionVariables())[lower];
-		} else {
-			traLower = lower;
-		}
-
-		if (value > traUpper || value < traLower) {
-			return false;
-		}
-
-		return true;
+		
+		return set.contains(value);
 	}
 	
 	private boolean isValid(SASSolution s, int i) throws JMException{
 		
 		int value = (int)s.getDecisionVariables()[i].getValue();	
-		int upper = s.getUpperBoundforVariable(i);
-		int lower = s.getLowerBoundforVariable(i);
-		int traUpper = s.translateIntoIndexInMainVariable(i, upper);
-		int traLower = s.translateIntoIndexInMainVariable(i, lower);
+		Set<Integer> set = s.getOptionalValueSet(i);
 		
-		if  (value > traUpper || value < traLower) {
-			return false;
+		// Means no dependency
+		if(set == null) {
+			return true;
 		}
 		
-		return true;
+//		int upper = s.getUpperBoundforVariable(i);
+//		int lower = s.getLowerBoundforVariable(i);
+//		int traUpper = s.translateIntoIndexInMainVariable(i, upper);
+//		int traLower = s.translateIntoIndexInMainVariable(i, lower);
+//		
+//		if  (value > traUpper || value < traLower) {
+//			return false;
+//		}
+		
+		return set.contains(value);
 	}
 	
 

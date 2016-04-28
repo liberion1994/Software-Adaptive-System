@@ -177,7 +177,7 @@ public class TwoPointsCrossover extends Crossover {
 				offSpring[0] = factory.getSolution(parent1);
 				offSpring[1] = factory.getSolution(parent2);
 			} 
-			
+			if (PseudoRandom.randDouble() < probability) {
 			int crosspoint1 = PseudoRandom.randInt(0,parent1.getDecisionVariables().length - 1) ;
 			int crosspoint2 = PseudoRandom.randInt(0,parent1.getDecisionVariables().length - 1) ;
 			if (crosspoint1 > crosspoint2) {
@@ -192,8 +192,9 @@ public class TwoPointsCrossover extends Crossover {
 				((SASSolution)parent1).crossoverWithDependency(i, parent1, parent2, offSpring[0], offSpring[1], 
 						true);
 			}
-			
+			}
 			return offSpring;
+			
 		}
 		
 			else

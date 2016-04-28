@@ -213,7 +213,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
+		parameters.put("probability", 0.5);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
