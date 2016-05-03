@@ -24,6 +24,7 @@ public class MainTest extends TestCase{
 			SASSolution.init(DummySASSolution.testOptionalVariables);
 			Solution s = main.execute(inst, DummySASSolution.vars, 2, 0);
 	
+			
 		//Assert.assertEquals(dss.getUpperBoundforVariable(1), 2);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

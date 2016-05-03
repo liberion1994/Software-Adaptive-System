@@ -192,9 +192,10 @@ public class GP_SAS extends Algorithm {
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
 		
-		// Return the first non-dominated front
-		Ranking ranking = new Ranking(population);
-		return ranking.getSubfront(0);
+		SolutionSet set = new SolutionSet(1);
+		set.add(population.get(0));
+		
+		return set;
 	} // execute
 	
 	public SolutionSet getPopulation(){

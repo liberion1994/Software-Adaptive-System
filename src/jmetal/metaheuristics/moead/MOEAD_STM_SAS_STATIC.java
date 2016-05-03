@@ -143,7 +143,7 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 		do {
 			int[] permutation = new int[populationSize_];
 			Utils.randomPermutation(permutation, populationSize_);
-			
+			currentOffspring_   = new SolutionSet(2 * populationSize_);
 			for (int i = 0; i < populationSize_; i++) {
 				int n = permutation[i]; // or int n = i;
 				// int n = i ; // or int n = i;
@@ -481,16 +481,16 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 		
 		for (int i = 0; i < populationSize_; i++) {
 			f1    = fitnessFunction(population_.get(i), lambda_[i]);
-			f2 	  = fitnessFunction(savedValues_[i], lambda_[i]);
+			//f2 	  = fitnessFunction(savedValues_[i], lambda_[i]);
 			
-			delta = f2 - f1;
-			if (delta > 0.001)
-				utility_[i] = 1.0;
-			else {
-				uti 		= (0.95 + (0.05 * delta / 0.001)) * utility_[i];
-				utility_[i] = uti < 1.0 ? uti : 1.0;
-			}
-			savedValues_[i] = factory.getSolution(population_.get(i));
+			//delta = f2 - f1;
+//			if (delta > 0.001)
+//				utility_[i] = 1.0;
+//			else {
+//				uti 		= (0.95 + (0.05 * delta / 0.001)) * utility_[i];
+//				utility_[i] = uti < 1.0 ? uti : 1.0;
+//			}
+//			savedValues_[i] = factory.getSolution(population_.get(i));
 		}
 	}
 
@@ -529,7 +529,7 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
       problem_.evaluate(newSolution);
       evaluations_++;
       population_.add(newSolution) ;
-      savedValues_[i] = factory.getSolution(newSolution);
+      //savedValues_[i] = factory.getSolution(newSolution);
     }
   }
 
@@ -556,7 +556,7 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 					j++;
 				}
 				population_.add(newSolution) ;
-				savedValues_[i] = factory.getSolution(newSolution);
+				//savedValues_[i] = factory.getSolution(newSolution);
 				aux = br.readLine();
 				i++;
 			}
@@ -659,10 +659,10 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 			for (int i = 1; i < depth; i++) {
 				i2 = (int) (PseudoRandom.randDouble() * candidate.size());
 				s2 = candidate.get(i2);
-				if (utility_[s2] > utility_[best_sub]) {
-					best_idd = i2;
-					best_sub = s2;
-				}
+//				if (utility_[s2] > utility_[best_sub]) {
+//					best_idd = i2;
+//					best_sub = s2;
+//				}
 			}
 			selected.add(best_sub);
 			candidate.remove(best_idd);

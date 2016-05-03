@@ -51,8 +51,8 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 
-	Problem problem; // The problem to solve
-	Algorithm algorithm; // The algorithm to use
+	protected Problem problem; // The problem to solve
+	protected Algorithm algorithm; // The algorithm to use
 	Operator crossover; // Crossover operator
 	Operator mutation; // Mutation operator
 	Operator selection; // Selection operator

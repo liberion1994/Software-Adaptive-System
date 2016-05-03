@@ -49,8 +49,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 
-	Problem problem; // The problem to solve
-	Algorithm algorithm; // The algorithm to use
+	protected Problem problem; // The problem to solve
+	protected Algorithm algorithm; // The algorithm to use
 	Operator crossover; // Crossover operator
 	Operator mutation; // Mutation operator
 
@@ -77,6 +77,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		HashMap parameters; // Operator parameters
 
+	
+ 		
 		// Logger object and file to store log messages
 		logger_ = Configuration.logger_;
 		fileHandler_ = new FileHandler("MOEAD.log");
@@ -181,7 +183,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		}
 		problem = new SAS("SASSolutionType", factory, vars, numberOfObjectives_, numberOfConstraints_);
 		
-
+		//algorithm = new MOEAD_STM_SAS_STATIC(problem, factory);
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
@@ -250,7 +252,14 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	@Override
 	protected Solution findSoleSolutionAfterEvolution(SolutionSet pareto_front) {
 		// find the knee point
-		Solution kneeIndividual = ((MOEAD_STM_SAS)algorithm).kneeSelection(pareto_front);
+		Solution kneeIndividual = null;
+		if(algorithm instanceof MOEAD_STM_SAS) {
+		     kneeIndividual = ((MOEAD_STM_SAS)algorithm).kneeSelection(pareto_front);
+		} else 	if(algorithm instanceof MOEAD_STM_SAS_STATIC) {
+			 kneeIndividual = ((MOEAD_STM_SAS_STATIC)algorithm).kneeSelection(pareto_front);
+		}
+		
+		
 		
 		for (int i = 0; i < problem.getNumberOfObjectives(); i++)
 			System.out.print(kneeIndividual.getObjective(i) + "\n");
@@ -273,6 +282,12 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	@Override
 	protected SolutionSet getAllFoundSolutions() {
 		// TODO Auto-generated method stub
-		return ((MOEAD_STM_SAS)algorithm).getPopulation();
+		if(algorithm instanceof MOEAD_STM_SAS) {
+			return ((MOEAD_STM_SAS)algorithm).getPopulation();
+		} else 	if(algorithm instanceof MOEAD_STM_SAS_STATIC) {
+			return ((MOEAD_STM_SAS_STATIC)algorithm).getPopulation();
+		}
+		
+		return null;
 	}
 } // MOEAD_main
