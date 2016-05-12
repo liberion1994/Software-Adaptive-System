@@ -223,15 +223,15 @@ public class MOEAD_STM_SAS extends Algorithm {
 //			population_.add(kneeIndividual);
 //		}
 		
-//		return population_;
+		return population_;
 
-		Ranking ranking = new Ranking(population_);
-		return ranking.getSubfront(0);
+		
 		//return population_;
 	}
 	
-	public SolutionSet getPopulation(){
-		return population_;
+	public SolutionSet doRanking(SolutionSet population){
+		Ranking ranking = new Ranking(population);
+		return ranking.getSubfront(0);
 	}
 	
 	/**

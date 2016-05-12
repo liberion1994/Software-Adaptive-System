@@ -41,4 +41,10 @@ public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
 		return sol;
 	}
 
+	@Override
+	public Solution getSolution(int objective_number) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

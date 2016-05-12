@@ -190,8 +190,8 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new NSGAII_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 600;
-		int generations = 5;
+		int popsize = 100;
+		int generations = 30;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
@@ -208,7 +208,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
+		parameters.put("probability", 0.2);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
@@ -266,8 +266,10 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 	}
 
 	@Override
-	protected SolutionSet getAllFoundSolutions() {
+	protected SolutionSet doRanking(SolutionSet population) {
 		// TODO Auto-generated method stub
-		return ((NSGAII_SAS)algorithm).getPopulation();
+		return ((NSGAII_SAS)algorithm).doRanking(population);
 	}
+
+
 } // NSGA2_SAS_main 

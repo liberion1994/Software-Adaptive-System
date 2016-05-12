@@ -25,6 +25,7 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.metaheuristics.nsgaII.NSGAII_SAS;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.*;
 import jmetal.operators.selection.*;
@@ -187,8 +188,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 600;
-		int factor = 5;
+		int popsize = 100;
+		int factor = 30;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
@@ -215,7 +216,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.5);
+		parameters.put("probability", 0.2);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
@@ -279,15 +280,16 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		return kneeIndividual;
 	}
 
+	
 	@Override
-	protected SolutionSet getAllFoundSolutions() {
-		// TODO Auto-generated method stub
+	protected SolutionSet doRanking(SolutionSet population) {
 		if(algorithm instanceof MOEAD_STM_SAS) {
-			return ((MOEAD_STM_SAS)algorithm).getPopulation();
+			return ((MOEAD_STM_SAS)algorithm).doRanking(population);
 		} else 	if(algorithm instanceof MOEAD_STM_SAS_STATIC) {
-			return ((MOEAD_STM_SAS_STATIC)algorithm).getPopulation();
+			return ((MOEAD_STM_SAS_STATIC)algorithm).doRanking(population);
 		}
 		
 		return null;
 	}
+
 } // MOEAD_main

@@ -187,14 +187,15 @@ public class NSGAII_SAS extends Algorithm {
 		setOutputParameter("evaluations", requiredEvaluations);
 		population_ = population;
 		// Return the first non-dominated front
-		Ranking ranking = new Ranking(population);
-		return ranking.getSubfront(0);
-		//return population;
+//		Ranking ranking = new Ranking(population);
+//		return ranking.getSubfront(0);
+		return population;
 	} // execute
 	
 	
-	public SolutionSet getPopulation(){
-		return population_;
+	public SolutionSet doRanking(SolutionSet population){
+		Ranking ranking = new Ranking(population);
+		return ranking.getSubfront(0);
 	}
 	
 	/**

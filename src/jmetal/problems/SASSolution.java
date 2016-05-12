@@ -49,6 +49,10 @@ public abstract class SASSolution extends Solution {
 		// TODO Auto-generated constructor stub
 	}
 	
+	public SASSolution(int numberOfObjectives) {
+		super(numberOfObjectives);
+	}
+	
 	public SASSolution() {
 		super();
 		// TODO Auto-generated constructor stub

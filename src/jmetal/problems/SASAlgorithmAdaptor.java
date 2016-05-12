@@ -15,23 +15,30 @@ public abstract class SASAlgorithmAdaptor {
 		SolutionSet pareto_front = findParetoFront(factory, vars,
 				numberOfObjectives_, numberOfConstraints_);
 		
-		logDependencyAfterEvolution(getAllFoundSolutions());
+		//logDependencyAfterEvolution(getAllFoundSolutions());
 		
 		SolutionSet result = correctDependencyAfterEvolution(pareto_front);
+		// Means no valid solutions.
 		if(result.size() == 0) {
-			pareto_front = filterRequirementsAfterEvolution(pareto_front);
-			SASSolution s = (SASSolution)findSoleSolutionAfterEvolution(pareto_front);
-			// Make sure the solution does not violate dependency.
-			// The dependencyMap is temporarily reset within the function.
-			s.correctDependency();
-			return s;
+			for (int i = 0; i < pareto_front.size(); i++) {
+				// Make sure the solution does not violate dependency.
+				// The dependencyMap is temporarily reset within the function.
+				 ((SASSolution)pareto_front.get(i)).correctDependency();
+				 double[] f = ((SASSolution)pareto_front.get(i)).getObjectiveValuesFromIndexValue();
+					
+					for (int k = 0; k < f.length ; k ++) {
+						((SASSolution)pareto_front.get(i)).setObjective(k, f[k]);
+					}
+			}
+			
 		} else {
 			pareto_front = result;
 		}
-		
+		//pareto_front = doRanking(pareto_front);
 		pareto_front = filterRequirementsAfterEvolution(pareto_front);
-
-		
+		pareto_front = doRanking(pareto_front);
+		printParetoFront(pareto_front);
+		//System.out.print("Pareto front size after dependency and requirement check: " + pareto_front.size() + "\n");
 		return findSoleSolutionAfterEvolution(pareto_front);
 	}
 
@@ -42,6 +49,10 @@ public abstract class SASAlgorithmAdaptor {
 			ClassNotFoundException;
 
 	protected abstract ApproachType getName();
+	
+	protected abstract SolutionSet doRanking(SolutionSet pf);
+	
+	
 
 	/**
 	 * This can return knee point or just randomly selected one.
@@ -52,7 +63,6 @@ public abstract class SASAlgorithmAdaptor {
 			SolutionSet pareto_front);
 
 	
-	protected abstract SolutionSet getAllFoundSolutions();
 	/**
 	 * Used mainly by the existing approach.
 	 * @param pareto_front
@@ -62,11 +72,14 @@ public abstract class SASAlgorithmAdaptor {
 			SolutionSet pareto_front) {
 		return pareto_front;
 	}
-
 	
-	protected void logDependencyAfterEvolution(
-			SolutionSet pareto_front_without_ranking) {
-	}
+	protected void printParetoFront(SolutionSet pareto_front) {
+    }
+	
+	
+//	protected void logDependencyAfterEvolution(
+//			SolutionSet pareto_front_without_ranking) {
+//	}
 	/**
 	 * If the requirements (constraints) are considered outside the evolution,
 	 * then it should be processed here.

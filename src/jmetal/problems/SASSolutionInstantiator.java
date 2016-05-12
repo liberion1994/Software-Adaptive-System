@@ -22,4 +22,6 @@ public interface SASSolutionInstantiator {
 	public Solution getSolution (Problem problem, Variable[] variables);
 	
 	public Solution getSolution();
+	
+	public Solution getSolution(int objective_number);
 }

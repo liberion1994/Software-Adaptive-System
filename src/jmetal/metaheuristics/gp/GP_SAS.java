@@ -22,6 +22,7 @@
 package jmetal.metaheuristics.gp;
 
 import jmetal.core.*;
+import jmetal.problems.SASSolution;
 import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.*;
@@ -192,15 +193,18 @@ public class GP_SAS extends Algorithm {
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
 		
+		
+		
+		return population;
+	} // execute
+	
+	public SolutionSet doRanking(SolutionSet population){
 		SolutionSet set = new SolutionSet(1);
 		set.add(population.get(0));
 		
 		return set;
-	} // execute
-	
-	public SolutionSet getPopulation(){
-		return population_;
 	}
+	
 	
 	/**
 	 * This is used to assign fitness value to a solution, according to weighted sum strategy.

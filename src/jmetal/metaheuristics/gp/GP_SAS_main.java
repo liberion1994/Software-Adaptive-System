@@ -25,6 +25,7 @@
 package jmetal.metaheuristics.gp;
 
 import jmetal.core.*;
+import jmetal.metaheuristics.nsgaII.NSGAII_SAS;
 import jmetal.operators.crossover.*;
 import jmetal.operators.mutation.*;
 import jmetal.operators.selection.*;
@@ -176,8 +177,8 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new GP_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 600;
-		int factor = 5;
+		int popsize = 100;
+		int factor = 30;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
@@ -191,7 +192,7 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 1.0 / problem.getNumberOfObjectives());
+		parameters.put("probability", 0.2);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
@@ -247,9 +248,10 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 		return individual;
 	}
 
+
 	@Override
-	protected SolutionSet getAllFoundSolutions() {
+	protected SolutionSet doRanking(SolutionSet population) {
 		// TODO Auto-generated method stub
-		return ((GP_SAS)algorithm).getPopulation();
+		return ((GP_SAS)algorithm).doRanking(population);
 	}
 } // MOEAD_main
