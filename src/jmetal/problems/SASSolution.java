@@ -63,11 +63,11 @@ public abstract class SASSolution extends Solution {
 	public abstract double getVariableValueFromIndex(int index);
 	
 	
-	public static void init(double[][] optionalVariables) {
+	public static synchronized void init(double[][] optionalVariables) {
 		SASSolution.optionalVariables = optionalVariables;
 	}
 	
-	public static void clearAndStoreForValidationOnly(){
+	public static synchronized void clearAndStoreForValidationOnly(){
 		validationDependencyMap.putAll(dependencyMap);
 		dependencyMap.clear();
 	}
