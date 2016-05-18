@@ -178,7 +178,7 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 
 		// Algorithm parameters
 		int popsize = 100;
-		int factor = 30;
+		int factor = 50;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
