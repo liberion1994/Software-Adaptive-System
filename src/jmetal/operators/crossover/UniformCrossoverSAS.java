@@ -74,14 +74,14 @@ public class UniformCrossoverSAS extends Crossover {
 //					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
 //				}				
 			}
-			if((offSpring[0].getDecisionVariables()[3].getValue() == offSpring[0].getDecisionVariables()[9].getValue() && offSpring[0].getDecisionVariables()[3].getValue() == 1) || 
+			/**if((offSpring[0].getDecisionVariables()[3].getValue() == offSpring[0].getDecisionVariables()[9].getValue() && offSpring[0].getDecisionVariables()[3].getValue() == 1) || 
 					(offSpring[1].getDecisionVariables()[3].getValue() == offSpring[1].getDecisionVariables()[9].getValue() && offSpring[1].getDecisionVariables()[3].getValue() == 1)	) {
 			    System.out.print("***************\n");
 				print(parent1, parent2, offSpring[0], offSpring[1]);
 				System.out.print("***************\n");
 			} else {
 				print(parent1, parent2, offSpring[0], offSpring[1]);
-			}
+			}**/
 			//((SASSolution)parent1).crossoverWithDependency(parent1, parent2, offSpring[0], offSpring[1]);
 		} else {
 

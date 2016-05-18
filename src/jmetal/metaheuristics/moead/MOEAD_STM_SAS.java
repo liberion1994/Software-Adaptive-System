@@ -284,11 +284,21 @@ public class MOEAD_STM_SAS extends Algorithm {
 		for (int i = 0; i < populationSize_; i++) {
 			for (int j = 0; j < union_.size(); j++)
 				subpPref[i][j] = j;
+			//System.out.print("Use union: " + " union " + union_.size() + ", " + " populationSize_ " + populationSize_ + "\n");
+			//System.out.print("subpMatrix[i] " + subpMatrix[i].length + " subpPref[i] " +  subpPref[i].length + "\n");
 			Utils.QuickSort(subpMatrix[i], subpPref[i], 0, union_.size() - 1);
 		}
 		for (int i = 0; i < union_.size(); i++) {
 			for (int j = 0; j < populationSize_; j++)
 				solPref[i][j] = j;
+//			System.out.print("Use populationSize_: " + " union " + union_.size() + ", " + " populationSize_ " + populationSize_ + "\n");
+//			System.out.print("solMatrix[i] " + solMatrix[i].length + " solPref[i] " +  solPref[i].length + "\n");
+//			for (double d : solMatrix[i]) {
+//				System.out.print("solMatrix[i] " + d +" \n");
+//			}
+//			for (double d : solPref[i]) {
+//				System.out.print("solPref[i] " + d +" \n");
+//			}
 			Utils.QuickSort(solMatrix[i], solPref[i], 0, populationSize_ - 1);
 		}
 

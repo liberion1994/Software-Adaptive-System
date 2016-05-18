@@ -189,11 +189,11 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Algorithm parameters
 		int popsize = 100;
-		int factor = 50;
+		int factor = 30;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
-		algorithm.setInputParameter("dataDirectory", "weight");
+		algorithm.setInputParameter("dataDirectory", System.getProperty("os.name").startsWith("Mac")? "weight" : "/home/tao/weight");
 
 		// Crossover operator
 //		int tag = 2;

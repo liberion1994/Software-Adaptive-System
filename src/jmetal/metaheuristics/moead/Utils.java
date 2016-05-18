@@ -256,7 +256,15 @@ public class Utils {
 	 * @param to
 	 */
 	static void QuickSort(double[] array, int[] idx, int from, int to) {
+		//System.out.print("from " + from + " to " + to + "\n");
+		
 		if (from < to) {
+			if(Double.isNaN(array[from]) || Double.isNaN(array[to])) {
+				// Avoid infinite loop.
+				System.out.print("NaN found in quick sort: from " + from + " to " + to + "\n");
+				return;
+			}
+				
 			double temp = array[to];
 			int tempIdx = idx[to];
 			int i = from - 1;

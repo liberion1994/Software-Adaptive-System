@@ -102,7 +102,7 @@ public class BitFlipMutation extends Mutation {
 //					} // if
 				}
 				//((SASSolution) solution).mutateWithDependency();
-				if(solution.getDecisionVariables()[3].getValue() == solution.getDecisionVariables()[9].getValue()
+				/**if(solution.getDecisionVariables()[3].getValue() == solution.getDecisionVariables()[9].getValue()
 						&& solution.getDecisionVariables()[3].getValue() == 1){
 					System.out.print("***************\n");
 					System.out.print("-------------\n");
@@ -115,7 +115,7 @@ public class BitFlipMutation extends Mutation {
 					System.out.print(r + "\n");
 					System.out.print(print(false, solution) + "\n");
 					System.out.print("-------------\n");
-				}
+				}**/
 			}
 			
 			else { // Integer representation
