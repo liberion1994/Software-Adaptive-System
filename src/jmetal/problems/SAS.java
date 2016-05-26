@@ -8,6 +8,7 @@ import jmetal.util.wrapper.XInt;
 public class SAS extends Problem {
 
 	public static final boolean isTest = false;
+	public static final long TIME_THRESHOLD = 40000;
 	
 	public SASSolutionInstantiator factory;
 	/**

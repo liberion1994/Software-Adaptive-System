@@ -26,6 +26,7 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
+import jmetal.problems.SAS;
 import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
@@ -133,7 +134,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 		z_ 			  = new double[problem_.getNumberOfObjectives()];
 	    nz_ 		  = new double[problem_.getNumberOfObjectives()];
-	    lambda_ 	  = new double[populationSize_][problem_.getNumberOfObjectives()];
+	    lambda_ 	  =  factory.getLambda();//new double[populationSize_][problem_.getNumberOfObjectives()];
 	    neighborhood_ = new int[populationSize_][T_];
 
 		crossover_ = operators_.get("crossover");
@@ -141,7 +142,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 		/* STEP 1. INITIALIZATION */
 		// STEP 1.1. compute Euclidean distances between weight vectors and find T
-		initUniformWeight();
+		//initUniformWeight();
 		initNeighborhood();
 
 		// STEP 1.2. initialize population
@@ -151,6 +152,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		initIdealPoint();
 		initNadirPoint();
 
+		long time = System.currentTimeMillis();
 		int iteration = 0;
 		/* STEP 2. UPDATE */
 		do {
@@ -210,7 +212,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 			if (iteration % 30 == 0) {
 				comp_utility();
 			}
-		} while (evaluations_ <= maxEvaluations);
+		} while (evaluations_ <= maxEvaluations && (System.currentTimeMillis() - time) < SAS.TIME_THRESHOLD);
 		
 		// find the knee point
 //		kneeIndividual = kneeSelection();
@@ -229,6 +231,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 		//return population_;
 	}
 	
+
 	public SolutionSet doRanking(SolutionSet population){
 		Ranking ranking = new Ranking(population);
 		return ranking.getSubfront(0);

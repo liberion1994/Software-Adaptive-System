@@ -47,4 +47,10 @@ public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
 		return null;
 	}
 
+	@Override
+	public double[][] getLambda() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

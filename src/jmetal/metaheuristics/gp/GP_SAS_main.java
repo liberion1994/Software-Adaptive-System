@@ -178,13 +178,13 @@ public class GP_SAS_main extends SASAlgorithmAdaptor{
 
 		// Algorithm parameters
 		int popsize = 100;
-		int factor = 50;
+		int factor = 10;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
 		// Crossover operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.5);
+		parameters.put("probability", 0.7);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator", factory);

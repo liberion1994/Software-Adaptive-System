@@ -50,6 +50,9 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 
+	public static int popsize = 100;
+	public static int factor = 10;
+	
 	protected Problem problem; // The problem to solve
 	protected Algorithm algorithm; // The algorithm to use
 	Operator crossover; // Crossover operator
@@ -188,13 +191,12 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new MOEAD_STM_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 100;
-		int factor = 50;
+	
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * factor);
 		
 		algorithm.setInputParameter("dataDirectory", System.getProperty("os.name").startsWith("Mac")? "weight" : "/home/tao/weight");
-
+		//algorithm.setInputParameter("lambda", factory.getLambda());
 		// Crossover operator
 //		int tag = 2;
 //		if (tag == 1) {
@@ -205,7 +207,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 //					"DifferentialEvolutionCrossover", parameters);
 //		} else {
 		parameters = new HashMap();
-		parameters.put("probability", 0.5);
+		parameters.put("probability", 0.9);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -216,7 +218,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.2);
+		parameters.put("probability", 0.1);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);

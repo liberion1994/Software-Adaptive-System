@@ -24,4 +24,6 @@ public interface SASSolutionInstantiator {
 	public Solution getSolution();
 	
 	public Solution getSolution(int objective_number);
+	
+	public double[][] getLambda();
 }
