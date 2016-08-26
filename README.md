@@ -1,5 +1,5 @@
 # MOEA/D-STM with feature dependency injection and knee selection
-This is the sub-module that exploited by [FEMOSAA](https://github.com/taochen/ssase#femosaa-feature-guided-and-knee-driven-multi-objective-optimization-for-self-adaptive-software-at-runtime) (Feature guided and knEe driven Multi-objective Optimization for Self-Adaptive softwAre at runtime). It contains the source code of MOEA/D-STM, our feature dependency aware mutation/crossover operators and knee selection method. Details are explained as below:
+This is the repository for an optimization component exploited by [FEMOSAA](https://github.com/taochen/ssase#femosaa-feature-guided-and-knee-driven-multi-objective-optimization-for-self-adaptive-software-at-runtime) (Feature guided and knEe driven Multi-objective Optimization for Self-Adaptive softwAre at runtime). It contains the source code of MOEA/D-STM, our feature dependency aware mutation/crossover operators and knee selection method. Details are explained as below:
 
 ###MOEA/D-STM: Multi-Objective Evolutionary Algorithm based Decomposition with STable-Matching model
 
