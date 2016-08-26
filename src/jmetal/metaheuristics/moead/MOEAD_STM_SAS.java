@@ -654,9 +654,9 @@ public class MOEAD_STM_SAS extends Algorithm {
 				p = neighborhood_[cid][r];
 			} else {
 				p = PseudoRandom.randInt(0, populationSize_ - 1);
-			}
+			}I
 			boolean flag = true;
-			for (int i = 0; i < list.size(); i++) {
+			for (int i = 0; i < list.size(); i++) {I
 				if (list.get(i) == p) // p is in the list
 				{
 					flag = false;
