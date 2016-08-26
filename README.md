@@ -5,8 +5,8 @@ This is the sub-module that exploited by [FEMOSAA](https://github.com/taochen/ss
 
 Unlike the classic aggregation methods which only specify and solve one aggregation at a time, MOEA/D decomposes the original multi-objective problem into several subproblems, each of which is an additive or Tchebycheff aggregation with automatically generated weights. Then, it leverages the population-based technique in classic EA/MOEA to solve these subproblems collaboratively. FEMOSAA exploits the recent MOEA/D variant, MOEA/D-STM, which achieves better balance between convergence and diversity by modifying the survival selection of the original MOEA/D. The algorithm details can be found in the following publication:
 
- > * K.Li,Q.Zhang,S.Kwong,M.Li,andR.Wang,“Stablematching-based selection in evolutionary multiobjective optimization,” IEEE Trans. Evolutionary Computation, vol. 18, no. 6, pp. 909–923, 2014.Source code directory:
-   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java/](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)###Dependency Aware Mutation and Crossover Operators
+ > * K.Li, Q.Zhang, S.Kwong, M.Li, and R.Wang,“Stablematching-based selection in evolutionary multiobjective optimization,” IEEE Trans. Evolutionary Computation, vol. 18, no. 6, pp. 909–923, 2014.Source code directory:
+   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)###Dependency Aware Mutation and Crossover Operators
 
 By analyzing and extracting dependencies from the Feature Model of a self-adaptive software, we are able to inject the dependency into the mutation/crossover operators of the EA/MOEA. Such information of dependencies can guide the search, providing more chances for finding better solutions. We have currently inject dependency to a modified bit-flip mutation operator and uniform crossover operator, but the injection machoism itself is generic and is compatible with a ranges of reproduction operators. The details has been reported in a paper which is currently under submission.
 
@@ -19,7 +19,7 @@ We have design method to find knee solutions, which are usually the most prefera
 The details has been reported in a paper which is currently under submission.
 
 Source code directory (the kneeSelection function):
-   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java/](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)
+   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)
 
 - - - -
 
