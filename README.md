@@ -3,7 +3,7 @@ This is the repository for an optimization component exploited by [FEMOSAA](http
 
 ###MOEA/D-STM: Multi-Objective Evolutionary Algorithm based Decomposition with STable-Matching model
 
-Unlike the classic aggregation methods which only specify and solve one aggregation at a time, MOEA/D decomposes the original multi-objective problem into several subproblems, each of which is an additive or Tchebycheff aggregation with automatically generated weights. Then, it leverages the population-based technique in classic EA/MOEA to solve these subproblems collaboratively. FEMOSAA exploits the recent MOEA/D variant, MOEA/D-STM, which achieves better balance between convergence and diversity by modifying the survival selection of the original MOEA/D. The algorithm details can be found in the following publication:
+Unlike the classic aggregation methods which only specify and solve one aggregation at a time, MOEA/D decomposes the original multi-objective problem into several subproblems, each of which is an additive or Tchebycheff aggregation with automatically generated weights. Then, it leverages the population-based technique in classic EA/MOEA to solve these subproblems collaboratively. As a recent MOEA/D variant, MOEA/D-STM achieves better balance between convergence and diversity by modifying the survival selection of the original MOEA/D. The algorithm details can be found in the following publication:
 
  > * K.Li, Q.Zhang, S.Kwong, M.Li, and R.Wang,“Stablematching-based selection in evolutionary multiobjective optimization,” IEEE Trans. Evolutionary Computation, vol. 18, no. 6, pp. 909–923, 2014.Source code directory:
    * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)###Dependency Aware Mutation and Crossover Operators
@@ -19,7 +19,7 @@ We have design method to find knee solutions, which are usually the most prefera
 The details has been reported in a paper which is currently under submission.
 
 Source code directory (the kneeSelection function):
-   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java)
+   * [src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java](https://github.com/JerryI00/Software-Adaptive-System/blob/master/src/jmetal/metaheuristics/moead/MOEAD_STM_SAS.java#L887)
 
 - - - -
 
