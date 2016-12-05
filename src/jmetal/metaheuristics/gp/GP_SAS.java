@@ -215,9 +215,13 @@ public class GP_SAS extends Algorithm {
 		double weight	   = 1.0 / (double) problem_.getNumberOfObjectives();
 
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
-			cur_fitness += weight * nz_[i] != z_[i]? ((cur_solution.getObjective(i) - z_[i]) / (nz_[i] - z_[i])) : 
-				((cur_solution.getObjective(i) - z_[i]) / (nz_[i])); 
+			cur_fitness += weight * (nz_[i] != z_[i]? ((cur_solution.getObjective(i) - z_[i]) / (nz_[i] - z_[i])) : 
+				((cur_solution.getObjective(i) - z_[i]) / (nz_[i]))); 
 		
+		if(Double.isNaN(cur_fitness)) {
+			System.out.print("Find one fitness with NaN!\n");
+			cur_fitness = 1.0e+30;
+		}
 		cur_solution.setFitness(cur_fitness);
 	}
 	
