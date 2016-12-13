@@ -92,6 +92,6 @@ public abstract class SASAlgorithmAdaptor {
 	}
 
 	protected enum ApproachType {
-		MOEAD_STM_D_K, NSGAII, GP, MIP
+		MOEAD_STM_D_K, NSGAII, GP, MIP, IBEA
 	}
 }

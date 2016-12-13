@@ -183,12 +183,12 @@ public class IBEA_SAS extends Algorithm {
 			for (int j = 0; j < solutionSet.size(); j++) {
 				B = new Solution(solutionSet.get(j));
 				
-				double r = maximumValues[0] - minimumValues[0];
+				double r = (maximumValues[0] != minimumValues[0])? maximumValues[0] - minimumValues[0] : maximumValues[0];
 				double eps = (A.getObjective(0) - minimumValues[0]) / r - (B.getObjective(0) - minimumValues[0]) / r;
 				for (int k = 1; k < problem_.getNumberOfObjectives(); k++) {
 					double temp_eps;
 					
-					r = maximumValues[k] - minimumValues[k];
+					r = (maximumValues[k] != minimumValues[k])? maximumValues[k] - minimumValues[k] : maximumValues[k];
 					temp_eps = (A.getObjective(k) - minimumValues[k]) / r - (B.getObjective(k) - minimumValues[k]) / r;
 					if (temp_eps > eps)
 						eps = temp_eps;

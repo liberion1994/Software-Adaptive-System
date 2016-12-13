@@ -32,6 +32,7 @@ import jmetal.operators.selection.BinaryTournament;
 import jmetal.operators.selection.SelectionFactory;
 import jmetal.problems.ProblemFactory;
 import jmetal.problems.SAS;
+import jmetal.problems.SASAlgorithmAdaptor;
 import jmetal.problems.SASSolutionInstantiator;
 import jmetal.problems.ZDT.*;
 import jmetal.problems.DTLZ.*;
@@ -54,7 +55,7 @@ import java.util.logging.Logger;
 /**
  * Class for configuring and running the DENSEA algorithm
  */
-public class IBEA_SAS_main {
+public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 	protected Problem problem; // The problem to solve
