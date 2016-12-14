@@ -209,6 +209,7 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 		// Algorithm parameters
 		int popsize = 100;
 		int generations = 10;
+		algorithm.setInputParameter("archiveSize", popsize*5);
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		

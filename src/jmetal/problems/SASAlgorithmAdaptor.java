@@ -1,6 +1,7 @@
 package jmetal.problems;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
@@ -8,6 +9,8 @@ import jmetal.util.JMException;
 
 public abstract class SASAlgorithmAdaptor {
 
+	private static final boolean PRINT_SOLUTIONS = false;
+	
 	public Solution execute(SASSolutionInstantiator factory, int[][] vars,
 			int numberOfObjectives_, int numberOfConstraints_)
 			throws JMException, SecurityException, IOException,
@@ -36,7 +39,13 @@ public abstract class SASAlgorithmAdaptor {
 		}
 		//pareto_front = doRanking(pareto_front);
 		pareto_front = filterRequirementsAfterEvolution(pareto_front);
+		if(PRINT_SOLUTIONS) {
+			printSolutions(pareto_front, numberOfObjectives_);
+		}		
 		pareto_front = doRanking(pareto_front);
+		if(PRINT_SOLUTIONS) {
+			printSolutions(pareto_front, numberOfObjectives_);
+		}
 		printParetoFront(pareto_front);
 		//System.out.print("Pareto front size after dependency and requirement check: " + pareto_front.size() + "\n");
 		return findSoleSolutionAfterEvolution(pareto_front);
@@ -76,6 +85,21 @@ public abstract class SASAlgorithmAdaptor {
 	protected void printParetoFront(SolutionSet pareto_front) {
     }
 	
+	
+	protected void printSolutions(SolutionSet pareto_front, int numberOfObjectives_) {
+		System.out.print("Total number : " + pareto_front.size() + "\n");
+		System.out.print("=========== solutions' objective values ===========\n");
+		Iterator itr = pareto_front.iterator();
+		while(itr.hasNext()) {
+			Solution s = (Solution)itr.next();
+			String str = "(";
+			for(int i = 0; i < numberOfObjectives_; i++) {
+				str = (i +1 == numberOfObjectives_)? str + s.getObjective(i) : 
+					str + s.getObjective(i) + ",";
+			}
+			System.out.print(str+ ")\n");
+		}
+    }
 	
 //	protected void logDependencyAfterEvolution(
 //			SolutionSet pareto_front_without_ranking) {
