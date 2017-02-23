@@ -220,7 +220,7 @@ public class GP_SAS extends Algorithm {
 		
 		if(Double.isNaN(cur_fitness)) {
 			System.out.print("Find one fitness with NaN!\n");
-			cur_fitness = 1.0e+30;
+			cur_fitness = 0;//-1.0e+30;
 		}
 		cur_solution.setFitness(cur_fitness);
 	}
