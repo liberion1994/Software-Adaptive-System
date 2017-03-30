@@ -1,4 +1,4 @@
-package jmetal.problems;
+package org.femosaa.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,8 +22,8 @@ public abstract class SASSolution extends Solution {
 	
 	
 	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
-	protected final static Map<Integer, VarEntity[]> dependencyMap = new HashMap<Integer, VarEntity[]>();
-	protected final static Map<Integer, VarEntity[]> validationDependencyMap = new HashMap<Integer, VarEntity[]>();
+	protected final static Map<Integer, SASVarEntity[]> dependencyMap = new HashMap<Integer, SASVarEntity[]>();
+	protected final static Map<Integer, SASVarEntity[]> validationDependencyMap = new HashMap<Integer, SASVarEntity[]>();
 	// Key = variable index, Value = list of main/dependent variable index.
 	protected final static Map<Integer, List<Integer>> crossoverMap = new HashMap<Integer, List<Integer>>();
 	
@@ -72,7 +72,7 @@ public abstract class SASSolution extends Solution {
 		dependencyMap.clear();
 	}
 	
-	public static Map<Integer, VarEntity[]> getDependencyMap(){
+	public static Map<Integer, SASVarEntity[]> getDependencyMap(){
 		return dependencyMap;
 	}
 
@@ -81,7 +81,7 @@ public abstract class SASSolution extends Solution {
 		//VarEntity[] vars = new VarEntity[1000000]; 
 		//VarEntity v1 = new VarEntity(0, null, null);
 		for (int i = 0; i < 100000; i ++) {
-			VarEntity v1 = new VarEntity(0, null, null);
+			SASVarEntity v1 = new SASVarEntity(0, null, null);
 			//Object obj = new Object();
 		//vars[i] = v1;
 		}
@@ -91,7 +91,7 @@ public abstract class SASSolution extends Solution {
 	
 	private int getUpperBoundforVariable(int index) throws JMException {
 		if (dependencyMap.containsKey(index)) {
-			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
+			SASVarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
@@ -101,7 +101,7 @@ public abstract class SASSolution extends Solution {
 	
 	private Set<Integer> getOptionalValueSet(int index) throws JMException {
 		if (dependencyMap.containsKey(index)) {
-			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
+			SASVarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValuesSet(super.getDecisionVariables());
 		} else {
 			return null;
@@ -116,7 +116,7 @@ public abstract class SASSolution extends Solution {
 
 	private int translateIntoIndexInMainVariable(int index, int subIndex) throws JMException {
 		if (dependencyMap.containsKey(index)) {
-			VarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
+			SASVarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables())[subIndex];
 		} else {
 			return subIndex;
@@ -146,7 +146,7 @@ public abstract class SASSolution extends Solution {
 		}
 		
 		List<Integer> list = new ArrayList<Integer>();
-		for (Map.Entry<Integer, VarEntity[]> entity : dependencyMap.entrySet()) {
+		for (Map.Entry<Integer, SASVarEntity[]> entity : dependencyMap.entrySet()) {
 			if (index == entity.getKey()) {
 				entity.getValue()[0].getMainVariablesByDependentVariable(list);
 			} 
@@ -165,10 +165,10 @@ public abstract class SASSolution extends Solution {
 		}
 		
 		List<Integer> list = new ArrayList<Integer>();
-		for (Map.Entry<Integer, VarEntity[]> entity : dependencyMap.entrySet()) {
+		for (Map.Entry<Integer, SASVarEntity[]> entity : dependencyMap.entrySet()) {
 			
 				
-				VarEntity v = entity.getValue()[0];
+				SASVarEntity v = entity.getValue()[0];
 				
 				do {
 					if(index == v.varIndex) {
@@ -375,12 +375,69 @@ public abstract class SASSolution extends Solution {
 		return true;
 	}
 	
+	
+	public int countDegreeOfViolation(){
+		int count = 0;
+		for (int i = 0; i < super.getDecisionVariables().length; i ++) {
+			try {
+				if(!checkIsValidOnly(i)) {
+					count++;
+				}
+			} catch (JMException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return count;
+	}
+	
+	public double getProbabilityToBeNaturallyRepaired(){
+		double prob = 1;
+		for (int i = 0; i < super.getDecisionVariables().length; i ++) {
+			try {
+				// Only check for invalid genes.
+				prob = prob * getProbabilityToBeNaturallyRepaired(i);
+				
+			} catch (JMException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return prob;
+	}
+	
+	private double getProbabilityToBeNaturallyRepaired(int i) throws JMException {
+		
+		Set<Integer> set = null;
+		if (validationDependencyMap.containsKey(i)) {
+			SASVarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
+			set = v.getOptionalValuesSet(super.getDecisionVariables());
+		}
+		double p = 1.0;
+		
+		final int value = (int) super.getDecisionVariables()[i].getValue();	
+		// Means no dependency or this gene is value, then do nothing.
+		if(set == null || set.contains(value)) {
+			return p;
+		}
+		
+
+		// The number of valid option / the total number of options.
+		p = set.size() / optionalVariables[i].length;
+		
+		// prob of mutation not crossover + prob of crossover not mutation + prob of mutation and crossover
+		return SASAlgorithmAdaptor.MUTATION_RATE * p * (1 - SASAlgorithmAdaptor.CROSSOVER_RATE) +
+		SASAlgorithmAdaptor.CROSSOVER_RATE * p * (1 - SASAlgorithmAdaptor.MUTATION_RATE) +
+		SASAlgorithmAdaptor.CROSSOVER_RATE * p * SASAlgorithmAdaptor.MUTATION_RATE * p;
+	}
+	
+	
 	private boolean checkIsValidOnly(int i) throws JMException {
 
 		int value = (int) super.getDecisionVariables()[i].getValue();
 		Set<Integer> set = null;
 		if (validationDependencyMap.containsKey(i)) {
-			VarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
+			SASVarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
 			set = v.getOptionalValuesSet(super.getDecisionVariables());
 		}
 

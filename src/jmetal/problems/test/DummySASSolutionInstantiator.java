@@ -1,9 +1,10 @@
 package jmetal.problems.test;
 
+import org.femosaa.core.SASSolutionInstantiator;
+
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
-import jmetal.problems.SASSolutionInstantiator;
 
 public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
 

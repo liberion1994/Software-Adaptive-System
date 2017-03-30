@@ -26,14 +26,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 
+import org.femosaa.core.SASSolution;
+import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.core.SASSolutionType;
+
 import jmetal.core.*;
 import jmetal.encodings.solutionType.ArrayRealSolutionType;
 import jmetal.encodings.solutionType.PermutationSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
-import jmetal.problems.SASSolution;
-import jmetal.problems.SASSolutionInstantiator;
-import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;

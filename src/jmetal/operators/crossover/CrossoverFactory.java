@@ -54,7 +54,7 @@ public class CrossoverFactory {
     else if (name.equalsIgnoreCase("DifferentialEvolutionCrossover"))
       return new DifferentialEvolutionCrossover(parameters);
     else if (name.equalsIgnoreCase("UniformCrossoverSAS"))
-    	return new UniformCrossoverSAS(parameters);
+    	return new org.femosaa.operator.UniformCrossoverSAS(parameters);
     else {
       Configuration.logger_.severe("CrossoverFactory.getCrossoverOperator. " +
           "Operator '" + name + "' not found ");

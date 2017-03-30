@@ -1,4 +1,4 @@
-package jmetal.problems;
+package org.femosaa.core;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,11 +7,15 @@ import java.util.Set;
 import jmetal.core.Variable;
 import jmetal.util.JMException;
 
-
-public class VarEntity {
+/**
+ * This is the branch in the value tree.
+ * @author tao
+ *
+ */
+public class SASVarEntity {
 	
 	protected int varIndex;
-	protected VarEntity[] next;
+	protected SASVarEntity[] next;
 	// This correspond to the index in the original set
 	protected Integer[] optionalValues;
 	protected Set<Integer> set;
@@ -24,7 +28,7 @@ public class VarEntity {
 //		this.dependentOptionalValues = dependentOptionalValues;
 //	}
 
-	public VarEntity(int varIndex, Integer[] optionalValues, VarEntity[] next) {
+	public SASVarEntity(int varIndex, Integer[] optionalValues, SASVarEntity[] next) {
 		super();
 		this.varIndex = varIndex;
 		this.optionalValues = optionalValues;
@@ -42,7 +46,7 @@ public class VarEntity {
 		return optionalValues;
 	}
 	
-	public VarEntity[] getNext(){
+	public SASVarEntity[] getNext(){
 		return next;
 	}
 	
@@ -89,7 +93,7 @@ public class VarEntity {
 		}
 	}
 	
-	public void extend(VarEntity[] next){
+	public void extend(SASVarEntity[] next){
 		this.next = next;
 		optionalValues = null;
 		set = null;

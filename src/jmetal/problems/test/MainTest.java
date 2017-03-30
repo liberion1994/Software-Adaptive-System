@@ -1,11 +1,12 @@
 package jmetal.problems.test;
 
+import org.femosaa.core.SAS;
+import org.femosaa.core.SASSolution;
+
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
 import jmetal.metaheuristics.moead.MOEAD_SAS_main;
-import jmetal.problems.SAS;
-import jmetal.problems.SASSolution;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

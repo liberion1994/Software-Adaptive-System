@@ -1,4 +1,4 @@
-package jmetal.problems;
+package org.femosaa.core;
 
 import jmetal.core.*;
 import jmetal.encodings.solutionType.IntSolutionType;

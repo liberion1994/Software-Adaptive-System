@@ -21,9 +21,10 @@
 
 package jmetal.metaheuristics.gp;
 
+import org.femosaa.core.SASSolution;
+import org.femosaa.core.SASSolutionInstantiator;
+
 import jmetal.core.*;
-import jmetal.problems.SASSolution;
-import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.*;
 

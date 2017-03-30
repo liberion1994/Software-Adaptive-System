@@ -1,4 +1,4 @@
-package jmetal.problems;
+package org.femosaa.core;
 
 import jmetal.core.Problem;
 import jmetal.core.SolutionType;

@@ -45,6 +45,12 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.femosaa.core.SAS;
+import org.femosaa.core.SASAlgorithmAdaptor;
+import org.femosaa.core.SASProblemFactory;
+import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+
 
 public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
@@ -90,12 +96,12 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		
 		if (args.length == 1) {
 			Object[] params = { "Real" };
-			problem = (new ProblemFactory()).getProblem(args[0], params);
+			problem = (new SASProblemFactory()).getProblem(args[0], params);
 		}
 		else {
 			if (args.length == 2) {
 				Object[] params = {"Real"};
-				problem = (new ProblemFactory()).getProblem(args[0], params);
+				problem = (new SASProblemFactory()).getProblem(args[0], params);
 			}
 			else { // Default problem
 //				problem = new ZDT1("Real");
@@ -225,6 +231,11 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
+		
+		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
+		     parameters.put("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(parameters));
+		}
+		
 		
 		long initTime = System.currentTimeMillis();
 		

@@ -1,7 +1,8 @@
 package jmetal.problems.test;
 
+import org.femosaa.core.SAS;
+
 import jmetal.core.Problem;
-import jmetal.problems.SAS;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 

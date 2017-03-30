@@ -1,4 +1,4 @@
-package jmetal.operators.crossover;
+package org.femosaa.operator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,16 +16,17 @@ import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
+import jmetal.operators.crossover.Crossover;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.Configuration.*;
 
-public class UniformCrossoverSAS extends Crossover {
+public class ClassicUniformCrossoverSAS extends Crossover {
 	
 	private SASSolutionInstantiator factory;
 	
-	public UniformCrossoverSAS(HashMap<String, Object> parameters) {
+	public ClassicUniformCrossoverSAS(HashMap<String, Object> parameters) {
 		super(parameters);
 		if (parameters
 				.get("jmetal.metaheuristics.moead.SASSolutionInstantiator") == null) {
@@ -62,29 +63,8 @@ public class UniformCrossoverSAS extends Crossover {
 		int valueX1;
 		int valueX2;
 
-		if (parent1 instanceof SASSolution) {
-			for (int i = 0; i < parent1.numberOfVariables(); i++) {
-				((SASSolution)parent1).crossoverWithDependency(i, parent1, parent2, offSpring[0], offSpring[1], 
-						(PseudoRandom.randDouble() < crossoverProbability_));
-//				if (PseudoRandom.randDouble() < crossoverProbability_) {
-//					valueX1 = (int) parent1.getDecisionVariables()[i]
-//							.getValue();
-//					valueX2 = (int) parent2.getDecisionVariables()[i]
-//							.getValue();
-//					offSpring[0].getDecisionVariables()[i].setValue(valueX2);
-//					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
-//				}				
-			}
-			/**if((offSpring[0].getDecisionVariables()[3].getValue() == offSpring[0].getDecisionVariables()[9].getValue() && offSpring[0].getDecisionVariables()[3].getValue() == 1) || 
-					(offSpring[1].getDecisionVariables()[3].getValue() == offSpring[1].getDecisionVariables()[9].getValue() && offSpring[1].getDecisionVariables()[3].getValue() == 1)	) {
-			    System.out.print("***************\n");
-				print(parent1, parent2, offSpring[0], offSpring[1]);
-				System.out.print("***************\n");
-			} else {
-				print(parent1, parent2, offSpring[0], offSpring[1]);
-			}**/
-			//((SASSolution)parent1).crossoverWithDependency(parent1, parent2, offSpring[0], offSpring[1]);
-		} else {
+	
+		
 
 			for (int i = 0; i < parent1.numberOfVariables(); i++) {
 				if (PseudoRandom.randDouble() < crossoverProbability_) {
@@ -96,7 +76,7 @@ public class UniformCrossoverSAS extends Crossover {
 					offSpring[1].getDecisionVariables()[i].setValue(valueX1);
 				}
 			}
-		}
+		
 		try {
 			
 		} catch (ClassCastException e1) {

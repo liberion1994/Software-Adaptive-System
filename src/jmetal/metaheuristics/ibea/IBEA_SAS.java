@@ -22,7 +22,6 @@
 package jmetal.metaheuristics.ibea;
 
 import jmetal.core.*;
-import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.Ranking;
 import jmetal.util.comparators.DominanceComparator;
@@ -36,12 +35,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+
 /**
  * This class implementing the IBEA algorithm
  */
 public class IBEA_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
+	
+	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
 	
 	SolutionSet population_;
 
@@ -307,7 +311,9 @@ public class IBEA_SAS extends Algorithm {
 
 		// knee point which might be used as the output
 		Solution kneeIndividual = factory.getSolution(problem_);
-
+		if(getInputParameter("vandInvCoEvolver") != null) {
+		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
+		}
 		// Read the params
 		populationSize = ((Integer) getInputParameter("populationSize")).intValue();
 		archiveSize    = ((Integer) getInputParameter("archiveSize")).intValue();
@@ -333,6 +339,18 @@ public class IBEA_SAS extends Algorithm {
 			solutionSet.add(newSolution);
 		}
 
+		if(vandInvCoEvolver != null) {
+			for (int i = 0; i < populationSize; i++) {
+				newSolution = factory.getSolution(problem_);
+				vandInvCoEvolver.createInitialSolution(newSolution, problem_);
+//				if(vandInvCoEvolver.createInitialSolution(newSolution, problem_)){
+//					evaluations++;
+//					population.add(newSolution);
+//				}
+				
+			} //for  
+		}
+		
 		while (evaluations < maxEvaluations) {
 			SolutionSet union = ((SolutionSet) solutionSet).union(archive);
 			calculateFitness(union);
@@ -341,10 +359,24 @@ public class IBEA_SAS extends Algorithm {
 			while (archive.size() > populationSize) {
 				removeWorst(archive);
 			}
+			if(vandInvCoEvolver != null && evaluations > 0) {
+				vandInvCoEvolver.doEnvironmentalSelection(archive);
+			}
 			// Create a new offspringPopulation
 			offSpringSolutionSet = new SolutionSet(populationSize);
 			Solution[] parents 	 = new Solution[2];
 			while (offSpringSolutionSet.size() < populationSize) {
+				Solution[] offSpring = null;
+				if(vandInvCoEvolver != null) {
+					parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(archive);
+					parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(archive);
+                    offSpring = vandInvCoEvolver.doReproduction(parents, problem_);
+					
+					for(Solution s : offSpring) {
+						offSpringSolutionSet.add(s);
+						evaluations++;
+					}
+				} 
 				int j = 0;
 				do {
 					j++;
@@ -357,7 +389,7 @@ public class IBEA_SAS extends Algorithm {
 				} while (k < IBEA_SAS.TOURNAMENTS_ROUNDS); // do-while
 
 				// make the crossover
-				Solution[] offSpring = (Solution[]) crossoverOperator
+				offSpring = (Solution[]) crossoverOperator
 						.execute(parents);
 				mutationOperator.execute(offSpring[0]);
 				problem_.evaluate(offSpring[0]);

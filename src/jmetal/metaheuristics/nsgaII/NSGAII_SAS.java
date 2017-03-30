@@ -21,8 +21,10 @@
 
 package jmetal.metaheuristics.nsgaII;
 
+import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+
 import jmetal.core.*;
-import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.comparators.CrowdingComparator;
 import jmetal.util.*;
 
@@ -35,8 +37,11 @@ public class NSGAII_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
 	
+	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
+	
 	SolutionSet population_;
 
+	
 	/**
 	 * Constructor
 	 * @param problem Problem to solve
@@ -78,7 +83,9 @@ public class NSGAII_SAS extends Algorithm {
 
 		// knee point which might be used as the output
 		Solution kneeIndividual = factory.getSolution(problem_);
-
+		if(getInputParameter("vandInvCoEvolver") != null) {
+		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
+		}
 		SolutionSet population;
 		SolutionSet offspringPopulation;
 		SolutionSet union;
@@ -114,18 +121,43 @@ public class NSGAII_SAS extends Algorithm {
 			population.add(newSolution);
 		} //for       
 
+		if(vandInvCoEvolver != null) {
+			for (int i = 0; i < populationSize; i++) {
+				newSolution = factory.getSolution(problem_);
+				vandInvCoEvolver.createInitialSolution(newSolution, problem_);
+//				if(vandInvCoEvolver.createInitialSolution(newSolution, problem_)){
+//					evaluations++;
+//					population.add(newSolution);
+//				}
+				
+			} //for  
+		}
 		// Generations 
 		while (evaluations < maxEvaluations) {
 
 			// Create the offSpring solutionSet      
 			offspringPopulation = new SolutionSet(populationSize);
 			Solution[] parents = new Solution[2];
-			for (int i = 0; i < (populationSize / 2); i++) {
+			//for (int i = 0; i < (populationSize / 2); i++) {
+			while (offspringPopulation.size() < populationSize) {
 				if (evaluations < maxEvaluations) {
+					Solution[] offSpring = null;
 					//obtain parents
+					if(vandInvCoEvolver != null) {
+						parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(population);
+						parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(population);
+                        offSpring = vandInvCoEvolver.doReproduction(parents, problem_);
+						
+						for(Solution s : offSpring) {
+							offspringPopulation.add(s);
+							evaluations++;
+						}
+					} 
 					parents[0] = (Solution) selectionOperator.execute(population);
 					parents[1] = (Solution) selectionOperator.execute(population);
-					Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
+					
+					
+					offSpring = (Solution[]) crossoverOperator.execute(parents);
 					mutationOperator.execute(offSpring[0]);
 					mutationOperator.execute(offSpring[1]);
 					problem_.evaluate(offSpring[0]);
@@ -180,12 +212,15 @@ public class NSGAII_SAS extends Algorithm {
 
 				remain = 0;
 			} // if                               
-
+			if(vandInvCoEvolver != null) {
+				vandInvCoEvolver.doEnvironmentalSelection(population);
+			}
 		} // while
 
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
 		population_ = population;
+		
 		// Return the first non-dominated front
 //		Ranking ranking = new Ranking(population);
 //		return ranking.getSubfront(0);

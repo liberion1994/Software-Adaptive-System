@@ -5,12 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.femosaa.core.SASSolution;
+import org.femosaa.core.SASVarEntity;
+
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.Variable;
 import jmetal.encodings.variable.Int;
-import jmetal.problems.SASSolution;
-import jmetal.problems.VarEntity;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 
@@ -31,35 +32,35 @@ public class DummySASSolution extends SASSolution{
 //						new VarEntity(0,
 //								new int[] {5,6,7,8}, null) });
 		dependencyMap.put(1,
-				new VarEntity[] {
-						new VarEntity(0, null, new VarEntity[] {
-								new VarEntity(2,
+				new SASVarEntity[] {
+						new SASVarEntity(0, null, new SASVarEntity[] {
+								new SASVarEntity(2,
 										new Integer[] {0}, null),
-										new VarEntity(2,
+										new SASVarEntity(2,
 												new Integer[] {0}, null)
 						}),
-						new VarEntity(0,
-								null, new VarEntity[] {
-										new VarEntity(2,
+						new SASVarEntity(0,
+								null, new SASVarEntity[] {
+										new SASVarEntity(2,
 												new Integer[] {0}, null),
-												new VarEntity(2,
+												new SASVarEntity(2,
 														new Integer[] {1,2,3,4 }, null)
 								}),
-						new VarEntity(0,
-								null, new VarEntity[] {
-								new VarEntity(2,
+						new SASVarEntity(0,
+								null, new SASVarEntity[] {
+								new SASVarEntity(2,
 										new Integer[] {7,8}, null),
-										new VarEntity(2,
+										new SASVarEntity(2,
 												new Integer[] {5,6,7,8 }, null)
 						}) 
 						});
 		
 		dependencyMap.put(2,
-		new VarEntity[] {
-				new VarEntity(0, new Integer[] {0}, null),
-				new VarEntity(0,
+		new SASVarEntity[] {
+				new SASVarEntity(0, new Integer[] {0}, null),
+				new SASVarEntity(0,
 						new Integer[] {0}, null),
-				new VarEntity(0,
+				new SASVarEntity(0,
 						new Integer[] {0}, null) });
 		
 		testOptionalVariables = new double[][]

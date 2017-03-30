@@ -1,4 +1,4 @@
-package jmetal.operators.crossover;
+package org.femosaa.operator;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +16,7 @@ import jmetal.encodings.solutionType.BinarySolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.solutionType.RealSolutionType;
 import jmetal.encodings.variable.*;
+import jmetal.operators.crossover.Crossover;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;

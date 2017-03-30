@@ -21,12 +21,13 @@
 
 package jmetal.util.wrapper;
 
+import org.femosaa.core.SASSolutionType;
+
 import jmetal.core.Solution;
 import jmetal.core.SolutionType;
 import jmetal.encodings.solutionType.ArrayIntSolutionType;
 import jmetal.encodings.solutionType.IntSolutionType;
 import jmetal.encodings.variable.ArrayInt;
-import jmetal.problems.SASSolutionType;
 import jmetal.util.Configuration;
 import jmetal.util.JMException;
 

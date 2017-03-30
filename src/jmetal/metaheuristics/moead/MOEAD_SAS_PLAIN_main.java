@@ -3,9 +3,10 @@ package jmetal.metaheuristics.moead;
 import java.io.File;
 import java.util.Random;
 
+import org.femosaa.core.SAS;
+
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
-import jmetal.problems.SAS;
 import jmetal.util.PseudoRandom;
 
 public class MOEAD_SAS_PLAIN_main extends MOEAD_SAS_main{

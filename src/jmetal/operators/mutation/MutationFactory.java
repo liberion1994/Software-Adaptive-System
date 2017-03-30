@@ -45,7 +45,8 @@ public class MutationFactory {
     if (name.equalsIgnoreCase("PolynomialMutation"))
       return new PolynomialMutation(parameters);
     else if (name.equalsIgnoreCase("BitFlipMutation"))
-      return new BitFlipMutation(parameters);
+      return new org.femosaa.operator.BitFlipMutation(parameters);
+      //return new BitFlipMutation(parameters);
     else if (name.equalsIgnoreCase("SwapMutation"))
       return new SwapMutation(parameters);
     else

@@ -26,8 +26,6 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
-import jmetal.problems.SAS;
-import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
@@ -36,6 +34,10 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+
+import org.femosaa.core.SAS;
+import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
 
 /**
  
@@ -49,6 +51,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 	
 
 	private SASSolutionInstantiator factory = null;
+	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
 	// population repository
 	private SolutionSet population_;
 	private SolutionSet currentOffspring_;
@@ -116,7 +119,9 @@ public class MOEAD_STM_SAS extends Algorithm {
 		
 		// knee point which might be used as the output
 		Solution kneeIndividual = factory.getSolution(problem_);
-
+		if(getInputParameter("vandInvCoEvolver") != null) {
+		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
+		}
 		evaluations_    = 0;
 		dataDirectory_  = this.getInputParameter("dataDirectory").toString();
 		maxEvaluations  = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
@@ -147,6 +152,17 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 		// STEP 1.2. initialize population
 		initPopulation();
+		if(vandInvCoEvolver != null) {
+			for (int i = 0; i < populationSize_; i++) {
+				Solution newSolution = factory.getSolution(problem_);
+				vandInvCoEvolver.createInitialSolution(newSolution, problem_);
+//				if(vandInvCoEvolver.createInitialSolution(newSolution, problem_)){
+//					evaluations++;
+//					population.add(newSolution);
+//				}
+				
+			} //for  
+		}
 
 		// STEP 1.3. initialize the ideal and nadir points
 		initIdealPoint();
@@ -161,6 +177,11 @@ public class MOEAD_STM_SAS extends Algorithm {
 			currentOffspring_   = new SolutionSet(2 * order.size());
 			//System.out.print("Run " + evaluations_ + "\n");
 			for (int i = 0; i < order.size(); i++) {
+				// Make sure that the solutions, which will not been added, cannot
+				// update the ideal and nadir points.
+				if(currentOffspring_.size() >= 2 * order.size()) {
+					break;
+				}
 				int n = order.get(i);
 
 				double rnd = PseudoRandom.randDouble();
@@ -175,6 +196,19 @@ public class MOEAD_STM_SAS extends Algorithm {
 				Solution[] children;
 				Solution[] parents = new Solution[2];
 				Vector<Integer> p = new Vector<Integer>();
+				
+				if(vandInvCoEvolver != null) {
+					parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(population_);
+					parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(population_);
+					children = vandInvCoEvolver.doReproduction(parents, problem_);
+					
+					for(Solution s : children) {
+						currentOffspring_.add(s);
+						updateReference(s);
+						updateNadirPoint(s);
+						evaluations_++;
+					}
+				} 
 				
 				parents = matingSelection(p, n, 2, type);
 
@@ -212,6 +246,11 @@ public class MOEAD_STM_SAS extends Algorithm {
 			if (iteration % 30 == 0) {
 				comp_utility();
 			}
+			
+			if(vandInvCoEvolver != null) {
+				vandInvCoEvolver.doEnvironmentalSelection(population_);
+			}
+			
 		} while (evaluations_ <= maxEvaluations && (System.currentTimeMillis() - time) < SAS.TIME_THRESHOLD);
 		
 		// find the knee point
@@ -570,6 +609,7 @@ public class MOEAD_STM_SAS extends Algorithm {
       population_.add(newSolution) ;
       savedValues_[i] = factory.getSolution(newSolution);
     }
+		
   }
 
 	public void initPopulation_Read() throws JMException, ClassNotFoundException {

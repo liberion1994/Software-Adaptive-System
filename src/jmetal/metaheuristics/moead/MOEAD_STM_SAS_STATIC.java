@@ -26,7 +26,6 @@
 package jmetal.metaheuristics.moead;
 
 import jmetal.core.*;
-import jmetal.problems.SASSolutionInstantiator;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
@@ -35,6 +34,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+
+import org.femosaa.core.SASSolutionInstantiator;
 
 /**
  
