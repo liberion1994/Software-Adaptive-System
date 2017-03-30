@@ -6,7 +6,7 @@ This is the repository for an optimization component exploited by [FEMOSAA](http
 By analyzing and extracting dependencies from the Feature Model of a self-adaptive software, we are able to inject the dependency into the mutation/crossover operators of the EA/MOEA. Such information of dependencies can guide the search, providing more chances for finding better solutions. We have currently injected dependency to a modified bit-flip mutation operator and uniform crossover operator, but the injection mechanism itself is generic and is compatible with a ranges of reproduction operators. The details have been reported in a paper which is currently under submission.
 
 Source code directory:
-   * [org/femosaa/](https://github.com/JerryI00/Software-Adaptive-System/tree/master/org/femosaa)
+   * [org/femosaa/](https://github.com/JerryI00/Software-Adaptive-System/tree/master/src/org/femosaa)
 
 ###Knee Solution Selection
 
