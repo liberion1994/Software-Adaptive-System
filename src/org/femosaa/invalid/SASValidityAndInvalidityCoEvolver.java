@@ -116,15 +116,69 @@ public class SASValidityAndInvalidityCoEvolver {
 		}
 
 		SolutionSet population = new SolutionSet();
-		this.selectByViolationThenDiversity(validSolutions, union, population,
-				size);
+		selectByViolationThenDiversity(validSolutions, union, population, size);
+		//selectByViolationNotPushAllThenDiversity(validSolutions, union, population, size);
+		//selectByViolationAndDiversityViaKnee(validSolutions, union, population, size);
+		//selectByViolationAndDiversityViaMutiplcity(validSolutions, union, population, size);
 
 		// Reset the temp set.
 		offSpringInvalidSolutions.clear();
 		invalidSolutions = population;
 	}
 	
-	// TODO add another selectByViolationAndDiversityViaMutiplcity (or knee point)?
+	/**
+	 * We use only probability here.
+	 */
+	private void selectByViolationAndDiversityViaKnee(
+			SolutionSet validSolutions, List<Solution> union,
+			SolutionSet population, int size) {
+		Map<Solution, Double> map = new HashMap<Solution, Double>();
+		Map<Solution, Integer> indics = new HashMap<Solution, Integer>();
+		for (int i = 0; i < union.size(); i++) {
+			map.put(union.get(i), ((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired());
+		}
+		
+		SolutionSet pop = new SolutionSet();
+	
+		while (population.size() < size && union.size() != 0) {
+		
+			pop.clear();
+			indics.clear();
+			for (int i = 0; i < union.size(); i++) {
+				
+				double localShortest = Double.MAX_VALUE;
+
+				for (int j = 0; j < validSolutions.size(); j++) {
+					double d = calculateHammingDistance(union.get(i),
+							validSolutions.get(j));
+					if (d < localShortest) {
+						localShortest = d;
+					}
+				}
+
+				for (int j = 0; j < population.size(); j++) {
+					double d = calculateHammingDistance(union.get(i),
+							population.get(j));
+					if (d < localShortest) {
+						localShortest = d;
+					}
+				}
+				
+				Solution s = new Solution(2);
+				s.setObjective(0, (0 - map.get(union.get(i))));
+				s.setObjective(1, (0 - localShortest));
+				
+			
+				pop.add(s);
+				indics.put(union.get(i), i);
+			}
+			
+			Solution knee = org.femosaa.util.Utils.improvedKneeSelection(pop, 2);
+			
+			population.add(knee);
+			union.remove(indics.get(knee));
+		}	
+	}
 	/**
 	 * We use only probability here.
 	 */
