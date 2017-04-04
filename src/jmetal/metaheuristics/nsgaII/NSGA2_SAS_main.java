@@ -139,7 +139,7 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation", parameters);
 
-		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
+		selection = SelectionFactory.getSelectionOperator("BinaryTournamentRE", parameters);
 
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);

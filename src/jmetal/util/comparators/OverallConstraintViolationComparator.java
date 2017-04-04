@@ -44,17 +44,17 @@ public class OverallConstraintViolationComparator implements Comparator {
     overall1 = ((Solution)o1).getOverallConstraintViolation();
     overall2 = ((Solution)o2).getOverallConstraintViolation();
         
-    if ((overall1 < 0) && (overall2 < 0)) {
-      if (overall1 > overall2){
+    if ((overall1 > 0) && (overall2 > 0)) {
+      if (overall1 < overall2){
         return -1;
-      } else if (overall2 > overall1){
+      } else if (overall2 < overall1){
         return 1;
       } else {
         return 0;
       }
-    } else if ((overall1 == 0) && (overall2 < 0)) {
+    } else if ((overall1 == 0) && (overall2 > 0)) {
       return -1;
-    } else if ((overall1 < 0) && (overall2 == 0)) {        
+    } else if ((overall1 > 0) && (overall2 == 0)) {        
       return 1;
     } else {
       return 0;        
