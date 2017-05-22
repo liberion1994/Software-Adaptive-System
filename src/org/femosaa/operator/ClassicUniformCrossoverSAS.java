@@ -31,7 +31,7 @@ public class ClassicUniformCrossoverSAS extends Crossover {
 		if (parameters
 				.get("jmetal.metaheuristics.moead.SASSolutionInstantiator") == null) {
 			System.err
-					.print("jmetal.metaheuristics.moead.SASSolutionInstantiator has not been instantiated in UniformCrossoverSAS\n");
+					.print("jmetal.metaheuristics.moead.SASSolutionInstantiator has not been instantiated in ClassicUniformCrossoverSAS\n");
 		} else {
 			factory = (SASSolutionInstantiator) parameters
 					.get("jmetal.metaheuristics.moead.SASSolutionInstantiator");

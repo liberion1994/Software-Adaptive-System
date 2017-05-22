@@ -65,7 +65,8 @@ public class SolutionSet implements Serializable {
   * otherwise. 
   */
   public boolean add(Solution solution) {
-    if (solutionsList_.size() == capacity_) {
+    if (solutionsList_.size() == capacity_ && capacity_ != 0) {
+    	//throw new RuntimeException("error");
       Configuration.logger_.severe("The population is full");
       Configuration.logger_.severe("Capacity is : "+capacity_);
       Configuration.logger_.severe("\t Size is: "+ this.size());

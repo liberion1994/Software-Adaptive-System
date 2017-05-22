@@ -225,6 +225,11 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 		crossover = CrossoverFactory.getCrossoverOperator(
 				"UniformCrossoverSAS", parameters);
 		//}
+		
+		
+		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
+			algorithm.setInputParameter("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(factory, 0.9, 0.1, 20));
+		}
 
 		// Mutation operator
 		parameters = new HashMap();
@@ -239,11 +244,6 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 		algorithm.addOperator("mutation", mutation);
 		algorithm.addOperator("selection", selection);
 		
-		
-
-		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
-		     parameters.put("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(parameters));
-		}
 		
 		long initTime = System.currentTimeMillis();
 		

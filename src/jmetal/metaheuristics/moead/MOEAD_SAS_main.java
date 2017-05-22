@@ -221,6 +221,11 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		crossover = CrossoverFactory.getCrossoverOperator(
 				"UniformCrossoverSAS", parameters);
 		//}
+		
+		
+		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
+			algorithm.setInputParameter("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(factory, 0.9, 0.1, 20));
+		}
 
 		// Mutation operator
 		parameters = new HashMap();
@@ -231,10 +236,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
-		
-		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
-		     parameters.put("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(parameters));
-		}
+
 		
 		
 		long initTime = System.currentTimeMillis();

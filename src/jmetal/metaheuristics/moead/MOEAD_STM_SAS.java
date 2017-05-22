@@ -36,6 +36,7 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import org.femosaa.core.SAS;
+import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
 
@@ -203,10 +204,18 @@ public class MOEAD_STM_SAS extends Algorithm {
 					children = vandInvCoEvolver.doReproduction(parents, problem_);
 					
 					for(Solution s : children) {
+						if(currentOffspring_.size() >= 2 * order.size()) {
+							break;
+						}
 						currentOffspring_.add(s);
 						updateReference(s);
 						updateNadirPoint(s);
 						evaluations_++;
+						
+						
+						if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+							((SASSolution)s).isFromInValid = true;
+						}
 					}
 				} 
 				
@@ -221,7 +230,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 				// evaluation
 				problem_.evaluate(children[0]);
 				problem_.evaluate(children[1]);
-				evaluations_++;
+				
 
 				// STEP 2.3. update the ideal and nadir points
 				updateReference(children[0]);
@@ -231,8 +240,19 @@ public class MOEAD_STM_SAS extends Algorithm {
 				updateNadirPoint(children[1]);
 
 				// add into the offspring population
-				currentOffspring_.add(children[0]);
+				if(currentOffspring_.size() >= 2 * order.size()) {
+					break;
+				}
+				currentOffspring_.add(children[0]);				
+				if(currentOffspring_.size() >= 2 * order.size()) {
+					break;
+				}
 				currentOffspring_.add(children[1]);
+				evaluations_++;
+				if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+					((SASSolution)children[0]).isFromInValid = true;
+					((SASSolution)children[1]).isFromInValid = true;
+				}
 			} // for
 			
 			// Combine the parent and the current offspring populations

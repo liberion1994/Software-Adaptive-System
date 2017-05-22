@@ -8,10 +8,11 @@ import jmetal.core.SolutionSet;
 import jmetal.util.JMException;
 
 public abstract class SASAlgorithmAdaptor {
-	
+	public static String valid1 = "", valid2 = "", invalid1 = "", invalid2 = "";
 	protected static double MUTATION_RATE = 0.1;
 	protected static double CROSSOVER_RATE = 0.9;
 	private static final boolean PRINT_SOLUTIONS = false;
+	private static final boolean PRINT_INVALID_SOLUTIONS = false;
 	// This can be changed within SSASE
 	public static boolean isPreserveInvalidSolution = false;
 	
@@ -51,6 +52,10 @@ public abstract class SASAlgorithmAdaptor {
 			printSolutions(pareto_front, numberOfObjectives_);
 		}
 		printParetoFront(pareto_front);
+		if(PRINT_INVALID_SOLUTIONS) {
+			printSolutionsIsFromInvalidity(pareto_front, numberOfObjectives_);
+		}
+		
 		//System.out.print("Pareto front size after dependency and requirement check: " + pareto_front.size() + "\n");
 		return findSoleSolutionAfterEvolution(pareto_front);
 	}
@@ -103,6 +108,40 @@ public abstract class SASAlgorithmAdaptor {
 			}
 			System.out.print(str+ ")\n");
 		}
+    }
+	
+	protected void printSolutionsIsFromInvalidity(SolutionSet pareto_front, int numberOfObjectives_) {
+		System.out.print("Check invalidity, total number : " + pareto_front.size() + "\n");
+		int count = 0;
+		Iterator itr = pareto_front.iterator();
+		String valid1 = "", valid2 = "";
+		String invalid1 = "", invalid2 = "";
+		while(itr.hasNext()) {
+			SASSolution s = (SASSolution)itr.next();
+			if (s.isFromInValid) {
+				count++;
+				invalid1 += s.getObjective(0) + "\n";
+				invalid2 += s.getObjective(1) + "\n";
+			} else {
+				valid1 += s.getObjective(0) + "\n";
+				valid2 += s.getObjective(1) + "\n";
+			}
+		}
+		
+		SASAlgorithmAdaptor.invalid1 += invalid1;
+		SASAlgorithmAdaptor.invalid2 += invalid2;
+		SASAlgorithmAdaptor.valid1 += valid1;
+		SASAlgorithmAdaptor.valid2 += valid2;
+		
+		System.out.print(count + " solutions are the descendants of invalid ones\n");
+		System.out.print("Valid ones 1:\n");
+		System.out.print(valid1);
+		System.out.print("Valid ones 2:\n");
+		System.out.print(valid2);
+		System.out.print("Invalid ones 1:\n");
+		System.out.print(invalid1);
+		System.out.print("Invalid ones 2:\n");
+		System.out.print(invalid2);
     }
 	
 //	protected void logDependencyAfterEvolution(

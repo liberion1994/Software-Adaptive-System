@@ -212,6 +212,10 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 				"UniformCrossoverSAS", parameters);
 		//}
 
+		
+		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
+			algorithm.setInputParameter("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(factory, 0.9, 0.1, 20));
+		}
 		// Mutation operator
 		parameters = new HashMap();
 		parameters.put("probability", 0.1);
@@ -225,10 +229,6 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		algorithm.addOperator("mutation", mutation);
 		algorithm.addOperator("selection", selection);
 		
-
-		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
-		     parameters.put("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(parameters));
-		}
 		
 		long initTime = System.currentTimeMillis();
 		

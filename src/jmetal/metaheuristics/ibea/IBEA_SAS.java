@@ -373,6 +373,9 @@ public class IBEA_SAS extends Algorithm {
                     offSpring = vandInvCoEvolver.doReproduction(parents, problem_);
 					
 					for(Solution s : offSpring) {
+						if(offSpringSolutionSet.size() >= populationSize) {
+							break;
+						}
 						offSpringSolutionSet.add(s);
 						evaluations++;
 					}
@@ -394,6 +397,9 @@ public class IBEA_SAS extends Algorithm {
 				mutationOperator.execute(offSpring[0]);
 				problem_.evaluate(offSpring[0]);
 				problem_.evaluateConstraints(offSpring[0]);
+				if(offSpringSolutionSet.size() >= populationSize) {
+					break;
+				}
 				offSpringSolutionSet.add(offSpring[0]);
 				evaluations++;
 				

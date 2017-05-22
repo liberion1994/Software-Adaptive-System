@@ -21,6 +21,7 @@
 
 package jmetal.metaheuristics.nsgaII;
 
+import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
 
@@ -149,8 +150,14 @@ public class NSGAII_SAS extends Algorithm {
                         offSpring = vandInvCoEvolver.doReproduction(parents, problem_);
 						
 						for(Solution s : offSpring) {
+							if(offspringPopulation.size() >= populationSize) {
+								break;
+							}
 							offspringPopulation.add(s);
 							evaluations++;
+							if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+								((SASSolution)s).isFromInValid = true;
+							}
 						}
 					} 
 					parents[0] = (Solution) selectionOperator.execute(population);
@@ -164,9 +171,20 @@ public class NSGAII_SAS extends Algorithm {
 					problem_.evaluateConstraints(offSpring[0]);
 					problem_.evaluate(offSpring[1]);
 					problem_.evaluateConstraints(offSpring[1]);
+					if(offspringPopulation.size() >= populationSize) {
+						break;
+					}
 					offspringPopulation.add(offSpring[0]);
+					evaluations++;
+					if(offspringPopulation.size() >= populationSize) {
+						break;
+					}
 					offspringPopulation.add(offSpring[1]);
-					evaluations += 2;
+					evaluations++;
+					if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+						((SASSolution)offSpring[0]).isFromInValid = true;
+						((SASSolution)offSpring[1]).isFromInValid = true;
+					}
 				} // if                            
 			} // for
 

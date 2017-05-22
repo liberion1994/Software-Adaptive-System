@@ -16,12 +16,16 @@ import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
 
 import org.femosaa.core.SASSolution;
+import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.operator.ClassicBitFlipMutation;
 import org.femosaa.operator.ClassicUniformCrossoverSAS;
 import org.femosaa.operator.InvalidityAwareBinaryTournament2;
 
 public class SASValidityAndInvalidityCoEvolver {
 
+	
+	private static final boolean PRINT_INVALID_SOLUTION = false;
+	private int validSolutionCounter = 0;
 	// this merges the two populations together
 	// private SolutionSet allSolutions;
 	private SolutionSet invalidSolutions;
@@ -33,12 +37,23 @@ public class SASValidityAndInvalidityCoEvolver {
 	private Operator mutationOperator;
 	private Operator crossoverOperator;
 
-	public SASValidityAndInvalidityCoEvolver(HashMap<String, Object> parameters) {
+	public SASValidityAndInvalidityCoEvolver(SASSolutionInstantiator factory, double crossRate, double mutationRate, double distributionIndex) {
 		invalidSolutions = new SolutionSet();
 		offSpringInvalidSolutions = new SolutionSet();
+		
+		HashMap parameters = new HashMap();
+		
 		// This can be changed to other modified ones.
 		selectionOperator = new InvalidityAwareBinaryTournament2(parameters);
+		parameters = new HashMap();
+		parameters.put("probability", 0.5);
+		parameters.put("distributionIndex", 20.0);
+		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
+				factory);
 		crossoverOperator = new ClassicUniformCrossoverSAS(parameters);
+		parameters = new HashMap();
+		parameters.put("probability", 0.5);
+		parameters.put("distributionIndex", 20.0);
 		mutationOperator = new ClassicBitFlipMutation(parameters);
 	}
 
@@ -53,12 +68,24 @@ public class SASValidityAndInvalidityCoEvolver {
 		} // if
 
 		if (((SASSolution) solution).isSolutionValid()) {
+
 			// problem_.evaluate(solution);
 			// problem_.evaluateConstraints(solution);
+			//System.out.print("true\n");
 			return true;
 		}
-
+		
+//		String o = "";
+//		for (int i = 0; i < solution.getDecisionVariables().length; i++) {
+//			o += solution.getDecisionVariables()[i].getValue() + ", ";
+//		}
+//		
+//		System.out.print("Valid " + o + "\n" );
+		
+		//System.out.print("false\n");
 		invalidSolutions.add(solution);
+		((SASSolution) solution).isFromInValid = true;
+		//System.out.print("invalidSolutions: " + invalidSolutions.size() + "\n");
 		return false;
 	}
 
@@ -82,6 +109,7 @@ public class SASValidityAndInvalidityCoEvolver {
 			count = 0;
 		} else {
 			offSpringInvalidSolutions.add(offSpring[0]);
+			((SASSolution) offSpring[0]).isFromInValid = true;
 		}
 
 		if (((SASSolution) offSpring[1]).isSolutionValid()) {
@@ -90,12 +118,13 @@ public class SASValidityAndInvalidityCoEvolver {
 			count = count == 0 ? 2 : 1;
 		} else {
 			offSpringInvalidSolutions.add(offSpring[1]);
+			((SASSolution) offSpring[1]).isFromInValid = true;
 		}
-
+		//System.out.print(count+"\n");
 		if (count == -1) {
 			return new Solution[] {};
 		}
-
+		validSolutionCounter = validSolutionCounter + count;
 		return count == 2 ? offSpring
 				: count == 0 ? new Solution[] { offSpring[0] }
 						: new Solution[] { offSpring[1] };
@@ -105,6 +134,8 @@ public class SASValidityAndInvalidityCoEvolver {
 		// This could be changed.
 		int size = validSolutions.size();
 
+	
+		
 		List<Solution> union = new ArrayList<Solution>();
 
 		for (int i = 0; i < invalidSolutions.size(); i++) {
@@ -115,15 +146,31 @@ public class SASValidityAndInvalidityCoEvolver {
 			union.add(offSpringInvalidSolutions.get(i));
 		}
 
+		//System.out.print("offSpringInvalidSolutions: " + offSpringInvalidSolutions.size() + "\n");
+		
 		SolutionSet population = new SolutionSet();
-		selectByViolationThenDiversity(validSolutions, union, population, size);
+		//selectByViolationThenDiversity(validSolutions, union, population, size);
 		//selectByViolationNotPushAllThenDiversity(validSolutions, union, population, size);
+		//selectByViolationWithProbNotPushAllThenDiversity(validSolutions, union, population, size);
 		//selectByViolationAndDiversityViaKnee(validSolutions, union, population, size);
-		//selectByViolationAndDiversityViaMutiplcity(validSolutions, union, population, size);
+		selectByViolationAndDiversityViaMutiplcity(validSolutions, union, population, size);
 
+	
 		// Reset the temp set.
 		offSpringInvalidSolutions.clear();
 		invalidSolutions = population;
+		
+		if(PRINT_INVALID_SOLUTION) {
+			int n = 0;
+			for (int i = 0;i < invalidSolutions.size(); i++) {
+				if(!((SASSolution)invalidSolutions.get(i)).isSolutionValid()) {
+					n++;
+				}
+			}
+			
+			System.out.print("After EnvironmentalSelection, whole size " + invalidSolutions.size() + ", invalid ones: " + n + "\n");
+		}
+		System.out.print("Found " + validSolutionCounter + " valid solutions\n");
 	}
 	
 	/**
@@ -133,6 +180,7 @@ public class SASValidityAndInvalidityCoEvolver {
 			SolutionSet validSolutions, List<Solution> union,
 			SolutionSet population, int size) {
 		Map<Solution, Double> map = new HashMap<Solution, Double>();
+		Map<Solution, Solution> subMap = new HashMap<Solution, Solution>();
 		Map<Solution, Integer> indics = new HashMap<Solution, Integer>();
 		for (int i = 0; i < union.size(); i++) {
 			map.put(union.get(i), ((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired());
@@ -144,6 +192,7 @@ public class SASValidityAndInvalidityCoEvolver {
 		
 			pop.clear();
 			indics.clear();
+			subMap.clear();
 			for (int i = 0; i < union.size(); i++) {
 				
 				double localShortest = Double.MAX_VALUE;
@@ -165,17 +214,18 @@ public class SASValidityAndInvalidityCoEvolver {
 				}
 				
 				Solution s = new Solution(2);
-				s.setObjective(0, (0 - map.get(union.get(i))));
-				s.setObjective(1, (0 - localShortest));
+				s.setObjective(0, (map.get(union.get(i)) == 0? Double.MAX_VALUE : 1/(1+map.get(union.get(i)))));
+				s.setObjective(1, (localShortest == 0? Double.MAX_VALUE : 1/localShortest));
 				
 			
 				pop.add(s);
+				subMap.put(s, union.get(i));
 				indics.put(union.get(i), i);
 			}
 			
 			Solution knee = org.femosaa.util.Utils.improvedKneeSelection(pop, 2);
 			
-			population.add(knee);
+			population.add(subMap.get(knee));
 			union.remove(indics.get(knee));
 		}	
 	}
@@ -187,14 +237,33 @@ public class SASValidityAndInvalidityCoEvolver {
 			SolutionSet population, int size) {
 		
 		Map<Solution, Double> map = new HashMap<Solution, Double>();
+		Map<Solution, Double> disMap = new HashMap<Solution, Double>();
+		double max = Double.MIN_VALUE, min =  Double.MAX_VALUE;
 		for (int i = 0; i < union.size(); i++) {
-			map.put(union.get(i), ((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired());
+			map.put(union.get(i), ((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired());	
+			if(map.get(union.get(i)) > max) {
+				max = map.get(union.get(i));
+			}
+			
+			if(map.get(union.get(i)) < min) {
+				min = map.get(union.get(i));
+			}
+		}
+		
+		for (int i = 0; i < union.size(); i++) {
+			//System.out.print("p: "+map.get(union.get(i)) + "\n");
+			// Need to prevent 0
+			double p = min != max? (map.get(union.get(i)) - min)/(max - min) : (map.get(union.get(i)))/max;
+			map.put(union.get(i), p);
 		}
 		
 		while (population.size() < size && union.size() != 0) {
 			Solution add = null;
 			int index = -1;
 			double largest = Double.MIN_VALUE;
+			disMap.clear();
+			max = Double.MIN_VALUE; 
+			min = Double.MAX_VALUE;
 			for (int i = 0; i < union.size(); i++) {
 				
 				double localShortest = Double.MAX_VALUE;
@@ -215,15 +284,42 @@ public class SASValidityAndInvalidityCoEvolver {
 					}
 				}
 				
-				double rank = map.get(union.get(i)) * localShortest;
+				disMap.put(union.get(i), localShortest);
+				
+				if(disMap.get(union.get(i)) > max) {
+					max = disMap.get(union.get(i));
+				}
+				
+				if(disMap.get(union.get(i)) < min) {
+					min = disMap.get(union.get(i));
+				}
+				
+				
+			}
+			
+			for (int i = 0; i < union.size(); i++) {
+				double d = min != max? (disMap.get(union.get(i)) - min)/(max - min) : (disMap.get(union.get(i)))/max;
+				double p = map.get(union.get(i));
+				if(d == 0) d = 1;
+				if(p == 0) p = 1;
+				
+				//d = 1;
+				
+				//System.out.print("after - d: "+d +", p:" + p + "\n");
+				//System.out.print(d + " -distance: " + disMap.get(union.get(i)) + "\n");
+				//System.out.print("prob: " + map.get(union.get(i)) + "\n");
+				double rank = p * d;
 				if(rank > largest) {
 					largest = rank;
 					add = union.get(i);
 					index = i;
 				}
-				
 			}
 			
+			
+			
+			
+			//System.out.print(largest+"\n");
 			population.add(add);
 			union.remove(index);
 		}	
@@ -241,7 +337,8 @@ public class SASValidityAndInvalidityCoEvolver {
 			Solution s = new Solution(2);
 			map.put(s, i);
 			s.setObjective(0, useCount? ((SASSolution)union.get(i)).countDegreeOfViolation() :
-				(0 - ((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired()));
+				(((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired() == 0? Double.MAX_VALUE : 
+					1/(1+((SASSolution)union.get(i)).getProbabilityToBeNaturallyRepaired())));
 			
 			
 
@@ -256,7 +353,7 @@ public class SASValidityAndInvalidityCoEvolver {
 				}
 			}
 
-			s.setObjective(1, (0 - localShortest));
+			s.setObjective(1, (localShortest == 0? Double.MAX_VALUE : 1/localShortest));
 			newPopulation.add(s);
 		}
 		
@@ -326,6 +423,10 @@ public class SASValidityAndInvalidityCoEvolver {
 					size, false, true);
 		}
 
+		if(selected == null) {
+			return;
+		}
+		
 		this.insertInvalidSolutionsByDistance(validSolutions, population,
 				selected, size, true);
 	}
@@ -347,14 +448,19 @@ public class SASValidityAndInvalidityCoEvolver {
 			// Get the ones that have the least number of violation/largest
 			// probability
 			for (int i = 0; i < union.size(); i++) {
-				double c = isProb ? (0 - ((SASSolution) union.get(i))
-						.getProbabilityToBeNaturallyRepaired())
+				double c = isProb ? (((SASSolution) union.get(i))
+						.getProbabilityToBeNaturallyRepaired() == 0? Double.MAX_VALUE : 1/(1+((SASSolution) union.get(i))
+						.getProbabilityToBeNaturallyRepaired()))
 						: ((SASSolution) union.get(i)).countDegreeOfViolation();
 				if (!map.containsKey(c)) {
 					map.put(c, new SolutionSet());
 				}
-
-				sort.add(c);
+				
+				
+                // Only one entry per violation level
+				if(!sort.contains(c)) {
+				    sort.add(c);
+				}
 
 				map.get(c).add(union.get(i));
 			}
@@ -377,6 +483,9 @@ public class SASValidityAndInvalidityCoEvolver {
 				return null;
 			}
 		} else {
+			if(s == null) {
+				System.out.print(population.size());
+			}
 			if (s.size() <= (size - population.size())) {
 				for (int i = 0; i < s.size(); i++) {
 					union.remove(s.get(i));
@@ -395,9 +504,11 @@ public class SASValidityAndInvalidityCoEvolver {
 		boolean isChanged = true;
 		List<DiversitySort> list = new ArrayList<DiversitySort>();
 
-		double currentProb = 1;
-		double decentProb = 1 / selected.size();
+		double currentProb = 1d;
+		double decentProb = 1d / selected.size();
 
+		
+		
 		while (count > 0) {
 
 			if (isChanged) {
@@ -441,7 +552,7 @@ public class SASValidityAndInvalidityCoEvolver {
 					isChanged = true;
 					// do not need to list.remove(0), as the list will be cleared anyway.
 				} else {
-					isChanged = false;
+					isChanged = true;
 					list.remove(0);
 				}
 
@@ -460,7 +571,7 @@ public class SASValidityAndInvalidityCoEvolver {
 		int d = 0;
 
 		for (int i = 0; i < s1.getDecisionVariables().length; i++) {
-			double v1 = 0, v2 = 0;
+			double v1 = 0d, v2 = 0d;
 			try {
 				v1 = s1.getDecisionVariables()[i].getValue();
 				v2 = s2.getDecisionVariables()[i].getValue();

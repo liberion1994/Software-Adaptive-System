@@ -19,7 +19,7 @@ import jmetal.util.PseudoRandom;
  *
  */
 public abstract class SASSolution extends Solution {
-	
+	public boolean isFromInValid = false;
 	
 	// Key = variable index of dependent variable, the VarEntity has the same order as the original values array.
 	protected final static Map<Integer, SASVarEntity[]> dependencyMap = new HashMap<Integer, SASVarEntity[]>();
@@ -68,9 +68,21 @@ public abstract class SASSolution extends Solution {
 	}
 	
 	public static synchronized void clearAndStoreForValidationOnly(){
+		if(validationDependencyMap.size() != 0) return;
 		validationDependencyMap.putAll(dependencyMap);
 		dependencyMap.clear();
 	}
+	
+	/**
+	 * For testing only
+	 */
+	public static synchronized void putDependencyChainBack(){
+		if(dependencyMap.size() != 0) return;
+		dependencyMap.putAll(validationDependencyMap);
+		validationDependencyMap.clear();
+	}
+	
+	
 	
 	public static Map<Integer, SASVarEntity[]> getDependencyMap(){
 		return dependencyMap;
@@ -89,14 +101,13 @@ public abstract class SASSolution extends Solution {
 	}
 	
 	
-	private int getUpperBoundforVariable(int index) throws JMException {
+	private int getUpperBoundforVariable(int index) throws JMException {	
 		if (dependencyMap.containsKey(index)) {
 			SASVarEntity v = dependencyMap.get(index)[(int) super.getDecisionVariables()[dependencyMap.get(index)[0].getVarIndex()].getValue()];
 			return v.getOptionalValues(super.getDecisionVariables()).length - 1;
 		} else {
 			return optionalVariables[index].length - 1;
 		}
-	
 	}
 	
 	private Set<Integer> getOptionalValueSet(int index) throws JMException {
@@ -408,9 +419,12 @@ public abstract class SASSolution extends Solution {
 	
 	private double getProbabilityToBeNaturallyRepaired(int i) throws JMException {
 		
+		Map<Integer, SASVarEntity[]> map = validationDependencyMap.size() == 0? dependencyMap : validationDependencyMap;
+		
+		
 		Set<Integer> set = null;
-		if (validationDependencyMap.containsKey(i)) {
-			SASVarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
+		if (map.containsKey(i)) {
+			SASVarEntity v = map.get(i)[(int) super.getDecisionVariables()[map.get(i)[0].getVarIndex()].getValue()];
 			set = v.getOptionalValuesSet(super.getDecisionVariables());
 		}
 		double p = 1.0;
@@ -423,8 +437,8 @@ public abstract class SASSolution extends Solution {
 		
 
 		// The number of valid option / the total number of options.
-		p = set.size() / optionalVariables[i].length;
-		
+		p = (double)set.size() / (double)optionalVariables[i].length;
+		//System.out.print(set.size() + "\n");
 		// prob of mutation not crossover + prob of crossover not mutation + prob of mutation and crossover
 		return SASAlgorithmAdaptor.MUTATION_RATE * p * (1 - SASAlgorithmAdaptor.CROSSOVER_RATE) +
 		SASAlgorithmAdaptor.CROSSOVER_RATE * p * (1 - SASAlgorithmAdaptor.MUTATION_RATE) +
@@ -434,10 +448,13 @@ public abstract class SASSolution extends Solution {
 	
 	private boolean checkIsValidOnly(int i) throws JMException {
 
+		Map<Integer, SASVarEntity[]> map = validationDependencyMap.size() == 0? dependencyMap : validationDependencyMap;
+		
+		
 		int value = (int) super.getDecisionVariables()[i].getValue();
 		Set<Integer> set = null;
-		if (validationDependencyMap.containsKey(i)) {
-			SASVarEntity v = validationDependencyMap.get(i)[(int) super.getDecisionVariables()[validationDependencyMap.get(i)[0].getVarIndex()].getValue()];
+		if (map.containsKey(i)) {
+			SASVarEntity v = map.get(i)[(int) super.getDecisionVariables()[map.get(i)[0].getVarIndex()].getValue()];
 			set = v.getOptionalValuesSet(super.getDecisionVariables());
 		}
 
@@ -447,7 +464,7 @@ public abstract class SASSolution extends Solution {
 		}
 		
 
-		
+		//System.out.print(set.contains(value)+"\n");
 		return set.contains(value);
 	}
 	
