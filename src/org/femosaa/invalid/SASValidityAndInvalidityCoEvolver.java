@@ -6,14 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 import jmetal.core.Operator;
 import jmetal.core.Problem;
 import jmetal.core.Solution;
 import jmetal.core.SolutionSet;
+import jmetal.util.Distance;
 import jmetal.util.JMException;
 import jmetal.util.PseudoRandom;
 import jmetal.util.Ranking;
+import jmetal.util.comparators.CrowdingComparator;
 
 import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
@@ -24,7 +27,17 @@ import org.femosaa.operator.InvalidityAwareBinaryTournament2;
 public class SASValidityAndInvalidityCoEvolver {
 
 	
+	/***
+	 * TODO 
+	 * 1.1 change different crossover operators
+	 * 1.2 use 3 parents to generate 3 offsprings
+	 * 
+	 * 
+	 * 2. change the way of setting values. using % to set the fitness values.DONE
+	 */
+	
 	private static final boolean PRINT_INVALID_SOLUTION = false;
+	private static final boolean FAKE_FITNESS = false;
 	private int validSolutionCounter = 0;
 	// this merges the two populations together
 	// private SolutionSet allSolutions;
@@ -32,15 +45,15 @@ public class SASValidityAndInvalidityCoEvolver {
 
 	private SolutionSet offSpringInvalidSolutions;
 
-	private Operator selectionOperator;
+	private InvalidityAwareBinaryTournament2 selectionOperator;
 
 	private Operator mutationOperator;
 	private Operator crossoverOperator;
-
+	private SASSolutionInstantiator factory;
 	public SASValidityAndInvalidityCoEvolver(SASSolutionInstantiator factory, double crossRate, double mutationRate, double distributionIndex) {
 		invalidSolutions = new SolutionSet();
 		offSpringInvalidSolutions = new SolutionSet();
-		
+		this.factory = factory;
 		HashMap parameters = new HashMap();
 		
 		// This can be changed to other modified ones.
@@ -52,7 +65,7 @@ public class SASValidityAndInvalidityCoEvolver {
 				factory);
 		crossoverOperator = new ClassicUniformCrossoverSAS(parameters);
 		parameters = new HashMap();
-		parameters.put("probability", 0.5);
+		parameters.put("probability", 0.1);
 		parameters.put("distributionIndex", 20.0);
 		mutationOperator = new ClassicBitFlipMutation(parameters);
 	}
@@ -84,6 +97,12 @@ public class SASValidityAndInvalidityCoEvolver {
 		
 		//System.out.print("false\n");
 		invalidSolutions.add(solution);
+		if(FAKE_FITNESS) {
+			for (int i = 0 ; i < solution.numberOfObjectives(); i++) {
+				solution.setObjective(i, Double.MAX_VALUE);
+	        }
+		}
+		
 		((SASSolution) solution).isFromInValid = true;
 		//System.out.print("invalidSolutions: " + invalidSolutions.size() + "\n");
 		return false;
@@ -94,13 +113,105 @@ public class SASValidityAndInvalidityCoEvolver {
 		return (Solution) selectionOperator.execute(new SolutionSet[] {
 				validSolutions, invalidSolutions });
 	}
+	
+	public Solution doMatingSelection(SolutionSet validSolutions,
+			boolean isValid) throws JMException {
+		return isValid? (Solution) selectionOperator.executeValid(validSolutions) : 
+			(Solution)  selectionOperator.executeInvalid(invalidSolutions);
+	}
 
+	
+	private void generateInvalidSolution(Problem problem_) throws JMException{
+		int n = 2;
+//		while (n > 0) {
+//			Solution s = factory.getSolution(problem_);
+//			for (int i = 0; i < s.getDecisionVariables().length; i++) {
+//
+//				int value = (int) (PseudoRandom.randInt(
+//						(int) s.getDecisionVariables()[i].getLowerBound(),
+//						(int) s.getDecisionVariables()[i].getUpperBound()));
+//				s.getDecisionVariables()[i].setValue(value);
+//			} // if
+//			if(!((SASSolution)s).isSolutionValid()) {
+//				offSpringInvalidSolutions.add(s);
+//				n--;
+//			}
+//		}
+		
+		
+		while (n > 0) {
+			Solution[] parents = new Solution[]{doMatingSelection(null), doMatingSelection(null)};
+			Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
+			mutationOperator.execute(offSpring[0]);
+			mutationOperator.execute(offSpring[1]);
+			
+			if (((SASSolution) offSpring[0]).isSolutionValid()) {
+				offSpringInvalidSolutions.add(offSpring[0]);
+				n--;
+				if(FAKE_FITNESS) {
+					setFakeFitness(parents, offSpring[0]);			 
+				}
+			}
+			
+			if (((SASSolution) offSpring[1]).isSolutionValid()) {
+				offSpringInvalidSolutions.add(offSpring[1]);
+				n--;
+				if(FAKE_FITNESS) {
+					setFakeFitness(parents, offSpring[1]);			 
+				}
+			}
+		}
+		
+		
+	}
+	
+	private void setFakeFitness  (Solution[] parents, Solution offSpring) throws JMException{
+
+		int s1 = 0, s2 = 0;
+		for (int i = 0 ; i < parents[0].numberOfVariables(); i++) {
+			if(parents[0].getDecisionVariables()[i].getValue() == offSpring.getDecisionVariables()[i].getValue() ) {
+				s1++;
+			}
+			if(parents[1].getDecisionVariables()[i].getValue() == offSpring.getDecisionVariables()[i].getValue() ) {
+				s2++;
+			}
+		}
+		
+		if(parents[0].getObjective(0) == 0) {
+			s1 = 0;
+		}
+		if(parents[1].getObjective(0) == 0) {
+			s2 = 0;
+		}
+	
+		double v1 = 0.5, v2 = 0.5;
+		if(s1 == 0 && s2 == 0) {
+		} else {
+			v1 = s1 / (s1+s2);
+			v2 = s2 / (s1+s2);
+		}
+		
+		for (int i = 0 ; i < parents[0].numberOfObjectives(); i++) {
+		        offSpring.setObjective(i, 
+				parents[0].getObjective(i) * v1 +  parents[1].getObjective(i) * v2);
+	    }
+		
+//		for (int i = 0 ; i < parents[0].numberOfObjectives(); i++) {
+//			double v0 = parents[0].getObjective(i) == 0? Double.MAX_VALUE : parents[0].getObjective(i);
+//			double v1 = parents[1].getObjective(i) == 0? Double.MAX_VALUE : parents[1].getObjective(i);
+//			offSpring[0].setObjective(i, v0 < v1? 
+//					v0 : v1);
+//		}
+	}
+	
 	public Solution[] doReproduction(Solution[] parents, Problem problem_)
 			throws JMException {
 		Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
 		mutationOperator.execute(offSpring[0]);
 		mutationOperator.execute(offSpring[1]);
-
+		// *******************************
+		//generateInvalidSolution(problem_);
+		// *******************************
 		int count = -1;// 0 = first one, 1 = second one, 2 = both
 
 		if (((SASSolution) offSpring[0]).isSolutionValid()) {
@@ -110,6 +221,9 @@ public class SASValidityAndInvalidityCoEvolver {
 		} else {
 			offSpringInvalidSolutions.add(offSpring[0]);
 			((SASSolution) offSpring[0]).isFromInValid = true;
+			if(FAKE_FITNESS) {
+				setFakeFitness(parents, offSpring[0]);			 
+			}
 		}
 
 		if (((SASSolution) offSpring[1]).isSolutionValid()) {
@@ -119,6 +233,9 @@ public class SASValidityAndInvalidityCoEvolver {
 		} else {
 			offSpringInvalidSolutions.add(offSpring[1]);
 			((SASSolution) offSpring[1]).isFromInValid = true;
+			if(FAKE_FITNESS) {
+				setFakeFitness(parents, offSpring[1]);			 
+			}
 		}
 		//System.out.print(count+"\n");
 		if (count == -1) {
@@ -145,17 +262,21 @@ public class SASValidityAndInvalidityCoEvolver {
 		for (int i = 0; i < offSpringInvalidSolutions.size(); i++) {
 			union.add(offSpringInvalidSolutions.get(i));
 		}
+		SolutionSet population = new SolutionSet();
+		if(FAKE_FITNESS) {
+			population = selectBasedOnFakeFitness(union, size, 2);
+		} else {
 
 		//System.out.print("offSpringInvalidSolutions: " + offSpringInvalidSolutions.size() + "\n");
 		
-		SolutionSet population = new SolutionSet();
+	
 		//selectByViolationThenDiversity(validSolutions, union, population, size);
 		//selectByViolationNotPushAllThenDiversity(validSolutions, union, population, size);
 		//selectByViolationWithProbNotPushAllThenDiversity(validSolutions, union, population, size);
 		//selectByViolationAndDiversityViaKnee(validSolutions, union, population, size);
 		selectByViolationAndDiversityViaMutiplcity(validSolutions, union, population, size);
-
-	
+		//selectRandomly(validSolutions, union, population, size);
+		}
 		// Reset the temp set.
 		offSpringInvalidSolutions.clear();
 		invalidSolutions = population;
@@ -171,6 +292,58 @@ public class SASValidityAndInvalidityCoEvolver {
 			System.out.print("After EnvironmentalSelection, whole size " + invalidSolutions.size() + ", invalid ones: " + n + "\n");
 		}
 		System.out.print("Found " + validSolutionCounter + " valid solutions\n");
+	}
+	
+	
+	private SolutionSet selectBasedOnFakeFitness(List<Solution> union, int size, int no){
+		Distance distance = new Distance();
+		SolutionSet population = new SolutionSet();
+		SolutionSet set = new SolutionSet();
+		for (Solution s : union) {
+			set.add(s);
+		}
+		
+		// Ranking the union
+		Ranking ranking = new Ranking(set);
+
+		int remain = size;
+		int index = 0;
+		SolutionSet front = null;
+		population.clear();
+
+		// Obtain the next front
+		front = ranking.getSubfront(index);
+
+		while ((remain > 0) && (remain >= front.size())) {
+			//Assign crowding distance to individuals
+			distance.crowdingDistanceAssignment(front, no);
+			//Add the individuals of this front
+			for (int k = 0; k < front.size(); k++) {
+				population.add(front.get(k));
+			} // for
+
+			//Decrement remain
+			remain = remain - front.size();
+
+			//Obtain the next front
+			index++;
+			if (remain > 0 && index < ranking.getNumberOfSubfronts()) {
+				front = ranking.getSubfront(index);
+			} // if        
+		} // while
+
+		// Remain is less than front(index).size, insert only the best one
+		if (remain > 0) {  // front contains individuals to insert                        
+			distance.crowdingDistanceAssignment(front, no);
+			front.sort(new CrowdingComparator());
+			for (int k = 0; k < remain; k++) {
+				population.add(front.get(k));
+			} // for
+
+			remain = 0;
+		} // if     
+		
+		return population;
 	}
 	
 	/**
@@ -229,6 +402,16 @@ public class SASValidityAndInvalidityCoEvolver {
 			union.remove(indics.get(knee));
 		}	
 	}
+	
+	private void selectRandomly(
+			SolutionSet validSolutions, List<Solution> union,
+			SolutionSet population, int size) {
+		Random r = new Random();
+		for (int i = 0;i<size;i++) {
+			population.add(union.get(r.nextInt(union.size())));
+		}
+	}
+	
 	/**
 	 * We use only probability here.
 	 */
@@ -253,8 +436,8 @@ public class SASValidityAndInvalidityCoEvolver {
 		for (int i = 0; i < union.size(); i++) {
 			//System.out.print("p: "+map.get(union.get(i)) + "\n");
 			// Need to prevent 0
-			double p = min != max? (map.get(union.get(i)) - min)/(max - min) : (map.get(union.get(i)))/max;
-			map.put(union.get(i), p);
+			//double p = min != max? (map.get(union.get(i)) - min)/(max - min) : (map.get(union.get(i)))/max;
+			//map.put(union.get(i), p);
 		}
 		
 		while (population.size() < size && union.size() != 0) {
@@ -298,7 +481,7 @@ public class SASValidityAndInvalidityCoEvolver {
 			}
 			
 			for (int i = 0; i < union.size(); i++) {
-				double d = min != max? (disMap.get(union.get(i)) - min)/(max - min) : (disMap.get(union.get(i)))/max;
+				double d = disMap.get(union.get(i));// min != max? (disMap.get(union.get(i)) - min)/(max - min) : (disMap.get(union.get(i)))/max;
 				double p = map.get(union.get(i));
 				if(d == 0) d = 1;
 				if(p == 0) p = 1;
@@ -317,9 +500,7 @@ public class SASValidityAndInvalidityCoEvolver {
 			}
 			
 			
-			
-			
-			//System.out.print(largest+"\n");
+			//System.out.print("Largest rank "+largest  + "\n");
 			population.add(add);
 			union.remove(index);
 		}	
@@ -568,7 +749,11 @@ public class SASValidityAndInvalidityCoEvolver {
 
 	private double calculateHammingDistance(Solution s1, Solution s2) {
 
-		int d = 0;
+//		if(1==1) {
+//			return calculateEuclideanDistance(s1,s2);
+//		}
+		
+		double d = 0.0;
 
 		for (int i = 0; i < s1.getDecisionVariables().length; i++) {
 			double v1 = 0d, v2 = 0d;
@@ -586,6 +771,27 @@ public class SASValidityAndInvalidityCoEvolver {
 		}
 
 		return d;
+	}
+	
+	private double calculateEuclideanDistance(Solution s1, Solution s2) {
+
+		double d = 0.0;
+
+		for (int i = 0; i < s1.getDecisionVariables().length; i++) {
+			double v1 = 0d, v2 = 0d;
+			try {
+				v1 = s1.getDecisionVariables()[i].getValue();
+				v2 = s2.getDecisionVariables()[i].getValue();
+			} catch (JMException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			d += Math.pow((v1-v2),2);
+			
+		}
+
+		return Math.pow(d, 0.5);
 	}
 
 	private class DiversitySort implements Comparable {

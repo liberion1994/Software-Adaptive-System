@@ -45,6 +45,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.femosaa.core.EAConfigure;
 import org.femosaa.core.SAS;
 import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASProblemFactory;
@@ -198,8 +199,8 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Algorithm parameters
 	
-		algorithm.setInputParameter("populationSize", popsize);
-		algorithm.setInputParameter("maxEvaluations", popsize * factor);
+		algorithm.setInputParameter("populationSize", EAConfigure.getInstance().pop_size);
+		algorithm.setInputParameter("maxEvaluations", EAConfigure.getInstance().pop_size * EAConfigure.getInstance().generation);
 		
 		algorithm.setInputParameter("dataDirectory", System.getProperty("os.name").startsWith("Mac")? "weight" : "/home/tao/weight");
 		//algorithm.setInputParameter("lambda", factory.getLambda());
@@ -213,7 +214,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 //					"DifferentialEvolutionCrossover", parameters);
 //		} else {
 		parameters = new HashMap();
-		parameters.put("probability", 0.9);
+		parameters.put("probability", EAConfigure.getInstance().crossover_rate);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -229,7 +230,7 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.1);
+		parameters.put("probability", EAConfigure.getInstance().mutation_rate);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);

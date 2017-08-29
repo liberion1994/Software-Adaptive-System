@@ -48,6 +48,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.femosaa.core.EAConfigure;
 import org.femosaa.core.SAS;
 import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASProblemFactory;
@@ -209,15 +210,15 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new IBEA_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 100;
-		int generations = 10;
+		int popsize = EAConfigure.getInstance().pop_size;
+		int generations = EAConfigure.getInstance().generation;
 		algorithm.setInputParameter("archiveSize", popsize*5);
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
 		// Crossover operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.9);
+		parameters.put("probability", EAConfigure.getInstance().crossover_rate);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -233,7 +234,7 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.1);
+		parameters.put("probability", EAConfigure.getInstance().mutation_rate);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);

@@ -9,12 +9,14 @@ import jmetal.util.JMException;
 
 public abstract class SASAlgorithmAdaptor {
 	public static String valid1 = "", valid2 = "", invalid1 = "", invalid2 = "";
-	protected static double MUTATION_RATE = 0.1;
-	protected static double CROSSOVER_RATE = 0.9;
-	private static final boolean PRINT_SOLUTIONS = false;
+	//protected static double MUTATION_RATE = 0.1;
+	//protected static double CROSSOVER_RATE = 0.9;
+	private static final boolean PRINT_SOLUTIONS = true;
 	private static final boolean PRINT_INVALID_SOLUTIONS = false;
 	// This can be changed within SSASE
 	public static boolean isPreserveInvalidSolution = false;
+	// This can be changed within SSASE
+	public static boolean isSeedSolution = false;
 	
 	public Solution execute(SASSolutionInstantiator factory, int[][] vars,
 			int numberOfObjectives_, int numberOfConstraints_)

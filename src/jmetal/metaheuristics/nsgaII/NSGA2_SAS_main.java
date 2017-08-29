@@ -46,11 +46,13 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.femosaa.core.EAConfigure;
 import org.femosaa.core.SAS;
 import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASProblemFactory;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.Seeder;
 
 
 public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
@@ -196,14 +198,14 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		algorithm = new NSGAII_SAS(problem, factory);
 
 		// Algorithm parameters
-		int popsize = 100;
-		int generations = 10;
+		int popsize = EAConfigure.getInstance().pop_size;
+		int generations = EAConfigure.getInstance().generation;
 		algorithm.setInputParameter("populationSize", popsize);
 		algorithm.setInputParameter("maxEvaluations", popsize * generations);
 		
 		// Crossover operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.9);
+		parameters.put("probability", EAConfigure.getInstance().crossover_rate);
 		parameters.put("distributionIndex", 20.0);
 		// This needs to change in testing.
 		parameters.put("jmetal.metaheuristics.moead.SASSolutionInstantiator",
@@ -216,12 +218,18 @@ public class NSGA2_SAS_main extends SASAlgorithmAdaptor{
 		if(SASAlgorithmAdaptor.isPreserveInvalidSolution) {
 			algorithm.setInputParameter("vandInvCoEvolver", new SASValidityAndInvalidityCoEvolver(factory, 0.9, 0.1, 20));
 		}
+		
+		
 		// Mutation operator
 		parameters = new HashMap();
-		parameters.put("probability", 0.1);
+		parameters.put("probability", EAConfigure.getInstance().mutation_rate);
 		parameters.put("distributionIndex", 20.0);
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
+		
+		if(SASAlgorithmAdaptor.isSeedSolution) {
+			algorithm.setInputParameter("seeder", new Seeder(mutation));		
+		}
 
 		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
 

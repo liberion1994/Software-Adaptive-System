@@ -440,9 +440,9 @@ public abstract class SASSolution extends Solution {
 		p = (double)set.size() / (double)optionalVariables[i].length;
 		//System.out.print(set.size() + "\n");
 		// prob of mutation not crossover + prob of crossover not mutation + prob of mutation and crossover
-		return SASAlgorithmAdaptor.MUTATION_RATE * p * (1 - SASAlgorithmAdaptor.CROSSOVER_RATE) +
-		SASAlgorithmAdaptor.CROSSOVER_RATE * p * (1 - SASAlgorithmAdaptor.MUTATION_RATE) +
-		SASAlgorithmAdaptor.CROSSOVER_RATE * p * SASAlgorithmAdaptor.MUTATION_RATE * p;
+		return EAConfigure.getInstance().mutation_rate * p * (1 - EAConfigure.getInstance().crossover_rate) +
+		EAConfigure.getInstance().crossover_rate * p * (1 - EAConfigure.getInstance().mutation_rate) +
+		EAConfigure.getInstance().crossover_rate * p * EAConfigure.getInstance().mutation_rate * p;
 	}
 	
 	

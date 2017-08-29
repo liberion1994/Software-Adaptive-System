@@ -24,6 +24,7 @@ package jmetal.metaheuristics.nsgaII;
 import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.Seeder;
 
 import jmetal.core.*;
 import jmetal.util.comparators.CrowdingComparator;
@@ -39,7 +40,7 @@ public class NSGAII_SAS extends Algorithm {
 	private SASSolutionInstantiator factory = null;
 	
 	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
-	
+	private Seeder seeder = null;
 	SolutionSet population_;
 
 	
@@ -87,6 +88,9 @@ public class NSGAII_SAS extends Algorithm {
 		if(getInputParameter("vandInvCoEvolver") != null) {
 		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
 		}
+		if(getInputParameter("seeder") != null) {
+			seeder = (Seeder)getInputParameter("seeder");
+		}
 		SolutionSet population;
 		SolutionSet offspringPopulation;
 		SolutionSet union;
@@ -112,15 +116,21 @@ public class NSGAII_SAS extends Algorithm {
 		crossoverOperator = operators_.get("crossover");
 		selectionOperator = operators_.get("selection");
 
-		// Create the initial solutionSet
 		Solution newSolution;
-		for (int i = 0; i < populationSize; i++) {
-			newSolution = factory.getSolution(problem_);
-			problem_.evaluate(newSolution);
-			problem_.evaluateConstraints(newSolution);
-			evaluations++;
-			population.add(newSolution);
-		} //for       
+		if (seeder != null) {
+			seeder.seeding(population, factory, problem_, populationSize);
+			evaluations += populationSize;
+		} else {
+			// Create the initial solutionSet			
+			for (int i = 0; i < populationSize; i++) {
+				newSolution = factory.getSolution(problem_);
+				problem_.evaluate(newSolution);
+				problem_.evaluateConstraints(newSolution);
+				evaluations++;
+				population.add(newSolution);
+			} //for 
+		}
+	      
 
 		if(vandInvCoEvolver != null) {
 			for (int i = 0; i < populationSize; i++) {
@@ -141,12 +151,15 @@ public class NSGAII_SAS extends Algorithm {
 			Solution[] parents = new Solution[2];
 			//for (int i = 0; i < (populationSize / 2); i++) {
 			while (offspringPopulation.size() < populationSize) {
+				int c = 2;
 				if (evaluations < maxEvaluations) {
 					Solution[] offSpring = null;
 					//obtain parents
 					if(vandInvCoEvolver != null) {
-						parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(population);
-						parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(population);
+						//parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(population);
+						//parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(population);
+						parents[0] = (Solution) vandInvCoEvolver.doMatingSelection(population, true);
+						parents[1] = (Solution) vandInvCoEvolver.doMatingSelection(population, false);
                         offSpring = vandInvCoEvolver.doReproduction(parents, problem_);
 						
 						for(Solution s : offSpring) {
@@ -155,7 +168,8 @@ public class NSGAII_SAS extends Algorithm {
 							}
 							offspringPopulation.add(s);
 							evaluations++;
-							if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+							c--;
+							if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[1]).isFromInValid) {
 								((SASSolution)s).isFromInValid = true;
 							}
 						}
@@ -171,17 +185,24 @@ public class NSGAII_SAS extends Algorithm {
 					problem_.evaluateConstraints(offSpring[0]);
 					problem_.evaluate(offSpring[1]);
 					problem_.evaluateConstraints(offSpring[1]);
+					if(c == 0) {
+						continue;
+					}
 					if(offspringPopulation.size() >= populationSize) {
 						break;
 					}
 					offspringPopulation.add(offSpring[0]);
 					evaluations++;
+					c--;
+					if(c == 0) {
+						continue;
+					}
 					if(offspringPopulation.size() >= populationSize) {
 						break;
 					}
 					offspringPopulation.add(offSpring[1]);
 					evaluations++;
-					if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[0]).isFromInValid) {
+					if(((SASSolution)parents[0]).isFromInValid || ((SASSolution)parents[1]).isFromInValid) {
 						((SASSolution)offSpring[0]).isFromInValid = true;
 						((SASSolution)offSpring[1]).isFromInValid = true;
 					}
