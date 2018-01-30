@@ -21,6 +21,9 @@
 
 package jmetal.metaheuristics.nsgaII;
 
+import java.util.Iterator;
+
+import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
@@ -131,6 +134,10 @@ public class NSGAII_SAS extends Algorithm {
 			} //for 
 		}
 	      
+		if (SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0) {
+			org.femosaa.util.Logger.logSolutionSetWithGeneration(population,
+					"InitialSolutionSet.rtf", 0);
+		}
 
 		if(vandInvCoEvolver != null) {
 			for (int i = 0; i < populationSize; i++) {
@@ -146,6 +153,16 @@ public class NSGAII_SAS extends Algorithm {
 		// Generations 
 		while (evaluations < maxEvaluations) {
 
+//
+//			Iterator itr = population.iterator();
+//			double no = 0.0;
+//			while(itr.hasNext()) {
+//				Solution s = (Solution)itr.next();
+//				if(((SASSolution)s).isFromInValid) {
+//					no++;
+//				}
+//			}
+//			System.out.print("("+evaluations+","+(no/population.size()) + ")\n");
 			// Create the offSpring solutionSet      
 			offspringPopulation = new SolutionSet(populationSize);
 			Solution[] parents = new Solution[2];
@@ -254,8 +271,21 @@ public class NSGAII_SAS extends Algorithm {
 			if(vandInvCoEvolver != null) {
 				vandInvCoEvolver.doEnvironmentalSelection(population);
 			}
+			
+			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
+				org.femosaa.util.Logger.logSolutionSetWithGeneration(population, "SolutionSetWithGen.rtf", 
+						evaluations );
+			}
 		} // while
-
+//		Iterator itr = population.iterator();
+//		double no = 0.0;
+//		while(itr.hasNext()) {
+//			Solution s = (Solution)itr.next();
+//			if(((SASSolution)s).isFromInValid) {
+//				no++;
+//			}
+//		}
+//		System.out.print("("+evaluations+","+(no/population.size()) + ")\n");
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
 		population_ = population;

@@ -31,4 +31,8 @@ public class EAConfigure {
 	public static EAConfigure getInstance(){
 		return con;
 	}
+	
+	public void setupWSConfiguration(){
+		con = new EAConfigure(100, 50, 0.9, 0.1);
+	}
 }

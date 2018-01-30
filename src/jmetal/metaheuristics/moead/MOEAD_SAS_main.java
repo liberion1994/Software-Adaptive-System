@@ -51,14 +51,15 @@ import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASProblemFactory;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.NewSeeder;
 
 
 public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 	public static Logger logger_; // Logger object
 	public static FileHandler fileHandler_; // FileHandler object
 
-	public static int popsize = 100;
-	public static int factor = 10;
+	public static int popsize = EAConfigure.getInstance().pop_size;//100;
+	public static int factor = EAConfigure.getInstance().generation;//10;
 	
 	protected Problem problem; // The problem to solve
 	protected Algorithm algorithm; // The algorithm to use
@@ -235,6 +236,11 @@ public class MOEAD_SAS_main extends SASAlgorithmAdaptor{
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
 
+		if(SASAlgorithmAdaptor.isSeedSolution) {
+			//algorithm.setInputParameter("seeder", new Seeder(mutation));	
+			algorithm.setInputParameter("seeder", NewSeeder.getInstance(mutation));			
+		}
+		
 		algorithm.addOperator("crossover", crossover);
 		algorithm.addOperator("mutation", mutation);
 

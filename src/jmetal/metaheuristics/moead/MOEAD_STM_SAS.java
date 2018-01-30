@@ -36,9 +36,11 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 import org.femosaa.core.SAS;
+import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.Seeder;
 
 /**
  
@@ -53,6 +55,7 @@ public class MOEAD_STM_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
 	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
+	private Seeder seeder = null;
 	// population repository
 	private SolutionSet population_;
 	private SolutionSet currentOffspring_;
@@ -122,6 +125,9 @@ public class MOEAD_STM_SAS extends Algorithm {
 		Solution kneeIndividual = factory.getSolution(problem_);
 		if(getInputParameter("vandInvCoEvolver") != null) {
 		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
+		}
+		if(getInputParameter("seeder") != null) {
+			seeder = (Seeder)getInputParameter("seeder");
 		}
 		evaluations_    = 0;
 		dataDirectory_  = this.getInputParameter("dataDirectory").toString();
@@ -269,6 +275,11 @@ public class MOEAD_STM_SAS extends Algorithm {
 			
 			if(vandInvCoEvolver != null) {
 				vandInvCoEvolver.doEnvironmentalSelection(population_);
+			}
+			
+			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations_%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
+				org.femosaa.util.Logger.logSolutionSetWithGeneration(population_, "SolutionSetWithGen.rtf", 
+						evaluations_ );
 			}
 			
 		} while (evaluations_ <= maxEvaluations && (System.currentTimeMillis() - time) < SAS.TIME_THRESHOLD);
@@ -621,14 +632,26 @@ public class MOEAD_STM_SAS extends Algorithm {
    * @throws ClassNotFoundException
    */
   public void initPopulation() throws JMException, ClassNotFoundException {
-	  for (int i = 0; i < populationSize_; i++) {
-      Solution newSolution = factory.getSolution(problem_);
+	  if (seeder != null) {
+			seeder.seeding(population_, factory, problem_, populationSize_);
+			evaluations_ += populationSize_;
+			Iterator itr = population_.iterator();
+			int i = 0;
+			while (itr.hasNext()) {
+				  savedValues_[i] = factory.getSolution((Solution)itr.next());
+				  i++;
+			}
+		} else {
+			 for (int i = 0; i < populationSize_; i++) {
+			      Solution newSolution = factory.getSolution(problem_);
 
-      problem_.evaluate(newSolution);
-      evaluations_++;
-      population_.add(newSolution) ;
-      savedValues_[i] = factory.getSolution(newSolution);
-    }
+			      problem_.evaluate(newSolution);
+			      evaluations_++;
+			      population_.add(newSolution) ;
+			      savedValues_[i] = factory.getSolution(newSolution);
+			  }
+		}
+	 
 		
   }
 

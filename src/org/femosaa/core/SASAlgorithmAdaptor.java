@@ -13,10 +13,16 @@ public abstract class SASAlgorithmAdaptor {
 	//protected static double CROSSOVER_RATE = 0.9;
 	private static final boolean PRINT_SOLUTIONS = true;
 	private static final boolean PRINT_INVALID_SOLUTIONS = false;
+	private static final boolean LOG_SOLUTIONS = true;
+	private static final boolean LOG_NON_DOMINATED_SOLUTIONS = false;
+	
+	private static final boolean LOG_SOLUTIONS_VALUES = false;
 	// This can be changed within SSASE
 	public static boolean isPreserveInvalidSolution = false;
 	// This can be changed within SSASE
-	public static boolean isSeedSolution = false;
+	public static boolean isSeedSolution = true;
+	// This is actually number of function evaluation
+	public static int logGenerationOfObjectiveValue = 500;//5000; // <=0 means disabled.
 	
 	public Solution execute(SASSolutionInstantiator factory, int[][] vars,
 			int numberOfObjectives_, int numberOfConstraints_)
@@ -49,9 +55,19 @@ public abstract class SASAlgorithmAdaptor {
 		if(PRINT_SOLUTIONS) {
 			printSolutions(pareto_front, numberOfObjectives_);
 		}		
+		if(LOG_SOLUTIONS) {
+			org.femosaa.util.Logger.logSolutionSet(pareto_front, "SolutionSet.rtf");
+			org.femosaa.util.Logger.logPercentageOfMarkedSolution(pareto_front, "HowManyFromSeeds.rtf");
+		}	
+		if(LOG_SOLUTIONS_VALUES) {
+			org.femosaa.util.Logger.logSolutionSetValues(pareto_front, "SolutionSetValue.rtf");
+		}	
 		pareto_front = doRanking(pareto_front);
 		if(PRINT_SOLUTIONS) {
 			printSolutions(pareto_front, numberOfObjectives_);
+		}
+		if(LOG_NON_DOMINATED_SOLUTIONS) {
+			org.femosaa.util.Logger.logSolutionSet(pareto_front, "NonDominatedSolutionSet.rtf");
 		}
 		printParetoFront(pareto_front);
 		if(PRINT_INVALID_SOLUTIONS) {

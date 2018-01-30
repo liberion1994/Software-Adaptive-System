@@ -15,6 +15,8 @@ import jmetal.util.PseudoRandom;
 /**
  * Need to ensure that the order of variables is the same as control primitives.
  * 
+ * The variable here refer to the index value, whereas the one in xValue in QualityOfService is the actual value
+ * 
  * @author tao
  *
  */

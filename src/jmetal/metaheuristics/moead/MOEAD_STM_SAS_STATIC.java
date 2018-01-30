@@ -35,7 +35,9 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolutionInstantiator;
+import org.femosaa.seed.Seeder;
 
 /**
  
@@ -48,6 +50,7 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 	private int populationSize_;
 	
 	private SASSolutionInstantiator factory = null;
+	private Seeder seeder = null;
 	// population repository
 	private SolutionSet population_;
 	private SolutionSet currentOffspring_;
@@ -109,7 +112,9 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 		
 		// knee point which might be used as the output
 		Solution kneeIndividual = factory.getSolution(problem_);
-
+		if(getInputParameter("seeder") != null) {
+			seeder = (Seeder)getInputParameter("seeder");
+		}
 		evaluations_    = 0;
 		dataDirectory_  = this.getInputParameter("dataDirectory").toString();
 		maxEvaluations  = ((Integer) this.getInputParameter("maxEvaluations")).intValue();
@@ -134,8 +139,12 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 		initNeighborhood();
 
 		// STEP 1.2. initialize population
-		initPopulation();
-
+		if (seeder != null) {
+			seeder.seeding(population_, factory, problem_, populationSize_);
+			evaluations_ += populationSize_;
+		} else {
+		    initPopulation();
+		}
 		// STEP 1.3. initialize the ideal and nadir points
 		initIdealPoint();
 		initNadirPoint();
@@ -187,6 +196,10 @@ public class MOEAD_STM_SAS_STATIC extends Algorithm {
 
 			// selection process
 			selection();
+			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0&& evaluations_%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
+				org.femosaa.util.Logger.logSolutionSetWithGeneration(population_, "SolutionSetWithGen.rtf", 
+						evaluations_);
+			}
 		} while (evaluations_ <= maxEvaluations);
 		
 		// find the knee point

@@ -54,6 +54,7 @@ import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASProblemFactory;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.NewSeeder;
 
 /**
  * Class for configuring and running the DENSEA algorithm
@@ -239,6 +240,11 @@ public class IBEA_SAS_main extends SASAlgorithmAdaptor{
 		mutation = MutationFactory.getMutationOperator("BitFlipMutation",
 				parameters);
 
+		if(SASAlgorithmAdaptor.isSeedSolution) {
+			//algorithm.setInputParameter("seeder", new Seeder(mutation));	
+			algorithm.setInputParameter("seeder", NewSeeder.getInstance(mutation));			
+		}
+		
 		selection = SelectionFactory.getSelectionOperator("BinaryTournament2", parameters);
 
 		algorithm.addOperator("crossover", crossover);

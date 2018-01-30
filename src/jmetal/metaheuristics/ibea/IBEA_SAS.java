@@ -35,8 +35,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolutionInstantiator;
 import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
+import org.femosaa.seed.Seeder;
 
 /**
  * This class implementing the IBEA algorithm
@@ -44,7 +46,7 @@ import org.femosaa.invalid.SASValidityAndInvalidityCoEvolver;
 public class IBEA_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
-	
+	private Seeder seeder = null;
 	private SASValidityAndInvalidityCoEvolver vandInvCoEvolver = null;
 	
 	SolutionSet population_;
@@ -311,6 +313,9 @@ public class IBEA_SAS extends Algorithm {
 
 		// knee point which might be used as the output
 		Solution kneeIndividual = factory.getSolution(problem_);
+		if(getInputParameter("seeder") != null) {
+			seeder = (Seeder)getInputParameter("seeder");
+		}
 		if(getInputParameter("vandInvCoEvolver") != null) {
 		    vandInvCoEvolver = (SASValidityAndInvalidityCoEvolver)getInputParameter("vandInvCoEvolver");
 		}
@@ -331,12 +336,17 @@ public class IBEA_SAS extends Algorithm {
 
 		// -> Create the initial solutionSet
 		Solution newSolution;
-		for (int i = 0; i < populationSize; i++) {
-			newSolution = factory.getSolution(problem_);
-			problem_.evaluate(newSolution);
-			problem_.evaluateConstraints(newSolution);
-			evaluations++;
-			solutionSet.add(newSolution);
+		if (seeder != null) {
+			seeder.seeding(solutionSet, factory, problem_, populationSize);
+			evaluations += populationSize;
+		} else {
+			for (int i = 0; i < populationSize; i++) {
+				newSolution = factory.getSolution(problem_);
+				problem_.evaluate(newSolution);
+				problem_.evaluateConstraints(newSolution);
+				evaluations++;
+				solutionSet.add(newSolution);
+			}
 		}
 
 		if(vandInvCoEvolver != null) {
@@ -359,6 +369,9 @@ public class IBEA_SAS extends Algorithm {
 			while (archive.size() > populationSize) {
 				removeWorst(archive);
 			}
+			
+			
+			
 			if(vandInvCoEvolver != null && evaluations > 0) {
 				vandInvCoEvolver.doEnvironmentalSelection(archive);
 			}
@@ -407,6 +420,11 @@ public class IBEA_SAS extends Algorithm {
 
 			// End Create a offSpring solutionSet
 			solutionSet = offSpringSolutionSet; 
+			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0 
+					&& evaluations > 0) {
+				org.femosaa.util.Logger.logSolutionSetWithGeneration(archive, "SolutionSetWithGen.rtf", 
+						evaluations);
+			}
 		} // while
 
 		// 
