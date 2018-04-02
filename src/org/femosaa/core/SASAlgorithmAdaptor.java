@@ -21,6 +21,8 @@ public abstract class SASAlgorithmAdaptor {
 	public static boolean isPreserveInvalidSolution = false;
 	// This can be changed within SSASE
 	public static boolean isSeedSolution = true;
+	// This can be changed within SSASE
+	public static boolean isLogTheEvalNeededToRemiveNonSeed = true;
 	// This is actually number of function evaluation
 	public static int logGenerationOfObjectiveValue = 500;//5000; // <=0 means disabled.
 	

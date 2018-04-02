@@ -12,7 +12,8 @@ import jmetal.core.SolutionSet;
 
 public class Logger {
 	public static final String prefix = "/Users/tao/research/monitor/ws-soa/sas/";
-	
+	// This attribute is only used for testing
+	public static int max_number_of_eval_to_have_only_seed = 0;
 	public static synchronized void logSolutionSet(SolutionSet pareto_front, String name){
 		File file = null;
 		if(!(file = new File(prefix)).exists()){
@@ -130,5 +131,20 @@ public class Logger {
 		}
 		
 		
+	}
+	
+	public static synchronized void printMarkedSolution(SolutionSet pareto_front, int eval){
+		Iterator itr = pareto_front.iterator();
+		int no = 0;
+		while(itr.hasNext()) {
+			Solution s = (Solution)itr.next();
+			if(((SASSolution)s).isFromInValid) {
+				no++;
+			}
+		}
+		System.out.print("from seed: " + no + "\n");
+		if(no == pareto_front.size() && max_number_of_eval_to_have_only_seed == 0) {
+			max_number_of_eval_to_have_only_seed = eval;
+		}
 	}
 }

@@ -271,6 +271,9 @@ public class NSGAII_SAS extends Algorithm {
 			if(vandInvCoEvolver != null) {
 				vandInvCoEvolver.doEnvironmentalSelection(population);
 			}
+			if(SASAlgorithmAdaptor.isLogTheEvalNeededToRemiveNonSeed) {
+				org.femosaa.util.Logger.printMarkedSolution(population, evaluations);
+			}
 			
 			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
 				org.femosaa.util.Logger.logSolutionSetWithGeneration(population, "SolutionSetWithGen.rtf", 
