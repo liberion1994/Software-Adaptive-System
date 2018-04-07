@@ -1,5 +1,5 @@
 # The MOEA for Search-based Self-Adaptive Software Engine (SSASE)
-This is the repository for the MOEA BASED optimization component exploited by [Search-based Self-Adaptive Software Engine (SSASE)](https://github.com/taochen/ssase). It specifically contains the tailored algorithms for the following work:
+This is the repository for the MOEA based optimization component exploited by [Search-based Self-Adaptive Software Engine (SSASE)](https://github.com/taochen/ssase). It specifically contains the tailored algorithms for the following work:
 
 - - - -
 
