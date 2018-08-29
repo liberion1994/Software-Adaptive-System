@@ -4,6 +4,7 @@ import org.femosaa.core.SASSolutionInstantiator;
 
 import jmetal.core.Problem;
 import jmetal.core.Solution;
+import jmetal.core.SolutionSet;
 import jmetal.core.Variable;
 
 public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
@@ -50,6 +51,20 @@ public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
 
 	@Override
 	public double[][] getLambda() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	@Override
+	public Solution defuzzilize(int i, SolutionSet newPopulation,
+			SolutionSet oldPopulation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public SolutionSet fuzzilize(SolutionSet set) {
 		// TODO Auto-generated method stub
 		return null;
 	}

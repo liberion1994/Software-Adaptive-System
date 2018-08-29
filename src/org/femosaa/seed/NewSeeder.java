@@ -29,6 +29,8 @@ public class NewSeeder extends Seeder{
 	private SolutionSet history = new SolutionSet();
 
 	private static NewSeeder seeder = null;
+	private static long time = 0;
+	private static int count = 0;
 	
 	public static NewSeeder getInstance(Operator mutationOperator){
 		if(seeder == null) {
@@ -85,7 +87,7 @@ public class NewSeeder extends Seeder{
 		
 		
 		
-		
+		long t = System.currentTimeMillis();
 		SolutionSet set = null;
 		switch (strategy) {
 		case AO_Seed:
@@ -102,7 +104,9 @@ public class NewSeeder extends Seeder{
 			break;
 
 		}
-		
+		time += System.currentTimeMillis() - t;
+		count ++;
+		System.out.print("Average seeding overhead " + (time/count) + " ms\n");
 		
 		for(int i = 0; i < set.size(); i++) {
 			population.add(set.get(i));

@@ -35,4 +35,10 @@ public class EAConfigure {
 	public void setupWSConfiguration(){
 		con = new EAConfigure(100, 50, 0.9, 0.1);
 	}
+	
+	public void setupWSConfigurationOnlyMutation(){
+		con = new EAConfigure(100, 50, 0.9,  0.1);
+	}
+	
+
 }

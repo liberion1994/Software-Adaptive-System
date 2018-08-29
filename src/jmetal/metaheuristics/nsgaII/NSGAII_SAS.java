@@ -150,9 +150,13 @@ public class NSGAII_SAS extends Algorithm {
 				
 			} //for  
 		}
+		
+		long time = Long.MAX_VALUE;
+		
 		// Generations 
-		while (evaluations < maxEvaluations) {
-
+		while (evaluations < maxEvaluations || (evaluations >= maxEvaluations && (System.currentTimeMillis() - time) < -1 )) {
+			System.out.print("no" + evaluations + "***eval\n");
+		
 //
 //			Iterator itr = population.iterator();
 //			double no = 0.0;
@@ -169,7 +173,7 @@ public class NSGAII_SAS extends Algorithm {
 			//for (int i = 0; i < (populationSize / 2); i++) {
 			while (offspringPopulation.size() < populationSize) {
 				int c = 2;
-				if (evaluations < maxEvaluations) {
+				if (evaluations < maxEvaluations || (evaluations >= maxEvaluations)) {
 					Solution[] offSpring = null;
 					//obtain parents
 					if(vandInvCoEvolver != null) {
@@ -193,8 +197,9 @@ public class NSGAII_SAS extends Algorithm {
 					} 
 					parents[0] = (Solution) selectionOperator.execute(population);
 					parents[1] = (Solution) selectionOperator.execute(population);
-					
-					
+					//offSpring  = new Solution[2];
+					//offSpring[0] = factory.getSolution(parents[0]);
+					//offSpring[1] = factory.getSolution(parents[1]);
 					offSpring = (Solution[]) crossoverOperator.execute(parents);
 					mutationOperator.execute(offSpring[0]);
 					mutationOperator.execute(offSpring[1]);
@@ -278,6 +283,9 @@ public class NSGAII_SAS extends Algorithm {
 			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
 				org.femosaa.util.Logger.logSolutionSetWithGeneration(population, "SolutionSetWithGen.rtf", 
 						evaluations );
+			}
+			if(evaluations >= maxEvaluations && time == Long.MAX_VALUE) {
+				time = System.currentTimeMillis();
 			}
 		} // while
 //		Iterator itr = population.iterator();

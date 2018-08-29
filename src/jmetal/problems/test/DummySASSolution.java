@@ -174,6 +174,12 @@ public class DummySASSolution extends SASSolution{
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public void updateNormalizationBounds(double[] f) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 
 }

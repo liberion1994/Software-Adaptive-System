@@ -25,7 +25,8 @@ public abstract class SASAlgorithmAdaptor {
 	public static boolean isLogTheEvalNeededToRemiveNonSeed = true;
 	// This is actually number of function evaluation
 	public static int logGenerationOfObjectiveValue = 500;//5000; // <=0 means disabled.
-	
+	// This is to control if fuzzy requriement is enable
+	public static boolean isFuzzy = false; 
 	public Solution execute(SASSolutionInstantiator factory, int[][] vars,
 			int numberOfObjectives_, int numberOfConstraints_)
 			throws JMException, SecurityException, IOException,

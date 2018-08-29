@@ -74,7 +74,7 @@ public class SAS extends Problem {
 		// It is possible to directly retrieve objective' values from indices, and this
 		// can be done from my end.
 		double[] f = sol.getObjectiveValuesFromIndexValue();
-		
+		sol.updateNormalizationBounds(f);
 		for (int i = 0; i < f.length ; i ++) {
 			solution.setObjective(i, f[i]);
 		}

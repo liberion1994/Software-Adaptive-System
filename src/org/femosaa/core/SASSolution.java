@@ -64,6 +64,12 @@ public abstract class SASSolution extends Solution {
 
 	public abstract double getVariableValueFromIndex(int index);
 	
+	/**
+	 * Used for fuzzy requirement.
+	 * @param f
+	 */
+	public abstract void updateNormalizationBounds(double[] f);
+	
 	
 	public static synchronized void init(double[][] optionalVariables) {
 		SASSolution.optionalVariables = optionalVariables;

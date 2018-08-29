@@ -21,6 +21,7 @@
 
 package jmetal.metaheuristics.gp;
 
+import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolution;
 import org.femosaa.core.SASSolutionInstantiator;
 
@@ -134,6 +135,12 @@ public class GP_SAS extends Algorithm {
 		initIdealPoint();
 		initNadirPoint();
 		
+		SolutionSet old_population = new SolutionSet(populationSize);
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			old_population = population;
+			population = factory.fuzzilize(population);
+		}
+		
 		for (int i = 0; i < populationSize; i++) {
 			fitnessAssignment(population.get(i));	// assign fitness value to each solution			
 		}
@@ -172,8 +179,15 @@ public class GP_SAS extends Algorithm {
 				} // if                            
 			} // for
 
-			// Create the solutionSet union of solutionSet and offSpring
-			union = ((SolutionSet) population).union(offspringPopulation);
+			SolutionSet old_union = null;
+			// Create the solutionSet union of solutionSet and offSpring			
+			if(SASAlgorithmAdaptor.isFuzzy) {			
+				union = ((SolutionSet) old_population).union(offspringPopulation);
+				old_union = union;
+				union = factory.fuzzilize(union);
+			} else {
+				union = ((SolutionSet) population).union(offspringPopulation);
+			}
 			
 			// Environmental selection based on the fitness value of each solution 
 			int[] idxArray = new int[union.size()];
@@ -188,6 +202,13 @@ public class GP_SAS extends Algorithm {
 			population.clear();
 			for (int i = 0; i < populationSize; i++)
 				population.add(union.get(idxArray[i]));
+			
+			if(SASAlgorithmAdaptor.isFuzzy) {
+				old_population.clear();
+				for (int i = 0; i < populationSize; i++) {
+					old_population.add(factory.defuzzilize(idxArray[i], union, old_union));
+				}
+			}
 
 		} // while
 
@@ -233,6 +254,13 @@ public class GP_SAS extends Algorithm {
 	 * @throws ClassNotFoundException
 	 */
 	void initIdealPoint() throws JMException, ClassNotFoundException {
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+				z_[i] = 0;
+			}
+			return;
+		}
+		
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
 			z_[i] = 1.0e+30;
 
@@ -246,6 +274,13 @@ public class GP_SAS extends Algorithm {
 	 * @throws ClassNotFoundException
 	 */
 	void initNadirPoint() throws JMException, ClassNotFoundException {
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
+				nz_[i] = 1;
+			}
+			return;
+		}
+		
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++)
 			nz_[i] = -1.0e+30;
 
@@ -258,6 +293,9 @@ public class GP_SAS extends Algorithm {
    	 * @param individual
    	 */
 	void updateReference(Solution individual) {
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			return;
+		}
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
 			if (individual.getObjective(i) < z_[i])
 				z_[i] = individual.getObjective(i);
@@ -270,6 +308,9 @@ public class GP_SAS extends Algorithm {
   	 * @param individual
   	 */
 	void updateNadirPoint(Solution individual) {
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			return;
+		}
 		for (int i = 0; i < problem_.getNumberOfObjectives(); i++) {
 			if (individual.getObjective(i) > nz_[i])
 				nz_[i] = individual.getObjective(i);
