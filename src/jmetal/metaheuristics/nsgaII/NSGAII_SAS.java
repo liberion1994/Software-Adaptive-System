@@ -133,6 +133,13 @@ public class NSGAII_SAS extends Algorithm {
 				population.add(newSolution);
 			} //for 
 		}
+		
+		SolutionSet old_population = new SolutionSet(populationSize);
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			old_population = population;
+			population = factory.fuzzilize(population);
+		}
+		
 	      
 		if (SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0) {
 			org.femosaa.util.Logger.logSolutionSetWithGeneration(population,
@@ -231,8 +238,17 @@ public class NSGAII_SAS extends Algorithm {
 				} // if                            
 			} // for
 
+			SolutionSet old_union = null;
+			// Create the solutionSet union of solutionSet and offSpring			
+			if(SASAlgorithmAdaptor.isFuzzy) {			
+				union = ((SolutionSet) old_population).union(offspringPopulation);
+				old_union = union;
+				union = factory.fuzzilize(union);
+			} else {
+				union = ((SolutionSet) population).union(offspringPopulation);
+			}
 			// Create the solutionSet union of solutionSet and offSpring
-			union = ((SolutionSet) population).union(offspringPopulation);
+			//union = ((SolutionSet) population).union(offspringPopulation);
 
 			// Ranking the union
 			Ranking ranking = new Ranking(union);
@@ -241,6 +257,7 @@ public class NSGAII_SAS extends Algorithm {
 			int index = 0;
 			SolutionSet front = null;
 			population.clear();
+			old_population.clear();
 
 			// Obtain the next front
 			front = ranking.getSubfront(index);
@@ -251,6 +268,9 @@ public class NSGAII_SAS extends Algorithm {
 				//Add the individuals of this front
 				for (int k = 0; k < front.size(); k++) {
 					population.add(front.get(k));
+					if(SASAlgorithmAdaptor.isFuzzy) {
+						old_population.add(factory.defuzzilize(front.get(k), old_union));
+					}
 				} // for
 
 				//Decrement remain
@@ -269,6 +289,9 @@ public class NSGAII_SAS extends Algorithm {
 				front.sort(new CrowdingComparator());
 				for (int k = 0; k < remain; k++) {
 					population.add(front.get(k));
+					if(SASAlgorithmAdaptor.isFuzzy) {
+						old_population.add(factory.defuzzilize(front.get(k), old_union));
+					}
 				} // for
 
 				remain = 0;
@@ -279,6 +302,7 @@ public class NSGAII_SAS extends Algorithm {
 			if(SASAlgorithmAdaptor.isLogTheEvalNeededToRemiveNonSeed) {
 				org.femosaa.util.Logger.printMarkedSolution(population, evaluations);
 			}
+			
 			
 			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
 				org.femosaa.util.Logger.logSolutionSetWithGeneration(population, "SolutionSetWithGen.rtf", 
@@ -297,6 +321,9 @@ public class NSGAII_SAS extends Algorithm {
 //			}
 //		}
 //		System.out.print("("+evaluations+","+(no/population.size()) + ")\n");
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			population = old_population;
+		}
 		// Return as output parameter the required evaluations
 		setOutputParameter("evaluations", requiredEvaluations);
 		population_ = population;

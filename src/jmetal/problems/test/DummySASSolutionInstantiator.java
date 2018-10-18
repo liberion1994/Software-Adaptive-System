@@ -69,4 +69,16 @@ public class DummySASSolutionInstantiator implements SASSolutionInstantiator {
 		return null;
 	}
 
+	@Override
+	public Solution defuzzilize(Solution s, SolutionSet oldPopulation) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void defuzzilizeAndRemove(Solution s, SolutionSet oldPopulation) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -63,9 +63,9 @@ public class UniformCrossoverSAS extends Crossover {
 			offSpring[1] = new Solution(parent2);
 		}
 		
-        //if(PseudoRandom.randDouble() >= crossoverProbability_) {
-			//return offSpring;
-		//}
+        if(PseudoRandom.randDouble() >= crossoverProbability_) {
+			return offSpring;
+		}
 		
 		int valueX1;
 		int valueX2;
@@ -73,7 +73,7 @@ public class UniformCrossoverSAS extends Crossover {
 		if (parent1 instanceof SASSolution) {
 			for (int i = 0; i < parent1.numberOfVariables(); i++) {
 				((SASSolution)parent1).crossoverWithDependency(i, parent1, parent2, offSpring[0], offSpring[1], 
-						(PseudoRandom.randDouble() < crossoverProbability_/*0.5*/));
+						(PseudoRandom.randDouble() < /*crossoverProbability_*/0.5));
 //				if (PseudoRandom.randDouble() < crossoverProbability_) {
 //					valueX1 = (int) parent1.getDecisionVariables()[i]
 //							.getValue();

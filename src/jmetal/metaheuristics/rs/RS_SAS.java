@@ -19,7 +19,9 @@
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-package jmetal.metaheuristics.gp;
+package jmetal.metaheuristics.rs;
+
+import java.util.Random;
 
 import org.femosaa.core.SASAlgorithmAdaptor;
 import org.femosaa.core.SASSolution;
@@ -34,7 +36,7 @@ import jmetal.util.*;
  * @author keli, taochen
  *
  */
-public class GP_SAS extends Algorithm {
+public class RS_SAS extends Algorithm {
 
 	private SASSolutionInstantiator factory = null;
 	
@@ -52,7 +54,7 @@ public class GP_SAS extends Algorithm {
 	 * Constructor
 	 * @param problem Problem to solve
 	 */
-	public GP_SAS(Problem problem) {
+	public RS_SAS(Problem problem) {
 		super (problem) ;
 	} // NSGAII
 
@@ -61,7 +63,7 @@ public class GP_SAS extends Algorithm {
   	 * Constructor
   	 * @param problem Problem to solve
   	 */
-	public GP_SAS(Problem problem, SASSolutionInstantiator factory) {
+	public RS_SAS(Problem problem, SASSolutionInstantiator factory) {
 		super(problem);
         this.factory = factory;
 	}
@@ -78,58 +80,32 @@ public class GP_SAS extends Algorithm {
 			throw new RuntimeException("No instance of SASSolutionInstantiator found!");
 		}
 		
-		int type;
 		
-		int populationSize;
-		int maxEvaluations;
+		int maxEvaluations  = ((Integer) getInputParameter("maxEvaluations")).intValue();
 		int evaluations;
 
-		int requiredEvaluations; // Use in the example of use of the
-		// indicators object (see below)
-
-		// knee point which might be used as the output
-		Solution kneeIndividual = factory.getSolution(problem_);
-
-		SolutionSet population;
-		SolutionSet offspringPopulation;
-		SolutionSet union;
-
-		Operator mutationOperator;
-		Operator crossoverOperator;
-		Operator selectionOperator;
-
-		Distance distance = new Distance();
-
-		//Read the parameters
-		populationSize = ((Integer) getInputParameter("populationSize")).intValue();
-		maxEvaluations = ((Integer) getInputParameter("maxEvaluations")).intValue();
-
-		//Initialize the variables
-		population = new SolutionSet(populationSize);
-		populationSize_ = populationSize;
-		population_ = population;
-		evaluations = 0;
-
-		requiredEvaluations = 0;
-
-		//Read the operators
-		mutationOperator  = operators_.get("mutation");
-		crossoverOperator = operators_.get("crossover");
-		selectionOperator = operators_.get("selection");
-
-		
 		z_  = new double[problem_.getNumberOfObjectives()];
 	    nz_ = new double[problem_.getNumberOfObjectives()];
+
+		int populationSize = 2;
+		//Initialize the variables
+		SolutionSet population = new SolutionSet(populationSize);
+		//SolutionSet nadir_population = new SolutionSet(populationSize);
 		
+		evaluations = 0;
+
+	
+
 		
 		// Create the initial solutionSet
 		Solution newSolution;
-		for (int i = 0; i < populationSize; i++) {
+		for (int i = 0; i < 1; i++) {
 			newSolution = factory.getSolution(problem_);
 			problem_.evaluate(newSolution);
 			problem_.evaluateConstraints(newSolution);
 			evaluations++;
 			population.add(newSolution);
+			//nadir_population.add(newSolution);
 		} //for       
 
 		initIdealPoint();
@@ -141,7 +117,7 @@ public class GP_SAS extends Algorithm {
 			population = factory.fuzzilize(population);
 		}
 		
-		for (int i = 0; i < populationSize; i++) {
+		for (int i = 0; i < population.size(); i++) {
 			fitnessAssignment(population.get(i));	// assign fitness value to each solution			
 		}
 		
@@ -150,83 +126,69 @@ public class GP_SAS extends Algorithm {
 					"SolutionSetWithGen.rtf", 0);
 		} 
 		
+		Random rand = new Random();
+	
+		
 		// Generations 
 		while (evaluations < maxEvaluations) {
 
-			// Create the offSpring solutionSet
-			offspringPopulation = new SolutionSet(populationSize);
-			Solution[] parents = new Solution[2];
-			for (int i = 0; i < (populationSize / 2); i++) {
-				if (evaluations < maxEvaluations) {
-					//obtain parents
-					// First round, how to ensure normalization?
-					parents[0] = (Solution) selectionOperator.execute(population);
-					parents[1] = (Solution) selectionOperator.execute(population);
-					Solution[] offSpring = (Solution[]) crossoverOperator.execute(parents);
-					mutationOperator.execute(offSpring[0]);
-					mutationOperator.execute(offSpring[1]);
-					problem_.evaluate(offSpring[0]);
-					problem_.evaluateConstraints(offSpring[0]);
-					problem_.evaluate(offSpring[1]);
-					problem_.evaluateConstraints(offSpring[1]);
-					
-					updateReference(offSpring[0]);
-					updateNadirPoint(offSpring[0]);
-					
-					updateReference(offSpring[1]);
-					updateNadirPoint(offSpring[1]);
-					
-//					fitnessAssignment(offSpring[0]);
-//					fitnessAssignment(offSpring[1]);
-					offspringPopulation.add(offSpring[0]);
-					offspringPopulation.add(offSpring[1]);
-					evaluations += 2;
-				} // if                            
-			} // for
+		
+	
+	
+			
+	
+			/**
+			 * This is a random search, uniformly searching over the variable vector.
+			 */
 
-			SolutionSet old_union = null;
-			// Create the solutionSet union of solutionSet and offSpring			
-			if(SASAlgorithmAdaptor.isFuzzy) {			
-				union = ((SolutionSet) old_population).union(offspringPopulation);
-				old_union = union;
-				union = factory.fuzzilize(union);
-			} else {
-				union = ((SolutionSet) population).union(offspringPopulation);
-			}
+			Solution nextSolution = factory.getSolution(population.get(0));
 			
-			// Environmental selection based on the fitness value of each solution 
-			int[] idxArray = new int[union.size()];
-			double[] pData = new double[union.size()];
-			for (int i = 0; i < union.size(); i++) {	// Is there a faster way?
-				fitnessAssignment(union.get(i));
-				idxArray[i] = i;
-				pData[i]    = union.get(i).getFitness();
-			}
-			Utils.QuickSort(pData, idxArray, 0, union.size() - 1); 
+			int index = rand.nextInt(nextSolution.getDecisionVariables().length);
+			((SASSolution) nextSolution).mutateWithDependency(index,  true);
 			
-			population.clear();
-			for (int i = 0; i < populationSize; i++)
-				population.add(union.get(idxArray[i]));
 			
+			
+		
+			
+			problem_.evaluate(nextSolution);
+			problem_.evaluateConstraints(nextSolution);
+			
+			updateReference(nextSolution);
+			updateNadirPoint(nextSolution);
+		
+			
+			old_population.add(nextSolution);
 			if(SASAlgorithmAdaptor.isFuzzy) {
-				old_population.clear();
-				for (int i = 0; i < populationSize; i++) {
-					old_population.add(factory.defuzzilize(idxArray[i], union, old_union));
-				}
+				population = factory.fuzzilize(old_population);
 			}
 			
+			fitnessAssignment(population.get(0));
+			fitnessAssignment(population.get(1));
+			
+			
+			if(population.get(0).getFitness() < population.get(1).getFitness() ) {
+				population.remove(1);
+				old_population.remove(1);
+				
+			} else {
+				population.remove(0);
+				old_population.remove(0);
+			}
+			
+			evaluations++;
 			if(SASAlgorithmAdaptor.logGenerationOfObjectiveValue > 0 && evaluations%SASAlgorithmAdaptor.logGenerationOfObjectiveValue == 0) {
 				org.femosaa.util.Logger.logSolutionSetWithGenerationAndFuzzyValue(population, old_population, "SolutionSetWithGen.rtf", 
 						evaluations );
 			}
 
+		
 		} // while
 
 		if(SASAlgorithmAdaptor.isFuzzy) {
 			population = old_population;
 		}
 		// Return as output parameter the required evaluations
-		setOutputParameter("evaluations", requiredEvaluations);
+		//setOutputParameter("evaluations", requiredEvaluations);
 		
 		
 		

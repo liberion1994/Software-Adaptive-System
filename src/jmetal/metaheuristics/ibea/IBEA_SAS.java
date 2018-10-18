@@ -349,6 +349,12 @@ public class IBEA_SAS extends Algorithm {
 			}
 		}
 
+		SolutionSet old_population = new SolutionSet(populationSize);
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			//old_population = solutionSet;
+			//solutionSet = factory.fuzzilize(solutionSet);
+		}
+		
 		if(vandInvCoEvolver != null) {
 			for (int i = 0; i < populationSize; i++) {
 				newSolution = factory.getSolution(problem_);
@@ -362,13 +368,32 @@ public class IBEA_SAS extends Algorithm {
 		}
 		
 		while (evaluations < maxEvaluations) {
-			SolutionSet union = ((SolutionSet) solutionSet).union(archive);
+			
+			SolutionSet old_union = null;
+			SolutionSet union = null;
+			// Create the solutionSet union of solutionSet and offSpring			
+			if(SASAlgorithmAdaptor.isFuzzy) {			
+				union = ((SolutionSet) solutionSet).union(old_population);
+				old_union = union;
+				union = factory.fuzzilize(union);
+			} else {
+				union = ((SolutionSet) solutionSet).union(archive);
+			}
+			
+			old_population.clear();
 			calculateFitness(union);
 			archive = union;
 
 			while (archive.size() > populationSize) {
 				removeWorst(archive);
 			}
+			
+			if(SASAlgorithmAdaptor.isFuzzy) {
+				for (int i = 0; i < archive.size(); i++) {
+					old_population.add(factory.defuzzilize(archive.get(i), old_union));
+				}				
+			}
+			
 			
 			
 			
@@ -427,6 +452,9 @@ public class IBEA_SAS extends Algorithm {
 			}
 		} // while
 
+		if(SASAlgorithmAdaptor.isFuzzy) {
+			archive = old_population;
+		}
 		// 
 //		Ranking ranking = new Ranking(archive);
 //		return ranking.getSubfront(0); 

@@ -74,6 +74,54 @@ public class Logger {
 		
 	}
 	
+	
+	public static synchronized void logSolutionSetWithGenerationAndFuzzyValue(SolutionSet new_pareto_front, SolutionSet old_pareto_front, String name, int gen){
+		File file = null;
+		if(!(file = new File(prefix)).exists()){
+			file.mkdir();
+		} 
+		
+		try {
+			BufferedWriter bw = new BufferedWriter(new FileWriter(prefix
+					+ name, true));
+
+			String data = "";
+			Iterator new_itr = new_pareto_front.iterator();
+			Iterator old_itr = old_pareto_front.iterator();
+			while(new_itr.hasNext()) {
+				Solution s1 = (Solution)new_itr.next();
+				Solution s2 = (Solution)old_itr.next();
+				boolean isRecorded = true;
+				for(int i = 0; i < s1.numberOfObjectives(); i++) {
+
+					if(s2.getObjective(i) == Double.MAX_VALUE || s2.getObjective(i) == (Double.MAX_VALUE/100) || 
+							s1.getObjective(i) == Double.MAX_VALUE || s1.getObjective(i) == (Double.MAX_VALUE/100)) {
+						isRecorded = false;
+						break;
+					}
+				}
+				
+				if(!isRecorded) {
+					continue;
+				}
+				
+				for(int i = 0; i < s1.numberOfObjectives(); i++) {
+					// original:fuzzy
+					data +=  s2.getObjective(i) + ":" + s1.getObjective(i) + (i ==  s1.numberOfObjectives() - 1? "" : ",");
+				}
+				data += "\n";
+			}
+			
+			bw.write(data);
+			bw.write("------------:" + gen + ":------------\n");
+			bw.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
 	public static synchronized void logSolutionSetValues(SolutionSet pareto_front, String name){
 		File file = null;
 		if(!(file = new File(prefix)).exists()){

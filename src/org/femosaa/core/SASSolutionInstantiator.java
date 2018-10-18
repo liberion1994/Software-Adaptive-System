@@ -31,5 +31,9 @@ public interface SASSolutionInstantiator {
 	
 	public Solution defuzzilize(int i, SolutionSet newPopulation, SolutionSet oldPopulation);
 	
+	public Solution defuzzilize(Solution s, SolutionSet oldPopulation);
+	
+	public void defuzzilizeAndRemove(Solution s, SolutionSet oldPopulation);
+	
 	public double[][] getLambda();
 }

@@ -11,22 +11,22 @@ public abstract class SASAlgorithmAdaptor {
 	public static String valid1 = "", valid2 = "", invalid1 = "", invalid2 = "";
 	//protected static double MUTATION_RATE = 0.1;
 	//protected static double CROSSOVER_RATE = 0.9;
-	private static final boolean PRINT_SOLUTIONS = true;
+	private static final boolean PRINT_SOLUTIONS = true; /*important*/
 	private static final boolean PRINT_INVALID_SOLUTIONS = false;
-	private static final boolean LOG_SOLUTIONS = true;
+	private static final boolean LOG_SOLUTIONS = false; /*important*/
 	private static final boolean LOG_NON_DOMINATED_SOLUTIONS = false;
 	
-	private static final boolean LOG_SOLUTIONS_VALUES = false;
+	private static final boolean LOG_SOLUTIONS_VALUES = false; /*important*/
 	// This can be changed within SSASE
 	public static boolean isPreserveInvalidSolution = false;
 	// This can be changed within SSASE
-	public static boolean isSeedSolution = true;
+	public static boolean isSeedSolution = false;
 	// This can be changed within SSASE
-	public static boolean isLogTheEvalNeededToRemiveNonSeed = true;
+	public static boolean isLogTheEvalNeededToRemiveNonSeed = false;
 	// This is actually number of function evaluation
-	public static int logGenerationOfObjectiveValue = 500;//5000; // <=0 means disabled.
-	// This is to control if fuzzy requriement is enable
-	public static boolean isFuzzy = false; 
+	public static int logGenerationOfObjectiveValue = 0;//500;//5000; // <=0 means disabled.
+	// This is to control if fuzzy requirement is enable
+	public static boolean isFuzzy = true; 
 	public Solution execute(SASSolutionInstantiator factory, int[][] vars,
 			int numberOfObjectives_, int numberOfConstraints_)
 			throws JMException, SecurityException, IOException,
@@ -60,7 +60,7 @@ public abstract class SASAlgorithmAdaptor {
 		}		
 		if(LOG_SOLUTIONS) {
 			org.femosaa.util.Logger.logSolutionSet(pareto_front, "SolutionSet.rtf");
-			org.femosaa.util.Logger.logPercentageOfMarkedSolution(pareto_front, "HowManyFromSeeds.rtf");
+			//org.femosaa.util.Logger.logPercentageOfMarkedSolution(pareto_front, "HowManyFromSeeds.rtf");
 		}	
 		if(LOG_SOLUTIONS_VALUES) {
 			org.femosaa.util.Logger.logSolutionSetValues(pareto_front, "SolutionSetValue.rtf");
